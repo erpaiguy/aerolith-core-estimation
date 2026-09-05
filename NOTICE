@@ -1,0 +1,53 @@
+Aerolith Core Estimation — third-party notices
+==============================================
+
+This product’s own source is proprietary (see LICENSE). Runtime and build
+dependencies are restricted to OSI-approved permissive licenses so the
+product can be sold without copyleft or proprietary UI-kit obligations.
+
+No AG Grid, Syncfusion, Telerik, DevExpress, Glide Data Grid, Material UI,
+Ant Design, or other commercial/copyleft UI frameworks are used.
+No source or UI is copied from Aerolith Estimation (WPF) or from Microsoft Excel.
+
+Bundled / used at runtime
+-------------------------
+React, React DOM
+  License: MIT
+  https://github.com/facebook/react
+
+sql.js (SQLite compiled to WebAssembly)
+  License: MIT (wrapper) + SQLite (public domain)
+  https://github.com/sql-js/sql.js
+  https://sqlite.org/copyright.html
+
+fflate (ZIP inflate for .xlsx / .docx import)
+  License: MIT
+  https://github.com/101arrowz/fflate
+
+pdfjs-dist (PDF.js text-layer extract)
+  License: Apache-2.0
+  https://github.com/mozilla/pdf.js
+
+Tauri 2 (desktop shell)
+  License: Apache-2.0 OR MIT (dual)
+  https://github.com/tauri-apps/tauri
+
+@tauri-apps/api, @tauri-apps/plugin-dialog
+  License: Apache-2.0 OR MIT (dual)
+  https://github.com/tauri-apps/plugins-workspace
+
+Build / test only (not required by end users of a compiled installer)
+---------------------------------------------------------------------
+TypeScript — Apache-2.0
+Vite — MIT
+@vitejs/plugin-react — MIT
+Vitest — MIT
+@types/react, @types/react-dom — MIT
+@tauri-apps/cli — Apache-2.0 OR MIT
+serde — Apache-2.0 OR MIT
+tauri-build, tauri-plugin-dialog (Rust) — Apache-2.0 OR MIT
+
+Intentionally excluded
+----------------------
+GPL, AGPL, SSPL, BUSL, proprietary grid/chart suites, Google-hosted fonts,
+and any fragment of the WPF “Aerolith Estimation” codebase.

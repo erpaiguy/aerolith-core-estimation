@@ -1,0 +1,57 @@
+import "@fontsource/outfit/400.css";
+import "@fontsource/outfit/500.css";
+import "@fontsource/outfit/600.css";
+import "@fontsource/outfit/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@fontsource/ibm-plex-mono/600.css";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { App } from "./App";
+import "./styles.css";
+
+function isBenignResizeObserver(err: unknown): boolean {
+  const text = err instanceof Error ? `${err.name} ${err.message}` : String(err ?? "");
+  return /ResizeObserver loop/i.test(text);
+}
+
+function showCrash(err: unknown): void {
+  if (isBenignResizeObserver(err)) return;
+  const root = document.getElementById("root");
+  if (!root) return;
+  const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+  root.innerHTML = `<div style="font-family:Outfit,'Segoe UI',system-ui,sans-serif;padding:48px;max-width:40em;color:#B42318">
+    <h1 style="font-size:20px;font-weight:600;letter-spacing:-0.03em">Aerolith Core could not start</h1>
+    <p style="color:#0F172A">Leave this window open and tell me the text below.</p>
+    <pre style="white-space:pre-wrap;background:#F8FAFC;border:1px solid #E2E8F0;padding:12px">${message.replace(/</g, "&lt;")}</pre>
+  </div>`;
+}
+
+window.addEventListener("error", (event) => {
+  if (isBenignResizeObserver(event.error ?? event.message)) {
+    event.preventDefault();
+    return;
+  }
+  showCrash(event.error ?? event.message);
+});
+window.addEventListener("unhandledrejection", (event) => {
+  if (isBenignResizeObserver(event.reason)) {
+    event.preventDefault();
+    return;
+  }
+  showCrash(event.reason);
+});
+
+try {
+  createRoot(document.getElementById("root")!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+} catch (err) {
+  showCrash(err);
+}

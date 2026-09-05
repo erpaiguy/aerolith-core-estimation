@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aerolith Core — design preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0F172A;
+      --ink-soft: #475569;
+      --paper: #F8FAFC;
+      --paper-2: #FFFFFF;
+      --line: #E2E8F0;
+      --accent: #EA580C;
+      --ok: #15803D;
+      --danger: #DC2626;
+      --hover: #F1F5F9;
+      --select: #FFF7ED;
+      --mono: "IBM Plex Mono", Consolas, ui-monospace, monospace;
+      --sans: Inter, "Segoe UI", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #CBD5E1; font-family: var(--sans); color: var(--ink); }
+    .picker {
+      display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px;
+      background: #0F172A; position: sticky; top: 0; z-index: 20;
+    }
+    .picker button {
+      height: 26px; padding: 0 10px; border: 1px solid #334155; background: transparent;
+      color: #E2E8F0; font: 500 11px/1 var(--sans); cursor: pointer;
+    }
+    .picker button.on { background: #EA580C; color: #000; border-color: #EA580C; }
+    .picker.hidden { display: none; }
+    .stage.embed { padding: 0; }
+    .stage.embed .app { border: 0; }
+    .app {
+      width: 1440px; height: 900px; background: var(--paper); overflow: hidden;
+      display: flex; flex-direction: column; border: 1px solid #94A3B8;
+    }
+    button.ui {
+      height: 28px; padding: 0 11px; border: 1px solid var(--line); background: var(--paper-2);
+      font: 500 13px/1 var(--sans); color: var(--ink); cursor: default;
+    }
+    button.ui.ink { background: var(--ink); color: #fff; border-color: var(--ink); }
+    button.ui.ghost { background: transparent; }
+    .job {
+      display: grid; grid-template-rows: 40px 32px 28px 1fr 24px; height: 100%;
+    }
+    .jobbar, .phases, .money, .status {
+      display: flex; align-items: center; gap: 10px; padding: 0 14px;
+      border-bottom: 1px solid var(--line); background: var(--paper-2);
+    }
+    .jobbar { background: var(--paper); }
+    .brand { font-weight: 700; letter-spacing: 0.12em; font-size: 11px; text-transform: uppercase; }
+    .brand span { color: var(--accent); }
+    .jobname { font-weight: 600; font-size: 13px; }
+    .sp { flex: 1; }
+    .chip {
+      height: 24px; padding: 0 9px; border: 1px solid var(--line); background: var(--paper-2);
+      font: 500 12px/24px var(--sans);
+    }
+    .chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .phase { height: 32px; padding: 0 12px; border: 0; background: transparent; font: 500 13px var(--sans); color: var(--ink-soft); border-bottom: 2px solid transparent; }
+    .phase.on { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+    .money { background: var(--paper); font-size: 12px; color: var(--ink-soft); gap: 18px; }
+    .money b { color: var(--ink); font-family: var(--mono); font-weight: 500; font-size: 12px; }
+    .status { border-bottom: 0; border-top: 1px solid var(--line); font-size: 11px; color: var(--ink-soft); height: 24px; }
+    .work { display: grid; grid-template-columns: 1fr 360px; min-height: 0; }
+    .work.full { grid-template-columns: 1fr; }
+    .sheet { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--paper-2); }
+    .sheet-tools { display: flex; gap: 8px; align-items: center; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+    .filter { height: 28px; border: 1px solid var(--line); padding: 0 8px; width: 180px; font: 13px var(--sans); }
+    .gridwrap { flex: 1; overflow: hidden; }
+    .g {
+      display: grid;
+      grid-template-columns: 72px minmax(220px, 1fr) 88px 88px 56px 104px 104px 120px 36px;
+      font-size: 12px;
+    }
+    .g.head { background: var(--paper); border-bottom: 1px solid var(--line); }
+    .g.head > div {
+      padding: 7px 8px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--ink-soft); font-weight: 600; border-right: 1px solid var(--line);
+    }
+    .g.row > div { padding: 0 8px; height: 28px; line-height: 28px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .g.row.sec > div { background: var(--paper); font-weight: 600; }
+    .g.row.on > div { background: var(--select); }
+    .g.row.on > div:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+    .num { font-family: var(--mono); text-align: right; }
+    .st { text-align: center; color: var(--accent); font-weight: 600; }
+    .bench { border-left: 1px solid var(--line); background: var(--paper); display: flex; flex-direction: column; min-height: 0; }
+    .btabs { display: flex; border-bottom: 1px solid var(--line); background: var(--paper-2); }
+    .btab { flex: 1; height: 32px; border: 0; background: transparent; font: 500 12px var(--sans); color: var(--ink-soft); }
+    .btab.on { color: var(--ink); box-shadow: inset 0 -2px 0 var(--accent); }
+    .bbody { padding: 12px 14px; overflow: auto; font-size: 12px; }
+    .bbody h3 { margin: 0 0 8px; font-size: 13px; }
+    .kv { display: grid; grid-template-columns: 88px 1fr; gap: 6px 10px; margin: 0 0 14px; }
+    .kv dt { color: var(--ink-soft); }
+    .kv dd { margin: 0; font-weight: 500; }
+    .qto { display: grid; grid-template-columns: 1fr 70px 70px 64px; gap: 0; font-size: 11px; }
+    .qto div { padding: 5px 6px; border-bottom: 1px solid var(--line); }
+    .ana { font-family: var(--mono); font-size: 11px; }
+    .ana div { display: grid; grid-template-columns: 1fr 48px 72px 80px; gap: 6px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+    .home, .login { height: 100%; background: var(--paper); padding: 48px 64px; }
+    .kicker { margin: 0 0 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft); }
+    h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.04em; margin: 0 0 8px; }
+    .lede { color: var(--ink-soft); max-width: 48ch; line-height: 1.45; }
+    .actions { display: flex; gap: 8px; margin: 22px 0 28px; }
+    .samples { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+    .sample { border-top: 1px solid var(--ink); padding-top: 14px; }
+    .sample h2 { margin: 0 0 8px; font-size: 18px; }
+    .sample p { color: var(--ink-soft); margin: 0 0 12px; max-width: 46ch; line-height: 1.45; }
+    .login-card { width: 360px; margin-top: 32px; }
+    .field { margin: 0 0 12px; }
+    .field label { display: block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 4px; }
+    .field input, .field select { width: 100%; height: 32px; border: 1px solid var(--line); padding: 0 10px; font: 13px var(--sans); }
+    .room { display: grid; grid-template-columns: 1fr 320px; min-height: 0; }
+    .room.preview { grid-template-columns: 1fr 280px; }
+    .pane { overflow: auto; background: var(--paper-2); }
+    .side { border-left: 1px solid var(--line); background: var(--paper); padding: 12px 14px; overflow: auto; }
+    table.d { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
+    table.d th, table.d td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    table.d th { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); background: var(--paper); }
+    table.d td.num { font-family: var(--mono); text-align: right; }
+    .doc {
+      width: 640px; margin: 16px auto; background: #fff; border: 1px solid var(--ink); padding: 24px 28px; font-size: 12px;
+    }
+    .bars { margin-top: 12px; }
+    .bar { display: grid; grid-template-columns: 110px 1fr 90px; gap: 8px; align-items: center; margin: 6px 0; font-size: 12px; }
+    .bar i { display: block; height: 8px; background: var(--ink); }
+    .ok { color: var(--ok); font-weight: 600; }
+    .hint { color: var(--ink-soft); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <nav class="picker" id="picker"></nav>
+  <div class="stage"><div class="app" id="app"></div></div>
+  <script>
+    const SCREENS = [
+      ["login", "Login"],
+      ["home", "Home"],
+      ["bill", "Bill · Identity"],
+      ["takeoff", "Bill · Take-off"],
+      ["rate", "Bill · Rate"],
+      ["closed", "Bill · sheet only"],
+      ["all", "Bill · All BOQs"],
+      ["buy", "Buy · Package"],
+      ["compare", "Buy · Compare"],
+      ["queries", "Queries"],
+      ["submit", "Submit"],
+      ["briefing", "Briefing"],
+      ["source", "Issued bill"],
+      ["masters", "Masters"],
+      ["settings", "Settings"],
+    ];
+    const params = new URLSearchParams(location.search);
+    let current = params.get("s") || "bill";
+    const embed = params.get("embed") === "1";
+    if (embed) {
+      document.getElementById("picker").classList.add("hidden");
+      document.querySelector(".stage").classList.add("embed");
+    }
+
+    const rows = [
+      ["sec", "1", "Preliminaries", "", "", "", "", "", "", ""],
+      ["", "1a", "Site establishment and welfare", "1.00", "1.00", "L/s", "220,000.00", "324,500.00", "324,500.00", ""],
+      ["", "1b", "Temporary works and scaffolding", "1.00", "1.00", "L/s", "86,000.00", "126,850.00", "126,850.00", ""],
+      ["sec", "2", "Substructure", "", "", "", "", "", "", ""],
+      ["", "2a", "Bulk excavation", "4,500.00", "4,635.00", "m³", "84.16", "124.14", "575,388.90", "Δ"],
+      ["", "2b", "Lean concrete blinding 50mm", "180.00", "180.00", "m³", "852.40", "1,257.29", "226,312.20", ""],
+      ["sec", "3", "Superstructure", "", "", "", "", "", "", ""],
+      ["on", "3a", "Columns", "620.00", "620.00", "m³", "852.40", "1,257.29", "779,519.80", ""],
+      ["", "3b", "Beams", "880.00", "880.00", "m³", "852.40", "1,257.29", "1,106,415.20", ""],
+      ["", "3c", "Suspended slabs", "2,100.00", "2,100.00", "m³", "852.40", "1,257.29", "2,640,309.00", ""],
+      ["", "3d", "Staircases", "85.00", "85.00", "m³", "852.40", "1,257.29", "106,869.65", ""],
+      ["sec", "4", "Masonry", "", "", "", "", "", "", ""],
+      ["", "4a", "200mm hollow blockwork", "18,000.00", "18,000.00", "m²", "68.20", "100.60", "1,810,800.00", ""],
+      ["", "4b", "100mm solid blockwork / partitions", "6,200.00", "6,200.00", "m²", "48.10", "70.95", "439,890.00", ""],
+      ["", "5a", "Torch-on waterproofing to roof", "2,800.00", "2,800.00", "m²", "39.40", "58.12", "162,736.00", ""],
+      ["", "8a", "Electrical installation (complete)", "1.00", "1.00", "L/s", "1,100,000.00", "1,100,000.00", "1,100,000.00", "Q"],
+    ];
+
+    function sheet(extraHead, extraCell) {
+      const head = extraHead ? `<div>BOQ</div>` : "";
+      const cols = extraHead
+        ? "72px 140px minmax(180px,1fr) 88px 88px 56px 104px 104px 120px 36px"
+        : "72px minmax(220px,1fr) 88px 88px 56px 104px 104px 120px 36px";
+      const body = rows.map(([kind, code, desc, c, o, u, cost, rate, amt, st]) => {
+        const cls = kind === "sec" ? "sec" : kind === "on" ? "on" : "";
+        const bill = extraHead ? `<div>${extraCell(code, kind)}</div>` : "";
+        if (kind === "sec") {
+          return `<div class="g row sec" style="grid-template-columns:${cols}"><div>${code}</div>${bill}<div>${desc}</div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>`;
+        }
+        return `<div class="g row ${cls}" style="grid-template-columns:${cols}"><div>${code}</div>${bill}<div>${desc}</div><div class="num">${c}</div><div class="num">${o}</div><div>${u}</div><div class="num">${cost}</div><div class="num">${rate}</div><div class="num">${amt}</div><div class="st">${st}</div></div>`;
+      }).join("");
+      return `
+        <div class="sheet-tools">
+          <button class="ui ink">Add item</button>
+          <button class="ui">Add section</button>
+          <span class="sp"></span>
+          <input class="filter" value="" placeholder="Filter items" readonly />
+          <span style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--line);padding:4px 8px">Client BOQ locked</span>
+        </div>
+        <div class="gridwrap">
+          <div class="g head" style="grid-template-columns:${cols}">
+            <div>Code</div>${head}<div>Description</div><div class="num">Client</div><div class="num">Our</div><div>Unit</div><div class="num">Cost</div><div class="num">Rate</div><div class="num">Amount</div><div></div>
+          </div>
+          ${body}
+        </div>`;
+    }
+
+    function bench(tab) {
+      const tabs = ["Identity", "Take-off", "Rate"].map(t =>
+        `<button class="btab ${t === tab ? "on" : ""}">${t}</button>`
+      ).join("");
+      let body = "";
+      if (tab === "Identity") {
+        body = `
+          <h3>3a · Columns</h3>
+          <p class="hint" style="margin:0 0 12px">Building 1 — Residential 10,000 m² · Superstructure</p>
+          <dl class="kv">
+            <dt>Issued</dt><dd>3a</dd>
+            <dt>Client qty</dt><dd>620.00 m³</dd>
+            <dt>Our qty</dt><dd>620.00 m³</dd>
+            <dt>Unit cost</dt><dd>852.40</dd>
+            <dt>Selling rate</dt><dd>1,257.29</dd>
+            <dt>Amount</dt><dd>779,519.80 QAR</dd>
+            <dt>Origin</dt><dd>Own analysis</dd>
+          </dl>
+          <p class="hint">Full specification stays here. The sheet truncates.</p>`;
+      } else if (tab === "Take-off") {
+        body = `
+          <h3>Measurements posting to 3a</h3>
+          <p class="hint">Volume = Nos × L × B × H. Our qty is the sum.</p>
+          <div class="qto" style="margin-top:10px">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)">Drawing / location</div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)">L</div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)">B</div>
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)">Qty</div>
+            <div>B1-S-201 · Grid A–D</div><div class="num">206.67</div><div class="num">5.00</div><div class="num">310.00</div>
+            <div>B1-S-202 · Grid E–H</div><div class="num">206.67</div><div class="num">5.00</div><div class="num">310.00</div>
+          </div>
+          <p style="margin:12px 0 0"><b>Posted</b> 620.00 m³ · matches client</p>`;
+      } else {
+        body = `
+          <h3>Rate build-up · 1 m³</h3>
+          <p class="hint">Live resources. Building 2 3a is linked here.</p>
+          <div class="ana">
+            <div><span>Cement OPC 42.5</span><span>7</span><span>22.00</span><span>161.70</span></div>
+            <div><span>Washed sand</span><span>0.45</span><span>55.00</span><span>27.23</span></div>
+            <div><span>20mm aggregate</span><span>0.85</span><span>65.00</span><span>58.03</span></div>
+            <div><span>High-yield rebar</span><span>0.12</span><span>2,800.00</span><span>345.74</span></div>
+            <div><span>Mason / concretor</span><span>0.50</span><span>220.00</span><span>110.00</span></div>
+            <div><span>Steel fixer</span><span>0.30</span><span>230.00</span><span>69.00</span></div>
+            <div><span>Mixer & pump</span><span>0.15</span><span>520.00</span><span>78.00</span></div>
+          </div>
+          <p style="margin:12px 0 0"><b>Unit cost</b> 852.40 · <b>Rate</b> 1,257.29 after 47.5% stack</p>
+          <p class="hint" style="margin-top:8px">Link / include pickers list all bills. Following a link switches BOQ, not the page.</p>`;
+      }
+      return `<div class="bench"><div class="btabs">${tabs}</div><div class="bbody">${body}</div></div>`;
+    }
+
+    function job({ phase, bill, benchTab, closed, all }) {
+      const bills = [
+        ["1", "B1 10,000 m²"],
+        ["2", "B2 15,000 m²"],
+        ["3", "B3 2,500 m²"],
+        ["All", "All BOQs"],
+      ].map(([id, label]) => `<span class="chip ${bill === id ? "on" : ""}">${label}</span>`).join("");
+      const phases = ["Bill", "Take-off", "Buy", "Queries", "Submit", "More"].map(p =>
+        `<span class="phase ${phase === p ? "on" : ""}">${p}</span>`
+      ).join("");
+      const extra = all ? (code, kind) => kind === "sec" ? "" : "Building 1" : null;
+      const center = closed
+        ? `<div class="work full"><div class="sheet">${sheet(false)}</div></div>`
+        : all
+          ? `<div class="work"><div class="sheet">${sheet(true, extra)}</div>${bench("Identity")}</div>`
+          : `<div class="work"><div class="sheet">${sheet(false)}</div>${bench(benchTab)}</div>`;
+      const thisBoq = all ? "Grand of view" : "This BOQ";
+      const thisAmt = all ? "18,412,880.15" : "8,240,112.40";
+      return `<div class="job">
+        <div class="jobbar">
+          <div class="brand">Aerolith <span>Core</span></div>
+          <div class="jobname">Al Maha Campus, Lusail · r1</div>
+          <div class="sp"></div>
+          ${bills}
+          <button class="ui">Open</button>
+          <button class="ui ink">Save .aero</button>
+        </div>
+        <div class="phases">${phases}</div>
+        <div class="money">
+          <span>${thisBoq} <b>QAR ${thisAmt}</b></span>
+          <span>Grand <b>QAR 18,412,880.15</b></span>
+          <span>0 unpriced</span>
+          <span>3 qty diffs</span>
+          <span>Source locked</span>
+        </div>
+        ${center}
+        <div class="status">3a selected · Superstructure · Tab cell · F2 edit · Esc cancel · Trial 14d</div>
+      </div>`;
+    }
+
+    function login() {
+      return `<div class="login">
+        <p class="kicker">Aerolith Core</p>
+        <h1>Sign in</h1>
+        <p class="lede">One job database per workspace. Estimators, viewers, and the owner share the same files.</p>
+        <div class="login-card">
+          <div class="field"><label>Workspace</label><select><option>Demo company</option></select></div>
+          <div class="field"><label>Login</label><input value="admin" readonly /></div>
+          <div class="field"><label>PIN</label><input type="password" value="admin" readonly /></div>
+          <button class="ui ink">Continue</button>
+          <p class="hint" style="margin-top:12px">admin / admin · estimator / estimator · viewer / viewer</p>
+        </div>
+      </div>`;
+    }
+
+    function home() {
+      return `<div class="home">
+        <p class="kicker">Aerolith Core</p>
+        <h1>Admin</h1>
+        <p class="lede">One job database for this company. Every user in this workspace opens and saves the same files.</p>
+        <p class="hint">Trial · 14 days remaining</p>
+        <div class="actions">
+          <button class="ui ink">New project</button>
+          <button class="ui">Open .aero</button>
+          <button class="ui">Import client bill</button>
+        </div>
+        <div class="samples">
+          <article class="sample">
+            <p class="kicker">Single BOQ</p>
+            <h2>Interior refurbishment</h2>
+            <p>Medical Institute. One issued bill. Status should read GREEN at QAR 100,826,297.13. Buy, Queries, and Take-off are seeded without moving the total.</p>
+            <button class="ui">Open single-BOQ sample</button>
+          </article>
+          <article class="sample">
+            <p class="kicker">Multiple BOQs</p>
+            <h2>Al Maha Campus, Lusail</h2>
+            <p>Three issued bills — 10,000 m² residential, 15,000 m² residential, 2,500 m² commercial & office. Same item numbers on each bill.</p>
+            <button class="ui ink">Open multi-BOQ sample</button>
+          </article>
+        </div>
+        <section style="margin-top:36px;border-top:1px solid var(--ink);padding-top:14px">
+          <p class="kicker">Recent</p>
+          <p class="hint">No saved jobs yet. Save a .aero under Documents\\Aerolith\\Projects.</p>
+        </section>
+      </div>`;
+    }
+
+    function buy(compare) {
+      const table = compare
+        ? `<table class="d">
+            <thead><tr><th>Resource</th><th>Unit</th><th class="num">QBM</th><th class="num">Gulf Steel</th><th>Taken up</th></tr></thead>
+            <tbody>
+              <tr><td>Cement OPC 42.5</td><td>bag</td><td class="num">22.00</td><td class="num">23.76</td><td>QBM</td></tr>
+              <tr><td>High-yield rebar</td><td>t</td><td class="num">2,800.00</td><td class="num">2,716.00</td><td>QBM</td></tr>
+              <tr><td>20mm aggregate</td><td>m³</td><td class="num">65.00</td><td class="num">70.20</td><td>QBM</td></tr>
+              <tr><td>Ceramic floor tile</td><td>m²</td><td class="num">48.00</td><td class="num">51.84</td><td>QBM</td></tr>
+            </tbody>
+          </table>`
+        : `<table class="d">
+            <thead><tr><th>Code</th><th>Resource</th><th>Unit</th><th class="num">Qty</th><th>Include</th></tr></thead>
+            <tbody>
+              <tr><td>PRJ-CEM</td><td>Cement OPC 42.5</td><td>bag</td><td class="num">98,310</td><td>Yes</td></tr>
+              <tr><td>PRJ-SND</td><td>Washed sand</td><td>m³</td><td class="num">1,568</td><td>Yes</td></tr>
+              <tr><td>PRJ-REB</td><td>High-yield rebar</td><td>t</td><td class="num">412</td><td>Yes</td></tr>
+              <tr><td>PRJ-BLK</td><td>200mm hollow block</td><td>m²</td><td class="num">27,000</td><td>Yes</td></tr>
+            </tbody>
+          </table>`;
+      return jobChrome("Buy", `
+        <div class="sheet-tools">
+          <span class="chip on">Package</span><span class="chip">Send</span><span class="chip">Receive</span>
+          <span class="chip ${compare ? "on" : ""}">Compare</span>
+          <span class="sp"></span>
+          <span class="chip on">Material</span><span class="chip">Labour</span><span class="chip">BOQ items</span>
+        </div>
+        <div class="room">
+          <div class="pane" style="padding:0">${table}</div>
+          <div class="side">
+            <h3 style="margin:0 0 8px;font-size:13px">${compare ? "Award" : "Enquiry to QBM"}</h3>
+            <p class="hint">${compare ? "Selected quotes own the project rate. Analysis lines update when you apply." : "One catalogue for all three buildings. Optional bill filter changes display qty only."}</p>
+            <p style="margin:12px 0 6px"><button class="ui ink">${compare ? "Apply selected" : "Issue pack"}</button></p>
+          </div>
+        </div>`);
+    }
+
+    function jobChrome(phase, body) {
+      const bills = ["B1 10,000 m²","B2 15,000 m²","B3 2,500 m²"].map((l,i)=>`<span class="chip ${i===0?"on":""}">${l}</span>`).join("");
+      const phases = ["Bill", "Take-off", "Buy", "Queries", "Submit", "More"].map(p =>
+        `<span class="phase ${phase === p || (phase==="More" && ["Briefing","Issued bill","Masters","Settings"].includes(p) ) ? "on" : ""}">${p}</span>`
+      ).join("");
+      const moreOn = ["Briefing","Issued bill","Masters","Settings"].includes(phase);
+      return `<div class="job">
+        <div class="jobbar">
+          <div class="brand">Aerolith <span>Core</span></div>
+          <div class="jobname">Al Maha Campus, Lusail · r1</div>
+          <div class="sp"></div>${bills}
+          <button class="ui ink">Save .aero</button>
+        </div>
+        <div class="phases">
+          ${["Bill","Take-off","Buy","Queries","Submit","More"].map(p => `<span class="phase ${p===phase || (moreOn && p==="More") ? "on":""}">${p}</span>`).join("")}
+        </div>
+        <div class="money"><span>This BOQ <b>QAR 8,240,112.40</b></span><span>Grand <b>QAR 18,412,880.15</b></span></div>
+        <div class="sheet">${body}</div>
+        <div class="status">Job room · returning to Bill restores 3a</div>
+      </div>`;
+    }
+
+    function queries() {
+      return jobChrome("Queries", `
+        <div class="sheet-tools">
+          <span class="chip on">Log</span><span class="chip">Tracker</span><span class="chip">Send</span><span class="chip">Receive</span>
+          <span class="sp"></span><span>5 queries · 1 overdue · 1 needs info</span>
+        </div>
+        <div class="room">
+          <div class="pane">
+            <table class="d">
+              <thead><tr><th>No.</th><th>Subject</th><th>Ref</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr style="background:var(--select)"><td>Q-001</td><td>Concrete grade — residential towers</td><td>B1 / B2 3a</td><td>Answered</td></tr>
+                <tr><td>Q-002</td><td>Curtain wall system on Building 3</td><td>B3 9b</td><td>Needs info</td></tr>
+                <tr><td>Q-003</td><td>Shared site establishment</td><td>B1 1a</td><td>Closed</td></tr>
+                <tr><td>Q-004</td><td>Ceiling void coordination on Building 2</td><td>B2 6d</td><td>Overdue</td></tr>
+                <tr><td>Q-005</td><td>Office lighting control</td><td>B3 8a</td><td>Draft</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="side">
+            <h3 style="margin:0 0 8px;font-size:13px">Q-001</h3>
+            <p>Please confirm C40 for columns and beams on Buildings 1 and 2.</p>
+            <p class="hint" style="margin-top:12px"><b>Engineer</b> — C40 for B1 and B2. Building 3 cores are C45.</p>
+          </div>
+        </div>`);
+    }
+
+    function submit() {
+      return jobChrome("Submit", `
+        <div class="sheet-tools">
+          <span class="chip on">This BOQ</span><span class="chip">All BOQs</span>
+          <span class="chip on">Complete items</span><span class="chip">Summaries</span>
+          <span class="sp"></span>
+          <button class="ui">CSV</button><button class="ui ink">Print</button>
+        </div>
+        <div class="room preview">
+          <div class="pane" style="background:var(--paper)">
+            <div class="doc">
+              <div class="kicker">Bill of quantities</div>
+              <h2 style="margin:0 0 4px;font-size:16px">Building 1 — Residential 10,000 m²</h2>
+              <p class="hint">Al Maha Campus, Lusail · packet of this BOQ</p>
+              <table class="d" style="margin-top:12px">
+                <thead><tr><th>Code</th><th>Description</th><th class="num">Qty</th><th class="num">Rate</th><th class="num">Amount</th></tr></thead>
+                <tbody>
+                  <tr><td>3a</td><td>Columns</td><td class="num">620</td><td class="num">1,257.29</td><td class="num">779,519.80</td></tr>
+                  <tr><td>3b</td><td>Beams</td><td class="num">880</td><td class="num">1,257.29</td><td class="num">1,106,415.20</td></tr>
+                  <tr><td colspan="4">This packet</td><td class="num">8,240,112.40</td></tr>
+                  <tr><td colspan="4">Project grand (all BOQs)</td><td class="num">18,412,880.15</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="side">
+            <h3 style="margin:0 0 8px;font-size:13px">Scope</h3>
+            <p class="hint">BOQ × category × items or summaries. A subset still shows project grand.</p>
+          </div>
+        </div>`);
+    }
+
+    function briefing() {
+      return jobChrome("More", `
+        <div class="pane" style="padding:20px 24px;overflow:auto">
+          <p class="kicker">Briefing</p>
+          <h2 style="margin:0 0 16px">Al Maha Campus</h2>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:24px">
+            <div><b style="font-size:18px;font-family:var(--mono)">12,466,359</b><div class="hint">Cost</div></div>
+            <div><b style="font-size:18px;font-family:var(--mono)">5,946,521</b><div class="hint">Margin 47.5%</div></div>
+            <div><b style="font-size:18px;font-family:var(--mono)">18,412,880</b><div class="hint">Working total</div></div>
+          </div>
+          <div class="bars">
+            <div class="bar"><span>Material</span><i style="width:72%"></i><span class="num">8.1m</span></div>
+            <div class="bar"><span>Labour</span><i style="width:28%"></i><span class="num">2.4m</span></div>
+            <div class="bar"><span>Sub-contract</span><i style="width:40%"></i><span class="num">3.9m</span></div>
+          </div>
+        </div>`);
+    }
+
+    function source() {
+      return jobChrome("More", `
+        <div class="sheet-tools"><span>Issued replica · Building 1 · locked 18 Apr 2026</span></div>
+        <div class="pane">
+          <table class="d">
+            <thead><tr><th>No.</th><th>Description</th><th class="num">Qty</th><th>Unit</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Preliminaries</td><td></td><td></td></tr>
+              <tr><td>a</td><td>Site establishment and welfare</td><td class="num">1</td><td>L/s</td></tr>
+              <tr><td>3</td><td>Superstructure</td><td></td><td></td></tr>
+              <tr><td>a</td><td>Columns</td><td class="num">620</td><td>m³</td></tr>
+            </tbody>
+          </table>
+        </div>`);
+    }
+
+    function masters() {
+      return jobChrome("More", `
+        <div class="sheet-tools">
+          <span class="chip on">Units</span><span class="chip">Categories</span><span class="chip">Vendors</span><span class="chip">Margin</span>
+        </div>
+        <div class="pane">
+          <table class="d">
+            <thead><tr><th>Code</th><th>Description</th><th>Symbol</th></tr></thead>
+            <tbody>
+              <tr><td>M3</td><td>Cubic metre</td><td>m³</td></tr>
+              <tr><td>M2</td><td>Square metre</td><td>m²</td></tr>
+              <tr><td>LS</td><td>Lump sum</td><td>L/s</td></tr>
+            </tbody>
+          </table>
+        </div>`);
+    }
+
+    function settings() {
+      return jobChrome("More", `
+        <div class="pane" style="padding:20px 24px">
+          <p class="kicker">Workspace</p>
+          <h2 style="margin:0 0 12px">Demo company</h2>
+          <p class="hint">License, seats, report paper, display decimals, audit. Not the bill.</p>
+          <div class="field" style="max-width:280px;margin-top:16px"><label>Qty decimals</label><input value="2" readonly /></div>
+          <div class="field" style="max-width:280px"><label>Rate decimals</label><input value="2" readonly /></div>
+        </div>`);
+    }
+
+    const render = {
+      login, home,
+      bill: () => job({ phase: "Bill", bill: "1", benchTab: "Identity" }),
+      takeoff: () => job({ phase: "Take-off", bill: "1", benchTab: "Take-off" }),
+      rate: () => job({ phase: "Bill", bill: "1", benchTab: "Rate" }),
+      closed: () => job({ phase: "Bill", bill: "1", closed: true }),
+      all: () => job({ phase: "Bill", bill: "All", all: true }),
+      buy: () => buy(false),
+      compare: () => buy(true),
+      queries, submit, briefing, source, masters, settings,
+    };
+
+    function go(id) {
+      current = id;
+      document.getElementById("app").innerHTML = (render[id] || render.bill)();
+      [...document.querySelectorAll(".picker button")].forEach(b => b.classList.toggle("on", b.dataset.id === id));
+      history.replaceState(null, "", "?s=" + id);
+    }
+
+    document.getElementById("picker").innerHTML = SCREENS.map(([id, label]) =>
+      `<button type="button" data-id="${id}">${label}</button>`
+    ).join("");
+    document.getElementById("picker").addEventListener("click", e => {
+      const id = e.target.dataset?.id;
+      if (id) go(id);
+    });
+    go(current);
+  </script>
+</body>
+</html>

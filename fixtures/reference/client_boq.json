@@ -1,0 +1,891 @@
+[
+  {
+    "row": 1,
+    "kind": "title",
+    "description": "Project - Interior Refurbishment for Medical Institute, Location A"
+  },
+  {
+    "row": 2,
+    "kind": "subtitle",
+    "description": "Bill of Quantities"
+  },
+  {
+    "row": 3,
+    "kind": "column_header"
+  },
+  {
+    "row": 4,
+    "kind": "section",
+    "sl_no": "1",
+    "description": "Preliminaries"
+  },
+  {
+    "row": 6,
+    "kind": "item",
+    "sl_no": "a",
+    "description": "Site Co-ordination",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 8,
+    "kind": "item",
+    "sl_no": "b",
+    "description": "Shop Drawings",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 10,
+    "kind": "item",
+    "sl_no": "c",
+    "description": "As-Built Drawings",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 12,
+    "kind": "item",
+    "sl_no": "d",
+    "description": "Material Submittals",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 14,
+    "kind": "item",
+    "sl_no": "e",
+    "description": "Sample Preparation",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 16,
+    "kind": "item",
+    "sl_no": "f",
+    "description": "Mock-ups",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 18,
+    "kind": "item",
+    "sl_no": "g",
+    "description": "Bonds",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 20,
+    "kind": "item",
+    "sl_no": "h",
+    "description": "Site-Office Setup",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 22,
+    "kind": "item",
+    "sl_no": "i",
+    "description": "Insurances",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 24,
+    "kind": "subtotal",
+    "description": "Page 1 - Sub-total"
+  },
+  {
+    "row": 26,
+    "kind": "layout",
+    "description": "Summary",
+    "sl_no": ""
+  },
+  {
+    "row": 28,
+    "kind": "layout",
+    "description": "1 - Preliminaries",
+    "sl_no": ""
+  },
+  {
+    "row": 30,
+    "kind": "page_subtotal",
+    "description": "Page 1 - subtotal"
+  },
+  {
+    "row": 32,
+    "kind": "subtotal",
+    "description": "1 - Preliminaries Sub-total"
+  },
+  {
+    "row": 34,
+    "kind": "section",
+    "sl_no": "2",
+    "description": "Demolition"
+  },
+  {
+    "row": 36,
+    "kind": "item",
+    "sl_no": "a",
+    "description": "Demolition of Blockwork",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 38,
+    "kind": "item",
+    "sl_no": "b",
+    "description": "Demolition of Gypsum Partition",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 40,
+    "kind": "item",
+    "sl_no": "c",
+    "description": "Stripping out HVAC Systems",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 42,
+    "kind": "item",
+    "sl_no": "d",
+    "description": "Removal of Fire Sprinklers",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 44,
+    "kind": "item",
+    "sl_no": "e",
+    "description": "Removal of Smoke & Fire Detectors",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 46,
+    "kind": "item",
+    "sl_no": "f",
+    "description": "Removal of Fire Hose Reel",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 48,
+    "kind": "item",
+    "sl_no": "g",
+    "description": "Removal of Fire Water Piping",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 50,
+    "kind": "item",
+    "sl_no": "h",
+    "description": "Removal of IT items",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 52,
+    "kind": "item",
+    "sl_no": "i",
+    "description": "Removal of Loose Furniture",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 54,
+    "kind": "subtotal",
+    "description": "Page 3 - Sub-total"
+  },
+  {
+    "row": 56,
+    "kind": "section",
+    "sl_no": "2",
+    "description": "Demolition (Contd.)"
+  },
+  {
+    "row": 58,
+    "kind": "item",
+    "sl_no": "j",
+    "description": "Removal of Wall Panelling",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 60,
+    "kind": "item",
+    "sl_no": "k",
+    "description": "Removal of Custom-Joinery",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 62,
+    "kind": "item",
+    "sl_no": "l",
+    "description": "Removal of CCTV",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 64,
+    "kind": "item",
+    "sl_no": "m",
+    "description": "Removal of Flooring",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 66,
+    "kind": "item",
+    "sl_no": "n",
+    "description": "Removal of Ceiling",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 68,
+    "kind": "item",
+    "sl_no": "o",
+    "description": "Removal of Signages",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 70,
+    "kind": "item",
+    "sl_no": "p",
+    "description": "Removal of Doors",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 72,
+    "kind": "item",
+    "sl_no": "q",
+    "description": "Removal of Windows",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 74,
+    "kind": "item",
+    "sl_no": "r",
+    "description": "Demolition of Glass Partition",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 76,
+    "kind": "subtotal",
+    "description": "Page 4 - Sub-total"
+  },
+  {
+    "row": 78,
+    "kind": "layout",
+    "description": "Summary",
+    "sl_no": ""
+  },
+  {
+    "row": 80,
+    "kind": "layout",
+    "description": "2 - Demolition",
+    "sl_no": ""
+  },
+  {
+    "row": 82,
+    "kind": "page_subtotal",
+    "description": "Page 3 - subtotal"
+  },
+  {
+    "row": 84,
+    "kind": "page_subtotal",
+    "description": "Page 4 - subtotal"
+  },
+  {
+    "row": 86,
+    "kind": "subtotal",
+    "description": "2 - Demolition Sub-total"
+  },
+  {
+    "row": 88,
+    "kind": "section",
+    "sl_no": "3",
+    "description": "Civil Works"
+  },
+  {
+    "row": 90,
+    "kind": "item",
+    "sl_no": "a",
+    "description": "M30 Concrete for Columns",
+    "qty": 1025.0,
+    "unit": "cbm"
+  },
+  {
+    "row": 92,
+    "kind": "item",
+    "sl_no": "b",
+    "description": "M30 Concrete for Beams",
+    "qty": 100.0,
+    "unit": "cbm"
+  },
+  {
+    "row": 94,
+    "kind": "item",
+    "sl_no": "c",
+    "description": "M30 Concrete for Slabs",
+    "qty": 400.0,
+    "unit": "cbm"
+  },
+  {
+    "row": 96,
+    "kind": "item",
+    "sl_no": "d",
+    "description": "Pre-tensioning works",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 98,
+    "kind": "item",
+    "sl_no": "e",
+    "description": "Shuttering for Columns",
+    "qty": 6850.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 100,
+    "kind": "item",
+    "sl_no": "f",
+    "description": "Shuttering for Beams",
+    "qty": 1000.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 102,
+    "kind": "item",
+    "sl_no": "g",
+    "description": "Shuttering for Slabs",
+    "qty": 2000.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 104,
+    "kind": "item",
+    "sl_no": "h",
+    "description": "Scaffolding for Columns",
+    "qty": 6850.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 106,
+    "kind": "item",
+    "sl_no": "i",
+    "description": "Scaffolding for Beams",
+    "qty": 1400.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 108,
+    "kind": "subtotal",
+    "description": "Page 6 - Sub-total"
+  },
+  {
+    "row": 110,
+    "kind": "section",
+    "sl_no": "3",
+    "description": "Civil Works (Contd.)"
+  },
+  {
+    "row": 112,
+    "kind": "item",
+    "sl_no": "j",
+    "description": "Scaffolding for Slabs",
+    "qty": 2000.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 114,
+    "kind": "item",
+    "sl_no": "k",
+    "description": "100mm Gypsum Partitions",
+    "qty": 680.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 116,
+    "kind": "item",
+    "sl_no": "l",
+    "description": "150mm Gypsum Partitions",
+    "qty": 680.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 118,
+    "kind": "item",
+    "sl_no": "m",
+    "description": "200mm Gypsum Partitions",
+    "qty": 680.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 120,
+    "kind": "item",
+    "sl_no": "n",
+    "description": "100mm Blockwork",
+    "qty": 1380.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 122,
+    "kind": "item",
+    "sl_no": "o",
+    "description": "200mm Blockwork",
+    "qty": 1000.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 124,
+    "kind": "item",
+    "sl_no": "p",
+    "description": "Gypsum False Ceiling",
+    "qty": 300.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 126,
+    "kind": "subtotal",
+    "description": "Page 7 - Sub-total"
+  },
+  {
+    "row": 128,
+    "kind": "layout",
+    "description": "Summary",
+    "sl_no": ""
+  },
+  {
+    "row": 130,
+    "kind": "layout",
+    "description": "3 - Civil Works",
+    "sl_no": ""
+  },
+  {
+    "row": 132,
+    "kind": "page_subtotal",
+    "description": "Page 6 - subtotal"
+  },
+  {
+    "row": 134,
+    "kind": "page_subtotal",
+    "description": "Page 7 - subtotal"
+  },
+  {
+    "row": 136,
+    "kind": "subtotal",
+    "description": "3 - Civil Works Sub-total"
+  },
+  {
+    "row": 138,
+    "kind": "section",
+    "sl_no": "4",
+    "description": "Finishing Works"
+  },
+  {
+    "row": 140,
+    "kind": "item",
+    "sl_no": "a",
+    "description": "Column Plastering",
+    "qty": 6000.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 142,
+    "kind": "item",
+    "sl_no": "b",
+    "description": "Beam Plastering",
+    "qty": 3000.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 144,
+    "kind": "item",
+    "sl_no": "c",
+    "description": "Ceiling Plastering",
+    "qty": 1500.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 146,
+    "kind": "item",
+    "sl_no": "d",
+    "description": "Jamb finishing for Doors",
+    "qty": 75.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 148,
+    "kind": "item",
+    "sl_no": "e",
+    "description": "Jamb finishing for Windows",
+    "qty": 18.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 150,
+    "kind": "item",
+    "sl_no": "f",
+    "description": "600x600mm Porcelain Tile Flooring",
+    "qty": 1500.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 152,
+    "kind": "item",
+    "sl_no": "g",
+    "description": "Interior Emulsion Paint Finish",
+    "qty": 3720.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 154,
+    "kind": "item",
+    "sl_no": "h",
+    "description": "Exerior Emulsion Paint Finish",
+    "qty": 1560.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 156,
+    "kind": "item",
+    "sl_no": "i",
+    "description": "Decorative Texture Plaster Finish",
+    "qty": 1000.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 158,
+    "kind": "subtotal",
+    "description": "Page 9 - Sub-total"
+  },
+  {
+    "row": 160,
+    "kind": "layout",
+    "description": "Summary",
+    "sl_no": ""
+  },
+  {
+    "row": 162,
+    "kind": "layout",
+    "description": "4 - Finishing Works",
+    "sl_no": ""
+  },
+  {
+    "row": 164,
+    "kind": "page_subtotal",
+    "description": "Page 9 - subtotal"
+  },
+  {
+    "row": 166,
+    "kind": "subtotal",
+    "description": "4 - Finishing Works Sub-total"
+  },
+  {
+    "row": 168,
+    "kind": "section",
+    "sl_no": "5",
+    "description": "Joinery Works"
+  },
+  {
+    "row": 170,
+    "kind": "item",
+    "sl_no": "a",
+    "description": "D1 - Door",
+    "qty": 20.0,
+    "unit": "Nos"
+  },
+  {
+    "row": 172,
+    "kind": "item",
+    "sl_no": "b",
+    "description": "D2 - Door",
+    "qty": 10.0,
+    "unit": "Nos"
+  },
+  {
+    "row": 174,
+    "kind": "item",
+    "sl_no": "c",
+    "description": "D3 - Door",
+    "qty": 10.0,
+    "unit": "Nos"
+  },
+  {
+    "row": 176,
+    "kind": "item",
+    "sl_no": "d",
+    "description": "D4 - Door",
+    "qty": 5.0,
+    "unit": "Nos"
+  },
+  {
+    "row": 178,
+    "kind": "item",
+    "sl_no": "e",
+    "description": "D5 - Door",
+    "qty": 10.0,
+    "unit": "Nos"
+  },
+  {
+    "row": 180,
+    "kind": "item",
+    "sl_no": "f",
+    "description": "Wall Panelling A",
+    "qty": 160.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 182,
+    "kind": "item",
+    "sl_no": "g",
+    "description": "Wall Panelling B",
+    "qty": 80.0,
+    "unit": "sqm"
+  },
+  {
+    "row": 184,
+    "kind": "item",
+    "sl_no": "h",
+    "description": "Ceiling Panelling",
+    "qty": 300.0,
+    "unit": "Nos"
+  },
+  {
+    "row": 186,
+    "kind": "item",
+    "sl_no": "i",
+    "description": "Wardrobe A",
+    "qty": 15.0,
+    "unit": "Nos"
+  },
+  {
+    "row": 188,
+    "kind": "item",
+    "sl_no": "j",
+    "description": "Wardrobe B",
+    "qty": 10.0,
+    "unit": "Nos"
+  },
+  {
+    "row": 190,
+    "kind": "item",
+    "sl_no": "k",
+    "description": "Reception Desk",
+    "qty": 100.0,
+    "unit": "Nos"
+  },
+  {
+    "row": 192,
+    "kind": "subtotal",
+    "description": "Page 11 - Sub-total"
+  },
+  {
+    "row": 194,
+    "kind": "layout",
+    "description": "Summary",
+    "sl_no": ""
+  },
+  {
+    "row": 196,
+    "kind": "layout",
+    "description": "5 - Joinery Works",
+    "sl_no": ""
+  },
+  {
+    "row": 198,
+    "kind": "page_subtotal",
+    "description": "Page 11 - subtotal"
+  },
+  {
+    "row": 200,
+    "kind": "subtotal",
+    "description": "5 - Joinery Works Sub-total"
+  },
+  {
+    "row": 202,
+    "kind": "section",
+    "sl_no": "6",
+    "description": "Provisional Sums"
+  },
+  {
+    "row": 204,
+    "kind": "item",
+    "sl_no": "a",
+    "description": "Loose Furniture",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 206,
+    "kind": "item",
+    "sl_no": "b",
+    "description": "MEP Works",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 208,
+    "kind": "item",
+    "sl_no": "c",
+    "description": "HVAC Works",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 210,
+    "kind": "item",
+    "sl_no": "d",
+    "description": "Elevators",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 212,
+    "kind": "item",
+    "sl_no": "e",
+    "description": "IT Systems",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 214,
+    "kind": "item",
+    "sl_no": "f",
+    "description": "CCTV Systems",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 216,
+    "kind": "item",
+    "sl_no": "g",
+    "description": "Signage Works",
+    "qty": 1.0,
+    "unit": "L/s"
+  },
+  {
+    "row": 218,
+    "kind": "subtotal",
+    "description": "Page 13 - Sub-total"
+  },
+  {
+    "row": 220,
+    "kind": "layout",
+    "description": "Summary",
+    "sl_no": ""
+  },
+  {
+    "row": 222,
+    "kind": "layout",
+    "description": "6 - Provisional Sums",
+    "sl_no": ""
+  },
+  {
+    "row": 224,
+    "kind": "page_subtotal",
+    "description": "Page 13 - subtotal"
+  },
+  {
+    "row": 226,
+    "kind": "subtotal",
+    "description": "6 - Provisional Sums Sub-total"
+  },
+  {
+    "row": 228,
+    "kind": "section",
+    "sl_no": "7",
+    "description": "Tender Adjustments"
+  },
+  {
+    "row": 244,
+    "kind": "subtotal",
+    "description": "Page 15 - Sub-total"
+  },
+  {
+    "row": 246,
+    "kind": "layout",
+    "description": "Summary",
+    "sl_no": ""
+  },
+  {
+    "row": 248,
+    "kind": "layout",
+    "description": "7 - Tender Adjustments",
+    "sl_no": ""
+  },
+  {
+    "row": 250,
+    "kind": "page_subtotal",
+    "description": "Page 15 - subtotal"
+  },
+  {
+    "row": 252,
+    "kind": "subtotal",
+    "description": "7 - Tender Adjustments Sub-total"
+  },
+  {
+    "row": 254,
+    "kind": "summary_heading",
+    "description": "Grand Summary"
+  },
+  {
+    "row": 256,
+    "kind": "layout",
+    "description": "1 - Preliminaries",
+    "sl_no": ""
+  },
+  {
+    "row": 258,
+    "kind": "layout",
+    "description": "2 - Demolition",
+    "sl_no": ""
+  },
+  {
+    "row": 260,
+    "kind": "layout",
+    "description": "3 - Civil Works",
+    "sl_no": ""
+  },
+  {
+    "row": 262,
+    "kind": "layout",
+    "description": "4 - Finishing Works",
+    "sl_no": ""
+  },
+  {
+    "row": 264,
+    "kind": "layout",
+    "description": "5 - Joinery Works",
+    "sl_no": ""
+  },
+  {
+    "row": 266,
+    "kind": "layout",
+    "description": "6 - Provisional Sums",
+    "sl_no": ""
+  },
+  {
+    "row": 268,
+    "kind": "layout",
+    "description": "7 - Tender Adjustments",
+    "sl_no": ""
+  },
+  {
+    "row": 270,
+    "kind": "grand_total",
+    "description": "Grand Total"
+  }
+]

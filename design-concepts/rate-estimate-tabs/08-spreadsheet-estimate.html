@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept 08 · Dense Spreadsheet — Estimate</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:1440px; height:900px; overflow:hidden; background:#EEF1F4; color:#1F2933; font:12px/1.3 "IBM Plex Sans", system-ui, sans-serif; }
+    .app { display:grid; grid-template-rows:40px 28px 32px 1fr 28px; height:900px; }
+    .ribbon { background:#217346; color:#fff; display:flex; align-items:center; padding:0 10px; gap:14px; }
+    .ribbon b { font-size:13px; }
+    .ribbon a { opacity:.85; font-size:12px; }
+    .ribbon .on { background:#fff; color:#217346; padding:4px 10px; font-weight:600; }
+    .formula { background:#fff; border-bottom:1px solid #C5CED6; display:flex; align-items:center; font-family:"IBM Plex Mono", monospace; font-size:11.5px; }
+    .fx { width:36px; text-align:center; font-weight:600; color:#217346; border-right:1px solid #C5CED6; height:28px; line-height:28px; }
+    .fxin { padding:0 10px; }
+    .tools { display:flex; gap:6px; align-items:center; padding:0 8px; background:#F7F9FB; border-bottom:1px solid #C5CED6; }
+    .tools button { height:22px; font-size:11px; border:1px solid #C5CED6; background:#fff; padding:0 8px; cursor:pointer; }
+    .tools input { height:22px; border:1px solid #C5CED6; padding:0 6px; width:180px; }
+    .gridw { overflow:auto; background:#fff; }
+    table { border-collapse:collapse; min-width:1400px; font-family:"IBM Plex Mono", monospace; font-size:11.5px; }
+    th { position:sticky; top:0; background:#D9EAD3; border:1px solid #B7C9B1; padding:4px 6px; font-weight:500; text-align:left; }
+    td { border:1px solid #D0D7DE; padding:3px 6px; height:22px; font-variant-numeric:tabular-nums; }
+    .rowh { position:sticky; left:0; background:#F1F3F4; text-align:center; color:#5F6B76; width:36px; }
+    thead .rowh { background:#D9EAD3; }
+    tr.sel td { background:#E6F4EA; }
+    tr.sel .rowh { background:#B7D7A8; }
+    .num { text-align:right; }
+    .sec td { background:#FCE8B2; font-weight:600; font-family:"IBM Plex Sans", sans-serif; }
+    .diff { color:#B45309; }
+    .zero { color:#C62828; }
+    footer { background:#217346; color:#fff; display:flex; align-items:center; gap:20px; padding:0 10px; font-size:11px; }
+    .concept { margin-left:auto; opacity:.8; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="ribbon">
+      <b>Aerolith</b>
+      <a>File</a><a>Home</a><span class="on">Estimate</span><a>Rate analysis</a><a>Take-off</a><a>Buy</a>
+      <span style="margin-left:auto;opacity:.85">Al Wasl Tower · Package B.xlsx.aero</span>
+    </div>
+    <div class="formula"><div class="fx">fx</div><div class="fxin">=OurQty * Rate &nbsp;&nbsp;  3.2.14 Cast in-situ RC walls 30 cm</div></div>
+    <div class="tools">
+      <button type="button">Add item</button>
+      <button type="button">Add section</button>
+      <button type="button">Insert column</button>
+      <input placeholder="Filter" />
+      <span>Freeze: Code + Description</span>
+    </div>
+    <div class="gridw">
+      <table>
+        <thead>
+          <tr><th class="rowh"></th><th>A Code</th><th>B Description</th><th class="num">C Client</th><th class="num">D Our</th><th>E Unit</th><th class="num">F Cost</th><th class="num">G Rate</th><th class="num">H Amount</th><th>I Flag</th></tr>
+        </thead>
+        <tbody>
+          <tr class="sec"><td class="rowh">1</td><td>3</td><td colspan="8">CONCRETE WORKS</td></tr>
+          <tr><td class="rowh">2</td><td>3.1.02</td><td>RC foundations</td><td class="num">240.00</td><td class="num">240.00</td><td>m3</td><td class="num">412.00</td><td class="num">473.80</td><td class="num">113,712.00</td><td></td></tr>
+          <tr class="sel"><td class="rowh">3</td><td>3.2.14</td><td>Cast in-situ RC walls 30 cm</td><td class="num">510.00</td><td class="num diff">486.40</td><td>m2</td><td class="num">218.40</td><td class="num">251.16</td><td class="num">122,164.22</td><td>qty-diff</td></tr>
+          <tr><td class="rowh">4</td><td>3.3.08</td><td>Suspended slabs 250 mm</td><td class="num">1,840.00</td><td class="num">1,840.00</td><td>m2</td><td class="num">196.25</td><td class="num">225.69</td><td class="num">415,269.60</td><td></td></tr>
+          <tr><td class="rowh">5</td><td>3.4.01</td><td>Columns 400×400</td><td class="num">86.00</td><td class="num">86.00</td><td>m3</td><td class="num">528.10</td><td class="num">607.32</td><td class="num">52,229.52</td><td>linked</td></tr>
+          <tr class="sec"><td class="rowh">6</td><td>4</td><td colspan="8">MASONRY</td></tr>
+          <tr><td class="rowh">7</td><td>4.1.05</td><td>Blockwork 200 mm</td><td class="num">920.00</td><td class="num diff">934.50</td><td>m2</td><td class="num">62.10</td><td class="num">71.42</td><td class="num">66,741.99</td><td>qty-diff</td></tr>
+          <tr><td class="rowh">8</td><td>4.2.11</td><td>Plaster internal</td><td class="num">1,280.00</td><td class="num">1,280.00</td><td>m2</td><td class="num">18.40</td><td class="num">21.16</td><td class="num">27,084.80</td><td></td></tr>
+          <tr><td class="rowh">9</td><td>4.3.02</td><td>Plaster external</td><td class="num">640.00</td><td class="num zero">0.00</td><td>m2</td><td class="num zero">0.00</td><td class="num zero">0.00</td><td class="num zero">0.00</td><td>unpriced</td></tr>
+          <tr class="sec"><td class="rowh">10</td><td>5</td><td colspan="8">FINISHES</td></tr>
+          <tr><td class="rowh">11</td><td>5.1.09</td><td>Ceramic floor tiles 600×600</td><td class="num">1,120.00</td><td class="num">1,118.00</td><td>m2</td><td class="num">84.50</td><td class="num">97.18</td><td class="num">108,647.24</td><td>quoted</td></tr>
+          <tr><td class="rowh">12</td><td>5.2.04</td><td>Emulsion paint 2 coats</td><td class="num">2,400.00</td><td class="num">2,400.00</td><td>m2</td><td class="num">9.80</td><td class="num">11.27</td><td class="num">27,048.00</td><td></td></tr>
+          <tr><td class="rowh">13</td><td>5.3.12</td><td>False ceiling gypsum</td><td class="num">980.00</td><td class="num">980.00</td><td>m2</td><td class="num">46.20</td><td class="num">53.13</td><td class="num">52,067.40</td><td>cloned</td></tr>
+          <tr><td class="rowh">14</td><td></td><td></td><td class="num"></td><td class="num"></td><td></td><td class="num"></td><td class="num"></td><td class="num"></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <footer>
+      <span>Ready</span>
+      <span>Sheet: Estimate</span>
+      <span>SUM(H) = 2,119,346.99 AED</span>
+      <span>Unpriced: 3</span>
+      <span class="concept">Concept 08 · Dense Spreadsheet</span>
+    </footer>
+  </div>
+</body>
+</html>

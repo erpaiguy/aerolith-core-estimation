@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept 03 · Glass Command — Rate Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:1440px; height:900px; overflow:hidden; font:13.5px/1.4 Outfit, system-ui, sans-serif; color:#E8F4F4; }
+    body { background: radial-gradient(1200px 700px at 10% -10%, #1A6B6C 0%, transparent 50%), radial-gradient(900px 600px at 110% 20%, #C4A35A33 0%, transparent 45%), linear-gradient(160deg,#071618,#0C2A2C 40%,#0A1C22); }
+    .app { display:grid; grid-template-columns:88px 1fr 300px; height:900px; }
+    .rail { backdrop-filter:blur(16px); background:rgba(255,255,255,.06); border-right:1px solid rgba(255,255,255,.12); display:flex; flex-direction:column; align-items:center; padding:18px 8px; gap:8px; }
+    .logo { width:40px; height:40px; border-radius:12px; background:rgba(196,163,90,.25); border:1px solid rgba(196,163,90,.5); display:grid; place-items:center; font-weight:700; color:#F3EFE6; }
+    .n { width:100%; border:0; background:transparent; color:#9BB8B8; padding:10px 4px; border-radius:10px; cursor:pointer; font:10px Outfit; }
+    .n.on { background:rgba(255,255,255,.12); color:#fff; }
+    .stage { display:grid; grid-template-rows:auto 1fr; padding:20px 22px; min-width:0; gap:16px; }
+    .top { display:flex; align-items:center; gap:12px; }
+    .glass { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16); backdrop-filter:blur(18px); border-radius:16px; }
+    h1 { margin:0; font-size:20px; font-weight:600; }
+    .sub { opacity:.7; font-size:12px; }
+    .sp { flex:1; }
+    .pill { background:rgba(196,163,90,.2); border:1px solid rgba(196,163,90,.45); color:#F3E6C4; border-radius:999px; padding:6px 12px; font-size:11px; }
+    .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .kpi { padding:16px 18px; }
+    .kpi b { display:block; font-size:22px; font-weight:600; }
+    .kpi span { opacity:.65; font-size:11px; }
+    .sheet { padding:8px 0 0; min-height:0; overflow:hidden; display:flex; flex-direction:column; }
+    table { width:100%; border-collapse:collapse; }
+    th { text-align:left; font-size:10px; letter-spacing:.08em; text-transform:uppercase; opacity:.55; padding:10px 14px; }
+    td { padding:9px 14px; border-top:1px solid rgba(255,255,255,.08); font-variant-numeric:tabular-nums; }
+    .num { text-align:right; }
+    tr.hi td { background:rgba(94,234,212,.08); }
+    .side { margin:20px 20px 20px 0; padding:18px; display:flex; flex-direction:column; gap:14px; }
+    .side h2 { margin:0; font-size:13px; font-weight:600; }
+    .row { display:flex; justify-content:space-between; font-size:12px; opacity:.85; }
+    .btn { border:0; border-radius:10px; height:36px; background:linear-gradient(90deg,#2A9A8C,#1A6B6C); color:#fff; font-weight:600; cursor:pointer; }
+    .ghost { background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.16); border-radius:10px; height:32px; padding:0 12px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail">
+      <div class="logo">A</div>
+      <button class="n" type="button">Home</button>
+      <button class="n" type="button">Source</button>
+      <button class="n" type="button">Take-off</button>
+      <button class="n" type="button">Estimate</button>
+      <button class="n on" type="button">Rates</button>
+      <button class="n" type="button">Buy</button>
+      <button class="n" type="button">Submit</button>
+    </aside>
+    <div class="stage">
+      <div class="top">
+        <div>
+          <div class="sub">3.2.14 · Concrete</div>
+          <h1>Cast in-situ RC walls 30 cm</h1>
+        </div>
+        <div class="sp"></div>
+        <span class="pill">Concept 03 · Glass Command</span>
+        <button class="ghost" type="button">Link</button>
+        <button class="ghost" type="button">Clone</button>
+      </div>
+      <div class="kpis">
+        <div class="glass kpi"><b>486.40 m²</b><span>Take-off qty</span></div>
+        <div class="glass kpi"><b>218.40</b><span>Unit cost</span></div>
+        <div class="glass kpi"><b>251.16</b><span>Selling rate</span></div>
+        <div class="glass kpi"><b>122,164</b><span>Amount AED</span></div>
+      </div>
+      <div class="glass sheet">
+        <table>
+          <thead><tr><th>Resource</th><th class="num">Qty</th><th class="num">Waste</th><th>Unit</th><th class="num">Rate</th><th class="num">Amount</th></tr></thead>
+          <tbody>
+            <tr><td>Cement OPC 42.5</td><td class="num">0.112</td><td class="num">2%</td><td>t</td><td class="num">285.00</td><td class="num">32.60</td></tr>
+            <tr class="hi"><td>10 mm aggregate</td><td class="num">0.840</td><td class="num">5%</td><td>m³</td><td class="num">48.00</td><td class="num">42.34</td></tr>
+            <tr><td>Wadi sand</td><td class="num">0.420</td><td class="num">5%</td><td>m³</td><td class="num">36.00</td><td class="num">15.88</td></tr>
+            <tr><td>TMT 12 mm</td><td class="num">8.40</td><td class="num">3%</td><td>kg</td><td class="num">3.15</td><td class="num">27.25</td></tr>
+            <tr><td>Formwork ply</td><td class="num">2.10</td><td class="num">8%</td><td>m²</td><td class="num">22.50</td><td class="num">51.03</td></tr>
+            <tr><td>Mason</td><td class="num">0.18</td><td class="num">0%</td><td>hr</td><td class="num">28.00</td><td class="num">5.04</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <aside class="glass side">
+      <h2>Item inspector</h2>
+      <div class="row"><span>Origin</span><b>Own analysis</b></div>
+      <div class="row"><span>Includes</span><b>1 live link</b></div>
+      <div class="row"><span>Linked</span><b>3.1.02 foundations</b></div>
+      <div class="row"><span>Factor</span><b>0.35</b></div>
+      <div class="row"><span>Margin</span><b>15%</b></div>
+      <p class="sub">Resource lines remain backup if a vendor quote is selected on Estimate.</p>
+      <button class="btn" type="button">Add resource line</button>
+      <button class="ghost" type="button">Use direct cost</button>
+    </aside>
+  </div>
+</body>
+</html>

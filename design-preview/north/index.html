@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aerolith — North comps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #12355B;
+      --navy-2: #1B4F7A;
+      --blue: #1B6CA8;
+      --gold: #C9A227;
+      --ink: #1C2A3A;
+      --muted: #5B6B7C;
+      --line: #D5DEE8;
+      --sheet: #FFFFFF;
+      --wash: #E8EEF4;
+      --ribbon: #F4F7FB;
+      --xl: #E9EDF2;
+      --sel: #D6E8F7;
+      --ok: #1F7A4D;
+      --warn: #B45309;
+      --danger: #B42318;
+      --sans: Outfit, "Segoe UI", sans-serif;
+      --mono: "IBM Plex Mono", Consolas, monospace;
+      --r: 6px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #90A4B8; font-family: var(--sans); color: var(--ink); }
+    .picker {
+      display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; background: #0B1C2C;
+      position: sticky; top: 0; z-index: 40; align-items: center;
+    }
+    .picker b { color: #8BA3B8; font: 600 10px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; margin: 0 8px 0 4px; }
+    .picker button {
+      height: 26px; padding: 0 9px; border: 1px solid #2A4660; background: transparent;
+      color: #D5DEE8; font: 500 11px/1 var(--sans); cursor: pointer; border-radius: 4px;
+    }
+    .picker button.on { background: #1B6CA8; color: #fff; border-color: #1B6CA8; }
+    .picker.hidden { display: none; }
+    .stage { padding: 16px; }
+    .stage.embed { padding: 0; }
+    .app { width: 1440px; height: 900px; overflow: hidden; background: var(--wash); }
+    .stage.embed .app { border: 0; }
+
+    button.ui {
+      height: 28px; padding: 0 10px; border: 1px solid var(--line); background: #fff;
+      font: 500 12px var(--sans); color: var(--ink); border-radius: var(--r); cursor: default;
+    }
+    button.ui.pri { background: var(--blue); color: #fff; border-color: var(--blue); }
+    button.ui.navy { background: var(--navy); color: #fff; border-color: var(--navy); }
+    button.ui.ghost { background: transparent; }
+
+    /* Title + ribbon shell */
+    .shell { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+    .titlebar {
+      height: 36px; background: var(--navy); color: #E8EEF4; display: flex; align-items: center;
+      gap: 12px; padding: 0 12px; font-size: 12px;
+    }
+    .mark {
+      width: 22px; height: 22px; display: grid; grid-template-rows: 5px 5px 5px; gap: 2px;
+    }
+    .mark i { background: #C9A227; display: block; }
+    .mark i:nth-child(2) { width: 70%; }
+    .mark i:nth-child(3) { width: 40%; }
+    .titlebar .job { font-weight: 600; }
+    .titlebar .sp { flex: 1; }
+    .titlebar .gold { color: var(--gold); font-family: var(--mono); font-weight: 600; font-size: 13px; }
+    .rtabs {
+      height: 30px; background: var(--navy-2); display: flex; align-items: flex-end; padding: 0 8px; gap: 2px;
+    }
+    .rtab {
+      height: 26px; padding: 0 12px; border: 0; background: transparent; color: #C5D4E3;
+      font: 500 12px var(--sans); border-radius: 6px 6px 0 0;
+    }
+    .rtab.on { background: var(--ribbon); color: var(--navy); font-weight: 600; }
+    .ribbon {
+      height: 76px; background: var(--ribbon); border-bottom: 1px solid var(--line);
+      display: flex; align-items: stretch; padding: 8px 10px; gap: 0;
+    }
+    .rg { display: flex; gap: 6px; align-items: center; padding: 0 12px; border-right: 1px solid var(--line); }
+    .rg .lab { font-size: 10px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; align-self: flex-end; padding-bottom: 2px; position: absolute; }
+    .rg { position: relative; padding-bottom: 14px; }
+    .rg button {
+      height: 40px; min-width: 52px; padding: 4px 8px; border: 1px solid transparent; background: transparent;
+      font: 500 11px/1.15 var(--sans); color: var(--ink); border-radius: 4px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px;
+    }
+    .rg button.on { background: #fff; border-color: var(--line); box-shadow: 0 1px 0 #fff; }
+    .rg button svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+    .formula {
+      height: 28px; background: #fff; border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; font-size: 12px;
+    }
+    .formula .name {
+      width: 88px; height: 100%; border-right: 1px solid var(--line); display: grid; place-items: center;
+      font-family: var(--mono); font-size: 11px; background: var(--xl);
+    }
+    .formula .eq { width: 28px; text-align: center; color: var(--muted); font-weight: 600; }
+    .formula .fx { flex: 1; font-family: var(--mono); font-size: 12px; color: var(--ink); }
+    .formula .amt { padding: 0 12px; font-family: var(--mono); color: var(--navy); font-weight: 600; }
+
+    .work { flex: 1; min-height: 0; display: flex; background: var(--sheet); }
+    .work.split { display: grid; grid-template-columns: 200px 1fr; }
+    .work.tri { display: grid; grid-template-columns: 180px 1fr 280px; }
+    .work.rate { display: grid; grid-template-columns: 280px 1fr; }
+    .work.dash { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; background: var(--wash); }
+    .tree { background: #F7F9FC; border-right: 1px solid var(--line); font-size: 12px; overflow: hidden; }
+    .tree .cap { padding: 10px 12px 6px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .tree .n { padding: 6px 12px; color: var(--ink); }
+    .tree .n.on { background: var(--sel); color: var(--navy); font-weight: 600; }
+    .tree .n.dim { color: var(--muted); padding-left: 20px; }
+
+    .cols, .row {
+      display: grid;
+      grid-template-columns: 36px 64px minmax(220px, 1fr) 56px 88px 40px 96px 108px 108px;
+    }
+    .cols {
+      height: 24px; background: var(--xl); font: 600 10px/24px var(--sans); letter-spacing: .06em;
+      text-transform: uppercase; color: var(--muted); border-bottom: 1px solid #C9D3DE;
+    }
+    .cols > div, .row > div { padding: 0 8px; border-right: 1px solid #E4EAF0; overflow: hidden; white-space: nowrap; }
+    .row { height: 24px; font-size: 12px; align-items: center; border-bottom: 1px solid #F0F3F7; }
+    .row.head { background: #F4F7FB; font-weight: 600; }
+    .row.sel { background: var(--sel); }
+    .row .num { font-family: var(--mono); text-align: right; font-size: 11px; }
+    .row .code { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+    .sheet { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: #fff; }
+
+    .sheets {
+      height: 28px; background: var(--xl); border-top: 1px solid var(--line);
+      display: flex; align-items: stretch; padding-left: 8px;
+    }
+    .stab {
+      padding: 0 14px; font: 500 12px/28px var(--sans); color: var(--muted); border-right: 1px solid var(--line);
+      background: var(--xl);
+    }
+    .stab.on { background: #fff; color: var(--navy); font-weight: 600; border-top: 2px solid var(--blue); }
+    .status {
+      height: 22px; background: var(--navy); color: #C5D4E3; display: flex; align-items: center;
+      gap: 16px; padding: 0 12px; font: 11px/1 var(--mono);
+    }
+    .status b { color: var(--gold); font-weight: 600; }
+    .status .sp { flex: 1; }
+
+    /* Login / owner / backstage */
+    .login { height: 100%; display: grid; grid-template-columns: 420px 1fr; }
+    .login-side { background: var(--navy); color: #E8EEF4; padding: 40px 36px; display: flex; flex-direction: column; }
+    .login-side h1 { font-size: 32px; font-weight: 600; margin: 24px 0 8px; letter-spacing: -.03em; }
+    .login-side p { color: #9BB3C9; font-size: 14px; line-height: 1.5; }
+    .login-side .foot { margin-top: auto; font: 12px var(--mono); color: #6E8AA3; }
+    .login-form { background: var(--wash); display: grid; place-items: center; }
+    .card {
+      width: 380px; background: #fff; border: 1px solid var(--line); border-radius: 10px;
+      padding: 28px; box-shadow: 0 8px 24px rgba(18,53,91,.08);
+    }
+    .card h2 { margin: 0 0 4px; font-size: 18px; }
+    .card .hint { color: var(--muted); font-size: 12px; margin-bottom: 16px; }
+    .card label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin: 10px 0 4px; }
+    .card input, .card select {
+      width: 100%; height: 34px; border: 1px solid var(--line); border-radius: var(--r);
+      padding: 0 10px; font: 13px var(--sans);
+    }
+    .seg { display: flex; background: var(--xl); border-radius: var(--r); padding: 3px; gap: 3px; }
+    .seg span { flex: 1; text-align: center; padding: 6px; font-size: 12px; border-radius: 4px; color: var(--muted); }
+    .seg span.on { background: #fff; color: var(--navy); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+
+    .back { height: 100%; display: grid; grid-template-columns: 260px 1fr; }
+    .back-nav { background: var(--navy); color: #C5D4E3; padding: 20px 0; }
+    .back-nav .who { padding: 0 20px 16px; color: #fff; font-weight: 600; }
+    .back-nav .who small { display: block; font-weight: 400; color: #9BB3C9; margin-top: 4px; }
+    .back-nav a { display: block; padding: 10px 20px; color: #C5D4E3; text-decoration: none; font-size: 13px; }
+    .back-nav a.on { background: var(--navy-2); color: #fff; border-left: 3px solid var(--gold); }
+    .back-main { background: #F7F9FC; padding: 28px 36px; overflow: hidden; }
+    .back-main h1 { margin: 0 0 6px; font-size: 26px; font-weight: 600; }
+    .back-main .sub { color: var(--muted); margin-bottom: 18px; font-size: 13px; }
+    .file {
+      display: grid; grid-template-columns: 1fr 140px 160px 72px; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid var(--line); align-items: center; font-size: 13px;
+    }
+    .file b { font-size: 14px; }
+    .file .num { font-family: var(--mono); text-align: right; }
+    .samples { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
+    .sample {
+      background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px;
+    }
+    .sample .k { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); font-weight: 600; }
+    .sample h3 { margin: 6px 0 8px; font-size: 16px; }
+    .sample p { margin: 0 0 12px; font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+    .kpi {
+      background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px;
+    }
+    .kpi span { display: block; font-size: 11px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+    .kpi b { font-family: var(--mono); font-size: 20px; font-weight: 600; }
+    .panel { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+    .panel h3 { margin: 0 0 12px; font-size: 13px; }
+    .bar { display: grid; grid-template-columns: 110px 1fr 90px; gap: 8px; align-items: center; margin: 6px 0; font-size: 12px; }
+    .bar i { display: block; height: 8px; background: var(--blue); border-radius: 4px; }
+    .bar .num { font-family: var(--mono); text-align: right; font-size: 11px; }
+
+    .canvas { background: #D7E0EA; position: relative; overflow: hidden; }
+    .side { border-left: 1px solid var(--line); background: #F7F9FC; padding: 12px; font-size: 12px; min-width: 0; }
+    .side h3 { margin: 0 0 10px; font-size: 13px; }
+    .side table { width: 100%; border-collapse: collapse; }
+    .side td { border-bottom: 1px solid var(--line); padding: 5px 0; }
+    .side td.num { font-family: var(--mono); text-align: right; }
+    .field { margin-bottom: 8px; }
+    .field label { display: block; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+    .field input, .field select {
+      width: 100%; height: 28px; border: 1px solid var(--line); border-radius: 4px; padding: 0 8px; font: 12px var(--sans);
+    }
+
+    .doc {
+      margin: 16px auto; width: 720px; background: #fff; min-height: 640px; padding: 36px 40px;
+      box-shadow: 0 4px 24px rgba(18,53,91,.12); font-size: 12px;
+    }
+    .doc h1 { font-size: 20px; margin: 0 0 4px; }
+    .doc .meta { color: var(--muted); margin-bottom: 16px; font-family: var(--mono); font-size: 11px; }
+    .doc table { width: 100%; border-collapse: collapse; }
+    .doc th, .doc td { border-bottom: 1px solid var(--line); padding: 5px 6px; text-align: left; }
+    .doc td.num, .doc th.num { text-align: right; font-family: var(--mono); }
+
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .pill.ok { background: #DCFCE7; color: var(--ok); }
+    .pill.warn { background: #FEF3C7; color: var(--warn); }
+    .pill.off { background: #E8EEF4; color: var(--muted); }
+    .pill.live { background: #DBEAFE; color: var(--blue); }
+
+    .settings { display: grid; grid-template-columns: 180px 1fr; height: 100%; background: #fff; }
+    .snav { background: #F7F9FC; border-right: 1px solid var(--line); padding: 12px 0; }
+    .snav a { display: block; padding: 8px 14px; font-size: 13px; color: var(--muted); }
+    .snav a.on { color: var(--navy); font-weight: 600; background: var(--sel); }
+    .sbody { padding: 20px 24px; }
+    .sbody h2 { margin: 0 0 12px; font-size: 18px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    table.data { width: 100%; border-collapse: collapse; font-size: 12px; }
+    table.data th { text-align: left; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding: 6px 8px; background: var(--xl); }
+    table.data td { border-bottom: 1px solid #F0F3F7; padding: 7px 8px; }
+    table.data td.num { font-family: var(--mono); text-align: right; }
+    table.data tr.sel td { background: var(--sel); }
+  </style>
+</head>
+<body>
+  <div class="picker" id="picker">
+    <b>North</b>
+    <button data-s="login">Login</button>
+    <button data-s="owner">Owner</button>
+    <button data-s="home">Home</button>
+    <button data-s="dashboard">Dashboard</button>
+    <button data-s="source">Source</button>
+    <button data-s="takeoff">Take-off</button>
+    <button data-s="estimate">Estimate</button>
+    <button data-s="analysis">Rate</button>
+    <button data-s="queries">Queries</button>
+    <button data-s="buy">Buy</button>
+    <button data-s="compare">Compare</button>
+    <button data-s="submit">Submit</button>
+    <button data-s="masters">Masters</button>
+    <button data-s="settings">Settings</button>
+  </div>
+  <div class="stage" id="stage"><div class="app" id="app"></div></div>
+<script>
+const params = new URLSearchParams(location.search);
+let screen = params.get("s") || "estimate";
+if (params.get("embed") === "1") {
+  document.getElementById("picker").classList.add("hidden");
+  document.getElementById("stage").classList.add("embed");
+}
+
+const svg = {
+  plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  copy: '<svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12"/><path d="M4 16V4h12"/></svg>',
+  lock: '<svg viewBox="0 0 24 24"><rect x="6" y="11" width="12" height="9"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  print: '<svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 17H4a2 2 0 0 1-2-2v-4h20v4a2 2 0 0 1-2 2h-2"/><rect x="6" y="13" width="12" height="8"/></svg>',
+  line: '<svg viewBox="0 0 24 24"><path d="M4 18 20 6"/></svg>',
+  area: '<svg viewBox="0 0 24 24"><path d="M5 7h10l4 10H9z"/></svg>',
+  count: '<svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="2"/><circle cx="16" cy="8" r="2"/><circle cx="16" cy="16" r="2"/></svg>',
+  send: '<svg viewBox="0 0 24 24"><path d="M4 12h16M13 6l7 6-7 6"/></svg>',
+  seal: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M9 12l2 2 4-4"/></svg>',
+  grid: '<svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 10h16M10 4v16"/></svg>',
+  trash: '<svg viewBox="0 0 24 24"><path d="M5 7h14M9 7V5h6v2m-7 0 1 12h6l1-12"/></svg>',
+};
+
+const rows = [
+  ["h","B1","BILL 1 — SUBSTRUCTURE","","","","","",""],
+  ["","2.1","Excavate to reduced levels","m3","1,842.00","","18.50","34,077.00"],
+  ["","2.2","Excavate foundation trenches","m3","416.50","","22.00","9,163.00"],
+  ["s","2.3","Plain concrete blinding 1:3:6","m3","128.40","T","185.00","23,754.00"],
+  ["","2.4","Reinforced concrete foundations","m3","286.00","T","420.00","120,120.00"],
+  ["","2.5","Formwork to sides of foundations","m2","612.00","","28.00","17,136.00"],
+  ["","2.6","High tensile reinforcement to foundations","t","42.80","T","4,850.00","207,580.00"],
+  ["h","B2","BILL 2 — SUPERSTRUCTURE","","","","","",""],
+  ["","3.1","Reinforced concrete columns","m3","198.60","T","465.00","92,349.00"],
+  ["","3.2","Reinforced concrete beams","m3","246.40","T","445.00","109,648.00"],
+  ["","3.3","Solid RC slabs 200mm","m3","512.00","T","390.00","199,680.00"],
+  ["","3.4","Formwork to soffit of slabs","m2","2,560.00","","32.00","81,920.00"],
+  ["","3.5","High tensile reinforcement to superstructure","t","118.40","T","4,850.00","574,240.00"],
+  ["","3.6","Blockwork 200mm to external walls","m2","3,210.00","","85.00","272,850.00"],
+  ["h","B3","BILL 3 — FINISHES","","","","","",""],
+  ["","4.1","Ceramic floor tiles 600×600","m2","8,420.00","","95.00","799,900.00"],
+  ["","4.2","Gypsum board suspended ceiling","m2","7,860.00","","62.00","487,320.00"],
+  ["","4.3","Emulsion paint to walls three coats","m2","12,440.00","","18.00","223,920.00"],
+  ["","4.4","Aluminium windows powder coated","m2","1,186.00","","640.00","759,040.00"],
+  ["","4.5","Fire-rated timber doors 1hr","nr","86.00","","2,450.00","210,700.00"],
+  ["","4.6","Stainless steel balustrades","m","412.00","","380.00","156,560.00"],
+  ["h","B4","BILL 4 — SERVICES","","","","","",""],
+  ["","5.1","Electrical installation complete","item","1.00","","4,280,000.00","4,280,000.00"],
+  ["","5.2","HVAC VRV system","item","1.00","","6,140,000.00","6,140,000.00"],
+  ["","5.3","Fire fighting & detection","item","1.00","","1,860,000.00","1,860,000.00"],
+];
+
+function grid(sel="2.3") {
+  return rows.map(([type, code, desc, unit, qty, tk, rate, amt]) => `
+    <div class="row ${type==="h"?"head":code===sel?"sel":""}">
+      <div></div><div class="code">${code}</div><div>${desc}</div>
+      <div>${unit}</div><div class="num">${qty}</div><div>${tk||""}</div>
+      <div class="num">${rate||""}</div><div class="num">${amt||""}</div><div class="num">${amt||""}</div>
+    </div>`).join("");
+}
+
+function mark() { return `<div class="mark"><i></i><i></i><i></i></div>`; }
+
+const TABS = [
+  ["dashboard","Dashboard"],["source","Source"],["takeoff","Take-off"],["estimate","Estimate"],
+  ["analysis","Rate"],["queries","Queries"],["buy","Buy"],["submit","Issue"],["masters","Data"],["settings","File"]
+];
+
+function title(job=true) {
+  return `<div class="titlebar">
+    ${mark()}
+    <span style="font-weight:600;letter-spacing:.04em">AEROLITH</span>
+    ${job ? `<span class="job">Al Maha Campus — Lusail</span><span style="color:#9BB3C9">r03 · Trial 11d</span>` : `<span>Workspace</span>`}
+    <span class="sp"></span>
+    ${job ? `<span class="gold">QAR 100,826,297.13</span>` : ""}
+    <span>HS · admin</span>
+  </div>`;
+}
+
+function rtabs(active) {
+  const map = { compare:"buy", analysis:"analysis" };
+  const on = map[active] || active;
+  return `<div class="rtabs">${TABS.map(([id,l]) => `<button class="rtab ${id===on?"on":""}">${l}</button>`).join("")}</div>`;
+}
+
+function ribbon(s) {
+  const g = (label, btns) => `<div class="rg">${btns}<span class="lab">${label}</span></div>`;
+  const b = (ico, lab, on="") => `<button class="${on}">${svg[ico]||""}<span>${lab}</span></button>`;
+  if (s==="estimate") return g("Clipboard", b("copy","Copy")+b("plus","Item")) + g("Structure", b("plus","Section")+b("trash","Delete")) + g("Bills", `<button class="on"><span style="font-size:13px;font-weight:600">B1</span><span>This bill</span></button><button><span style="font-size:13px">B2</span><span>Residential</span></button><button><span style="font-size:13px">B3</span><span>Commercial</span></button>`) + g("Protect", b("lock","Source lock"));
+  if (s==="takeoff") return g("Tools", b("line","Line")+b("area","Area","on")+b("count","Count")) + g("Scale", `<button><span style="font-weight:600">1:100</span><span>Sheet</span></button>`) + g("Link", b("grid","To item"));
+  if (s==="analysis") return g("Item", `<button class="on"><span style="font-weight:600">2.3</span><span>Blinding</span></button>`+b("copy","Copy rate")) + g("Build-up", b("plus","Resource")+b("grid","Link"));
+  if (s==="buy" || s==="compare") return g("Stage", `<button class="${s==="buy"?"on":""}"><span>Package</span></button><button><span>Send</span></button><button><span>Receive</span></button><button class="${s==="compare"?"on":""}"><span>Compare</span></button>`) + g("Enquiry", b("send","Issue pack")+b("print","Print"));
+  if (s==="queries") return g("Stage", `<button class="on"><span>Log</span></button><button><span>Tracker</span></button><button><span>Send</span></button><button><span>Receive</span></button><button><span>Pending</span></button>`) + g("List", b("plus","New RFI")+b("send","Issue"));
+  if (s==="submit") return g("Issue", b("seal","Seal","on")+b("print","PDF")+b("plus","Revision")) + g("Scope", `<button class="on"><span>All bills</span></button><button><span>This bill</span></button>`);
+  if (s==="source") return g("Document", b("print","Print")+b("lock","Lock source","on"));
+  if (s==="dashboard") return g("View", b("grid","KPIs","on")+b("print","Export"));
+  if (s==="masters") return g("Catalogue", `<button class="on"><span>Units</span></button><button><span>Categories</span></button><button><span>Vendors</span></button><button><span>Margin</span></button>`);
+  if (s==="settings") return g("Workspace", `<button class="on"><span>License</span></button><button><span>Numbers</span></button><button><span>Users</span></button>`);
+  return g("Job", b("grid","View"));
+}
+
+function formula(code="2.3", fx="128.40 × 185.00", amt="23,754.00") {
+  return `<div class="formula"><div class="name">${code}</div><div class="eq">fx</div><div class="fx">${fx}</div><div class="amt">QAR ${amt}</div></div>`;
+}
+function sheets(active) {
+  const ids = [["dashboard","Dashboard"],["source","Source"],["takeoff","Take-off"],["estimate","B1"],["b2","B2"],["b3","B3"],["buy","Buy"],["queries","Queries"],["submit","Issue"]];
+  const on = active==="analysis"||active==="estimate" ? "estimate" : active==="compare" ? "buy" : active;
+  return `<div class="sheets">${ids.map(([id,l]) => `<span class="stab ${id===on?"on":""}">${l}</span>`).join("")}</div>`;
+}
+function status() {
+  return `<div class="status">Ready · B1 Residential · 248 items · source locked <span class="sp"></span> GREEN <b>QAR 100,826,297.13</b></div>`;
+}
+function chrome(s, inner, extraFormula) {
+  return `<div class="shell">${title()}${rtabs(s)}<div class="ribbon">${ribbon(s)}</div>${extraFormula ?? formula()}${inner}${sheets(s)}${status()}</div>`;
+}
+
+function cols() {
+  return `<div class="cols"><div></div><div>Item</div><div>Description</div><div>Unit</div><div>Qty</div><div>T/O</div><div>Rate</div><div>Amount</div><div>Working</div></div>`;
+}
+
+function login() {
+  return `<div class="login">
+    <div class="login-side">
+      ${mark()}
+      <h1>Aerolith</h1>
+      <p>Estimating for issued bills. Several BOQs in one job. One resource catalogue. Totals you can seal.</p>
+      <div class="foot">CORE ESTIMATION · QAR · itemKey = bill :: code</div>
+    </div>
+    <div class="login-form"><div class="card">
+      <h2>Sign in</h2>
+      <div class="hint">Demo company · admin / admin</div>
+      <div class="seg"><span class="on">Workspace</span><span>Owner</span></div>
+      <label>Workspace</label><select><option>Aerolith demo</option></select>
+      <label>User</label><input value="admin" />
+      <label>PIN</label><input type="password" value="admin" />
+      <button class="ui pri" style="width:100%;margin-top:16px;height:36px">Continue</button>
+    </div></div>
+  </div>`;
+}
+
+function owner() {
+  return `<div class="back">
+    <div class="back-nav">
+      <div class="who">Owner portal<small>One installer · many workspaces</small></div>
+      <a class="on">Tenants</a><a>Licenses</a><a>Sign out</a>
+    </div>
+    <div class="back-main">
+      <h1>Tenants</h1>
+      <div class="sub">Solo workspaces keep one database. Company workspaces share one job store across seats.</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px"><button class="ui pri">New company</button><button class="ui">New solo</button></div>
+      <table class="data">
+        <thead><tr><th>Workspace</th><th>Edition</th><th>Seats</th><th>License</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>Aerolith demo</td><td>Company</td><td class="num">3 / 8</td><td>Trial · 11d</td><td>Impersonate · Issue key</td></tr>
+          <tr><td>Sejdiu QS</td><td>Solo</td><td class="num">1 / 1</td><td>Licensed</td><td>Impersonate · Issue key</td></tr>
+          <tr><td>Lusail Contracting</td><td>Company</td><td class="num">6 / 12</td><td>Licensed</td><td>Impersonate · Issue key</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function home() {
+  return `<div class="back">
+    <div class="back-nav">
+      <div class="who">H. Sejdiu<small>Admin · Aerolith demo · 3/8 seats</small></div>
+      <a class="on">Open</a><a>New</a><a>Samples</a><a>Import bill</a>
+    </div>
+    <div class="back-main">
+      <h1>Open</h1>
+      <div class="sub">Trial · 11 days remaining · jobs stay in this workspace.</div>
+      <div class="file"><div><b>Al Maha Campus, Lusail</b><div style="color:var(--muted);font-size:12px">Multi-BOQ · B1 B2 B3</div></div><div>Al Maha Dev.</div><div class="num">48,210,440.00</div><div>Open</div></div>
+      <div class="file"><div><b>Medical Institute interiors</b><div style="color:var(--muted);font-size:12px">Single BOQ · GREEN 100,826,297.13</div></div><div>MoPH</div><div class="num">100,826,297.13</div><div>Open</div></div>
+      <div class="file"><div><b>Lusail Boulevard fit-out</b><div style="color:var(--muted);font-size:12px">Queries on finishes</div></div><div>Qatari Diar</div><div class="num">12,441,900.00</div><div>Open</div></div>
+      <div class="samples">
+        <div class="sample"><div class="k">Single BOQ</div><h3>Interior refurbishment</h3><p>Medical Institute. Working total stays GREEN at QAR 100,826,297.13. Buy, Queries and Take-off are seeded.</p><button class="ui">Open sample</button></div>
+        <div class="sample"><div class="k">Multiple BOQs</div><h3>Al Maha Campus, Lusail</h3><p>Three issued bills — 10,000 / 15,000 / 2,500 m². Same item numbers on each bill. Rate links stay on one catalogue.</p><button class="ui pri">Open sample</button></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function dashboard() {
+  return chrome("dashboard", `<div class="work dash">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;grid-column:1/-1;gap:12px">
+      <div class="kpi"><span>Cost</span><b>87,412,440.00</b></div>
+      <div class="kpi"><span>Margin 8.50%</span><b>7,430,157.00</b></div>
+      <div class="kpi"><span>Working total</span><b style="color:var(--ok)">100,826,297.13</b></div>
+    </div>
+    <div class="panel"><h3>Cost by category</h3>
+      ${[["Concrete",72],["Steel",58],["Finishes",44],["Services",81],["Preliminaries",22]].map(([l,w])=>`<div class="bar"><span>${l}</span><div><i style="width:${w}%"></i></div><div class="num">${(w*120000).toLocaleString()}.00</div></div>`).join("")}
+    </div>
+    <div class="panel"><h3>Margin waterfall</h3>
+      ${[["Direct cost",90],["Overhead",18],["Profit",22],["Logistics",8],["Contingency",10]].map(([l,w])=>`<div class="bar"><span>${l}</span><div><i style="width:${w}%;background:#1B4F7A"></i></div><div class="num">${(w*90000).toLocaleString()}.00</div></div>`).join("")}
+    </div>
+    <div class="panel" style="grid-column:1/-1"><h3>Flags</h3>
+      <div style="display:flex;gap:18px;font-size:13px"><span>12 unpriced</span><span>7 qty diffs</span><span>4 missing analysis</span><span>3 open queries on B2</span></div>
+    </div>
+  </div>`, `<div class="formula"><div class="name">Job</div><div class="eq">Σ</div><div class="fx">B1 + B2 + B3</div><div class="amt">QAR 100,826,297.13</div></div>`);
+}
+
+function source() {
+  return chrome("source", `<div class="work" style="background:var(--wash);overflow:hidden">
+    <div class="doc">
+      <div style="display:flex;justify-content:space-between;align-items:end;border-bottom:2px solid var(--navy);padding-bottom:8px;margin-bottom:12px">
+        <div><div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)">Issued bill</div><h1>B1 Residential — 10,000 m²</h1></div>
+        <div class="meta">ALM-2026-04 · Rev 03<br/>Source locked · IFC-04</div>
+      </div>
+      <table>
+        <thead><tr><th>Item</th><th>Description</th><th>Unit</th><th class="num">Qty</th><th class="num">Rate</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          <tr><td colspan="6" style="font-weight:600;background:#F4F7FB">Substructure</td></tr>
+          <tr><td>2.1</td><td>Excavate to reduced levels</td><td>m3</td><td class="num">1,842.00</td><td class="num">18.50</td><td class="num">34,077.00</td></tr>
+          <tr><td>2.3</td><td>Plain concrete blinding 1:3:6</td><td>m3</td><td class="num">128.40</td><td class="num">185.00</td><td class="num">23,754.00</td></tr>
+          <tr><td>2.4</td><td>Reinforced concrete foundations</td><td>m3</td><td class="num">286.00</td><td class="num">420.00</td><td class="num">120,120.00</td></tr>
+          <tr><td colspan="6" style="font-weight:600;background:#F4F7FB">Superstructure</td></tr>
+          <tr><td>3.1</td><td>Reinforced concrete columns</td><td>m3</td><td class="num">198.60</td><td class="num">465.00</td><td class="num">92,349.00</td></tr>
+          <tr><td>3.3</td><td>Solid RC slabs 200mm</td><td>m3</td><td class="num">512.00</td><td class="num">390.00</td><td class="num">199,680.00</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`);
+}
+
+function takeoff() {
+  return chrome("takeoff", `<div class="work tri">
+    <aside class="tree">
+      <div class="cap">Drawings</div>
+      <div class="n">ARC-B1-00 Cover</div>
+      <div class="n on">ARC-B1-02 Plan L02</div>
+      <div class="n">ARC-B1-03 Plan L03</div>
+      <div class="n">STR-B1-11 Foundations</div>
+      <div class="cap">Linked</div>
+      <div class="n dim">2.3 Blinding</div>
+      <div class="n dim">2.4 Foundations</div>
+    </aside>
+    <div class="canvas">
+      <svg viewBox="0 0 800 520" width="100%" height="100%" style="display:block">
+        <defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#1B6CA8" stroke-width="1" opacity=".35"/></pattern></defs>
+        <rect x="80" y="70" width="520" height="340" fill="#F4F7FB" stroke="#12355B" stroke-width="2"/>
+        <rect x="80" y="70" width="180" height="160" fill="url(#hatch)" stroke="#1B6CA8" stroke-width="2"/>
+        <rect x="280" y="70" width="160" height="160" fill="#fff" stroke="#12355B"/>
+        <rect x="80" y="250" width="360" height="160" fill="#fff" stroke="#12355B"/>
+        <text x="120" y="155" fill="#1B6CA8" font-size="13" font-family="Outfit">Pour A 42.10 m³</text>
+        <text x="330" y="155" fill="#5B6B7C" font-size="12" font-family="Outfit">Lift</text>
+        <line x1="80" y1="430" x2="440" y2="430" stroke="#C9A227" stroke-width="1.5"/>
+        <text x="220" y="448" fill="#C9A227" font-size="11" font-family="IBM Plex Mono">24.80 m</text>
+      </svg>
+    </div>
+    <aside class="side">
+      <h3>Measure · 2.3</h3>
+      <div class="field"><label>Tool</label><select><option>Area</option></select></div>
+      <div class="field"><label>Linked qty</label><input value="128.40 m³" /></div>
+      <table>
+        <tr><td>Poly 01 pour A</td><td class="num">42.10</td></tr>
+        <tr><td>Poly 02 pour B</td><td class="num">51.80</td></tr>
+        <tr><td>Poly 03 lift pit</td><td class="num">34.50</td></tr>
+        <tr><td><b>Sum</b></td><td class="num"><b>128.40</b></td></tr>
+      </table>
+    </aside>
+  </div>`);
+}
+
+function estimate() {
+  return chrome("estimate", `<div class="work split">
+    <aside class="tree">
+      <div class="cap">This job</div>
+      <div class="n on">B1 Residential 10,000 m²</div>
+      <div class="n">B2 Residential 15,000 m²</div>
+      <div class="n">B3 Commercial 2,500 m²</div>
+      <div class="cap">B1 sections</div>
+      <div class="n dim">Preliminaries</div>
+      <div class="n on">Substructure</div>
+      <div class="n dim">Superstructure</div>
+      <div class="n dim">Finishes</div>
+      <div class="n dim">Services</div>
+    </aside>
+    <div class="sheet">${cols()}<div style="flex:1;overflow:hidden">${grid()}</div></div>
+  </div>`);
+}
+
+function analysis() {
+  return chrome("analysis", `<div class="work rate">
+    <aside class="tree" style="width:auto">
+      <div class="cap">Items this bill</div>
+      ${[["2.1","Excavate reduced"],["2.2","Foundation trenches"],["2.3","Blinding 1:3:6"],["2.4","RC foundations"],["2.6","HT reinforcement"]].map(([c,d],i)=>`<div class="n ${c==="2.3"?"on":""}"><span class="code" style="font-family:var(--mono);font-size:11px;color:var(--muted)">${c}</span> ${d}</div>`).join("")}
+    </aside>
+    <div class="sheet" style="padding:16px;overflow:hidden">
+      <div style="display:flex;justify-content:space-between;align-items:end;margin-bottom:12px">
+        <div><div style="font-size:11px;color:var(--muted)">Rate analysis</div><h2 style="margin:0;font-size:18px">2.3 · Plain concrete blinding 1:3:6</h2></div>
+        <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--navy)">185.00 / m³</div>
+      </div>
+      <table class="data">
+        <thead><tr><th>Code</th><th>Resource</th><th>Unit</th><th class="num">Qty</th><th class="num">Rate</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          <tr><td>CEM-01</td><td>Cement OPC</td><td>t</td><td class="num">0.32</td><td class="num">131.25</td><td class="num">42.00</td></tr>
+          <tr><td>SND-02</td><td>Washed sand</td><td>m3</td><td class="num">0.48</td><td class="num">59.38</td><td class="num">28.50</td></tr>
+          <tr><td>AGG-20</td><td>20mm aggregate</td><td>m3</td><td class="num">0.82</td><td class="num">74.39</td><td class="num">61.00</td></tr>
+          <tr><td>LAB-04</td><td>Labour gang</td><td>hr</td><td class="num">1.70</td><td class="num">31.47</td><td class="num">53.50</td></tr>
+          <tr><td></td><td colspan="4"><b>Net rate</b></td><td class="num"><b>185.00</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`);
+}
+
+function queries() {
+  return chrome("queries", `<div class="work"><div class="sheet" style="padding:12px">
+    <div style="display:flex;gap:10px;margin-bottom:10px;font-size:12px">
+      <span class="pill warn">8 open</span><span class="pill live">3 overdue</span><span class="pill ok">12 closed</span>
+    </div>
+    <table class="data">
+      <thead><tr><th>No</th><th>Item</th><th>Question</th><th>Bill</th><th>Status</th><th>Due</th></tr></thead>
+      <tbody>
+        <tr class="sel"><td>RFI-14</td><td>2.3</td><td>Confirm blinding thickness at lift pit</td><td>B1</td><td><span class="pill warn">Pending</span></td><td>08 Sep</td></tr>
+        <tr><td>RFI-15</td><td>3.6</td><td>Blockwork fire rating at shaft</td><td>B2</td><td><span class="pill live">Overdue</span></td><td>01 Sep</td></tr>
+        <tr><td>RFI-11</td><td>4.4</td><td>Window colour schedule</td><td>B1</td><td><span class="pill ok">Closed</span></td><td>—</td></tr>
+        <tr><td>RFI-09</td><td>5.2</td><td>VRV outdoor plant location</td><td>B3</td><td><span class="pill warn">Needs info</span></td><td>10 Sep</td></tr>
+        <tr><td>RFI-08</td><td>4.1</td><td>Tile slip rating wet areas</td><td>B1</td><td><span class="pill ok">Answered</span></td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div></div>`, formula("RFI-14", "Confirm blinding thickness at lift pit", "pending"));
+}
+
+function buy() {
+  return chrome("buy", `<div class="work split">
+    <aside class="tree">
+      <div class="cap">Packages</div>
+      <div class="n on">PK-04 Concrete works</div>
+      <div class="n">PK-07 Reinforcement</div>
+      <div class="n">PK-12 Finishes</div>
+      <div class="n">PK-18 MEP</div>
+    </aside>
+    <div class="sheet" style="padding:12px;overflow:hidden">
+      <div style="margin-bottom:8px;font-size:13px"><b>PK-04 Concrete works</b> · Qatar Ready Mix · 3 of 5 returned</div>
+      <table class="data">
+        <thead><tr><th>Item</th><th>Description</th><th>Unit</th><th class="num">Qty</th><th class="num">Our rate</th><th>Vendor</th></tr></thead>
+        <tbody>
+          <tr class="sel"><td>2.3</td><td>Blinding 1:3:6</td><td>m3</td><td class="num">128.40</td><td class="num">185.00</td><td>QRM</td></tr>
+          <tr><td>2.4</td><td>RC foundations</td><td>m3</td><td class="num">286.00</td><td class="num">420.00</td><td>QRM</td></tr>
+          <tr><td>3.1</td><td>RC columns</td><td>m3</td><td class="num">198.60</td><td class="num">465.00</td><td>—</td></tr>
+          <tr><td>3.3</td><td>RC slabs 200mm</td><td>m3</td><td class="num">512.00</td><td class="num">390.00</td><td>QRM</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>`, formula("PK-04", "Concrete works · 3 of 5 returned", "lane"));
+}
+
+function compare() {
+  return chrome("compare", `<div class="work"><div class="sheet" style="padding:12px;overflow:hidden">
+    <div style="margin-bottom:8px;font-size:13px"><b>Compare · PK-04 Concrete</b> · select lowest in lane</div>
+    <table class="data">
+      <thead><tr><th>Item</th><th>Description</th><th class="num">Qty</th><th class="num">QRM</th><th class="num">Bin Omran</th><th class="num">HBK</th><th class="num">Selected</th></tr></thead>
+      <tbody>
+        <tr class="sel"><td>2.3</td><td>Blinding 1:3:6</td><td class="num">128.40</td><td class="num">178.00</td><td class="num">185.00</td><td class="num">192.00</td><td class="num">178.00</td></tr>
+        <tr><td>2.4</td><td>RC foundations</td><td class="num">286.00</td><td class="num">412.00</td><td class="num">420.00</td><td class="num">405.00</td><td class="num">405.00</td></tr>
+        <tr><td>3.1</td><td>RC columns</td><td class="num">198.60</td><td class="num">455.00</td><td class="num">465.00</td><td class="num">470.00</td><td class="num">455.00</td></tr>
+        <tr><td>3.3</td><td>RC slabs 200mm</td><td class="num">512.00</td><td class="num">388.00</td><td class="num">390.00</td><td class="num">401.00</td><td class="num">388.00</td></tr>
+      </tbody>
+    </table>
+  </div></div>`, formula("PK-04", "lowest in lane · QRM / Bin Omran / HBK", "178.00"));
+}
+
+function submit() {
+  return chrome("submit", `<div class="work" style="background:var(--wash);padding:16px;gap:16px;display:grid;grid-template-columns:1fr 300px">
+    <div class="doc" style="margin:0;width:auto">
+      <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)">Tender issue</div>
+      <h1>Revision 03 — Al Maha Campus</h1>
+      <div class="meta">Margin 8.50% · project seal · source lock per bill</div>
+      <table>
+        <tr><td>B1 Residential 10,000 m²</td><td>Locked</td><td class="num">18,440,120.00</td></tr>
+        <tr><td>B2 Residential 15,000 m²</td><td>Open queries</td><td class="num">24,210,880.00</td></tr>
+        <tr><td>B3 Commercial & office 2,500 m²</td><td>Locked</td><td class="num">5,559,440.00</td></tr>
+        <tr><td><b>Grand</b></td><td></td><td class="num"><b>48,210,440.00</b></td></tr>
+      </table>
+    </div>
+    <div class="panel">
+      <h3>Seal</h3>
+      <p style="font-size:12px;color:var(--muted);line-height:1.5">Sealing freezes revision 03. Source lock stays per bill. New revision unlocks working rates.</p>
+      <button class="ui pri" style="width:100%;margin-top:8px">Seal revision</button>
+      <button class="ui" style="width:100%;margin-top:8px">Export tender PDF</button>
+    </div>
+  </div>`, formula("Rev 03", "All bills · margin 8.50%", "48,210,440.00"));
+}
+
+function masters() {
+  return chrome("masters", `<div class="work"><div class="sheet" style="padding:12px">
+    <table class="data">
+      <thead><tr><th>Code</th><th>Unit</th><th>Name</th><th>Global</th></tr></thead>
+      <tbody>
+        <tr class="sel"><td>m3</td><td>m³</td><td>Cubic metre</td><td>Yes</td></tr>
+        <tr><td>m2</td><td>m²</td><td>Square metre</td><td>Yes</td></tr>
+        <tr><td>t</td><td>t</td><td>Tonne</td><td>Yes</td></tr>
+        <tr><td>nr</td><td>Nr</td><td>Number</td><td>Yes</td></tr>
+        <tr><td>item</td><td>Item</td><td>Item</td><td>Yes</td></tr>
+        <tr><td>hr</td><td>hr</td><td>Hour</td><td>No</td></tr>
+      </tbody>
+    </table>
+  </div></div>`, `<div class="formula"><div class="name">Units</div><div class="eq">·</div><div class="fx">Project catalogue · promote to global on save</div><div class="amt">6 units</div></div>`);
+}
+
+function settings() {
+  return chrome("settings", `<div class="work"><div class="settings" style="width:100%">
+    <div class="snav">
+      <a class="on">License</a><a>Numbers</a><a>Replica</a><a>Report</a><a>Users</a><a>Roles</a><a>Audit</a>
+    </div>
+    <div class="sbody">
+      <h2>License</h2>
+      <div class="grid2" style="margin-bottom:16px">
+        <div class="kpi"><span>Status</span><b>Trial</b></div>
+        <div class="kpi"><span>Days left</span><b>11</b></div>
+        <div class="kpi"><span>Edition</span><b>Company</b></div>
+        <div class="kpi"><span>Seats</span><b>3 / 8</b></div>
+      </div>
+      <button class="ui pri">Apply license key</button>
+      <h2 style="margin-top:24px">Users</h2>
+      <table class="data">
+        <thead><tr><th>Login</th><th>Name</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>admin</td><td>H. Sejdiu</td><td>Admin</td></tr>
+          <tr><td>estimator</td><td>A. Rahman</td><td>Estimator</td></tr>
+          <tr><td>viewer</td><td>Client desk</td><td>Viewer</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>`, `<div class="formula"><div class="name">File</div><div class="eq">·</div><div class="fx">Workspace license · company · 3 of 8 seats</div><div class="amt">Trial 11d</div></div>`);
+}
+
+const pages = { login, owner, home, dashboard, source, takeoff, estimate, analysis, queries, buy, compare, submit, masters, settings };
+
+function paint() {
+  document.querySelectorAll(".picker button").forEach(b => b.classList.toggle("on", b.dataset.s === screen));
+  document.getElementById("app").innerHTML = (pages[screen] || estimate)();
+}
+document.getElementById("picker").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (b?.dataset.s) { screen = b.dataset.s; paint(); }
+});
+paint();
+</script>
+</body>
+</html>

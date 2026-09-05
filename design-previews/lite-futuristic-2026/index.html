@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aerolith lite futuristic · 3 concepts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --ink:#0f172a; --muted:#475569; --line:#e2e8f0; --bg:#f8fafc; --accent:#0891b2; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+    .wrap { max-width: 1280px; margin: 0 auto; padding: 40px 32px 80px; }
+    .kicker { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    h1 { font-size: 32px; letter-spacing: -.03em; margin: 8px 0 12px; }
+    .lede { color: var(--muted); max-width: 68ch; }
+    .banner { border: 1px solid var(--line); background: #fff; padding: 16px 20px; margin: 24px 0 32px; font-size: 13px; }
+    .cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .card { background: #fff; border: 1px solid var(--line); padding: 20px; }
+    .card h2 { margin: 0 0 8px; font-size: 18px; }
+    .card p { color: var(--muted); font-size: 13px; }
+    .swatch { height: 28px; margin: 12px 0; display: flex; }
+    .swatch i { flex: 1; }
+    a { color: var(--accent); }
+    .shot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+    .shot-grid h3 { grid-column: 1 / -1; margin: 24px 0 0; font-size: 16px; }
+    .shot { background: #fff; border: 1px solid var(--line); }
+    .shot img { width: 100%; display: block; }
+    .shot figcaption { padding: 8px 10px; font-size: 12px; color: var(--muted); }
+    .flow { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+    .flow b { color: var(--ink); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="kicker">Design concepts · screenshots only</div>
+    <h1>One lite futuristic language, three ways to hold it</h1>
+    <p class="lede">These are not the live app. Eighteen screens and the Resource Prices process (Summary → Pack → Send → Receive → Award → Settle) are mocked in three white/lite directions. Pick one to build later.</p>
+    <div class="banner">Shared rules: light paper, one accent, visible focus, keyboard operable, no navy rail, tables as the product, Pack/Send/Receive/Award stay rooms under Summary.</div>
+    <div class="cols">
+      <article class="card">
+        <h2>A · Ice Paper</h2>
+        <div class="swatch"><i style="background:#f4f7fb"></i><i style="background:#fff"></i><i style="background:#0891b2"></i><i style="background:#0f172a"></i></div>
+        <p>Swiss top tabs. Ice cyan. Inter. Tight 8px. Closest to today’s estimating density, lifted to white.</p>
+        <p><a href="option-a.html">Open all 18 screens</a></p>
+      </article>
+      <article class="card">
+        <h2>B · Cloud Speed</h2>
+        <div class="swatch"><i style="background:#f6f4f0"></i><i style="background:#fffcf8"></i><i style="background:#2563eb"></i><i style="background:#1c1917"></i></div>
+        <p>Warm white, 36px hits, left icon rail. Quieter chrome, friendlier for long sessions.</p>
+        <p><a href="option-b.html">Open all 18 screens</a></p>
+      </article>
+      <article class="card">
+        <h2>C · White Horizon</h2>
+        <div class="swatch"><i style="background:#f3fbf9"></i><i style="background:#fff"></i><i style="background:#0d9488"></i><i style="background:#ea580c"></i></div>
+        <p>Mint paper, teal, orange only on Settle. Process stepper always on. Sharp and sequential.</p>
+        <p><a href="option-c.html">Open all 18 screens</a></p>
+      </article>
+    </div>
+    <p class="flow"><b>Process</b> Sign-in → Home → Dashboard → Client BOQ → Take-off → Working BOQ → Rate Analysis → Resource Prices (Summary · Pack · Send · Receive · Award · Settle) → Margins → Client Queries → Submission BOQ → Masters → Settings</p>
+    <div class="shot-grid" id="shots"></div>
+  </div>
+  <script>
+    const screens = [
+      ["signin","Sign-in"],["home","Home"],["dashboard","Dashboard"],["client-boq","Client BOQ"],
+      ["takeoff","Take-off"],["working-boq","Working BOQ"],["rate-analysis","Rate Analysis"],
+      ["prices-summary","Prices · Summary"],["prices-pack","Prices · Pack"],["prices-send","Prices · Send"],
+      ["prices-receive","Prices · Receive"],["prices-award","Prices · Award"],["prices-settle","Prices · Settle"],
+      ["margins","Margins"],["queries","Client Queries"],["submit","Submission BOQ"],["masters","Masters"],["settings","Settings"]
+    ];
+    const opts = [["a","Ice Paper"],["b","Cloud Speed"],["c","White Horizon"]];
+    const root = document.getElementById("shots");
+    for (const [key, name] of screens) {
+      const h = document.createElement("h3");
+      h.textContent = name;
+      root.appendChild(h);
+      for (const [id, label] of opts) {
+        const fig = document.createElement("figure");
+        fig.className = "shot";
+        fig.innerHTML = `<img alt="${label} ${name}" src="screenshots/option-${id}-${key}.png" /><figcaption>${label}</figcaption>`;
+        root.appendChild(fig);
+      }
+    }
+  </script>
+</body>
+</html>

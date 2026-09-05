@@ -1,0 +1,65 @@
+[
+  {
+    "row": 230,
+    "boq_code": "3a",
+    "description": "M30 Concrete for Beams",
+    "qty": 500.0,
+    "unit": "cbm",
+    "rate": 3503.125,
+    "amount": 1751562.5
+  },
+  {
+    "row": 232,
+    "boq_code": "3f",
+    "description": "Shuttering for Beams",
+    "qty": 400.0,
+    "unit": "sqm",
+    "rate": 265.5,
+    "amount": 106200.0
+  },
+  {
+    "row": 234,
+    "boq_code": "3o",
+    "description": "200mm Blockwork",
+    "qty": 380.0,
+    "unit": "sqm",
+    "rate": 27044.125,
+    "amount": 10276767.5
+  },
+  {
+    "row": 236,
+    "boq_code": "4i",
+    "description": "Decorative Texture Plaster Finish",
+    "qty": -100.0,
+    "unit": "sqm",
+    "rate": 36.875,
+    "amount": -3687.5
+  },
+  {
+    "row": 238,
+    "boq_code": "5b",
+    "description": "D2 - Door",
+    "qty": 10.0,
+    "unit": "Nos",
+    "rate": 12501.444444444443,
+    "amount": 125014.44444444444
+  },
+  {
+    "row": 240,
+    "boq_code": "5c",
+    "description": "D3 - Door",
+    "qty": -5.0,
+    "unit": "Nos",
+    "rate": 13316.46388888889,
+    "amount": -66582.31944444445
+  },
+  {
+    "row": 242,
+    "boq_code": "5j",
+    "description": "Wardrobe B",
+    "qty": 5.0,
+    "unit": "Nos",
+    "rate": 18989.57508680556,
+    "amount": 94947.8754340278
+  }
+]

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept 04 · Clay Workshop — Estimate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:1440px; height:900px; overflow:hidden; background:#F3E6D8; color:#3A2A22; font:13.5px/1.4 Nunito, system-ui, sans-serif; }
+    .app { display:grid; grid-template-rows:72px 1fr; height:900px; padding:16px 18px 18px; gap:14px; }
+    header { display:flex; align-items:center; gap:14px; background:#FBEFE3; border:3px solid #C47A4A; border-radius:22px; padding:0 18px; box-shadow: 6px 6px 0 #C47A4A, inset -2px -3px 8px rgba(90,40,10,.08), inset 2px 3px 8px #fff; }
+    .mark { width:42px; height:42px; border-radius:14px; background:#2F4A3C; color:#FBEFE3; display:grid; place-items:center; font-weight:800; border:3px solid #1F3329; }
+    .tabs { display:flex; gap:8px; }
+    .tab { border:3px solid #C47A4A; background:#FBEFE3; border-radius:14px; height:36px; padding:0 12px; font-weight:700; color:#6B4A38; cursor:pointer; box-shadow: 3px 3px 0 #C47A4A; }
+    .tab.on { background:#C45C26; color:#fff; border-color:#8F3A12; }
+    .sp { flex:1; }
+    .chip { font-size:11px; font-weight:700; background:#E8F0EA; border:3px solid #2F4A3C; border-radius:999px; padding:6px 12px; }
+    .save { background:#2F4A3C; color:#fff; border:3px solid #1F3329; border-radius:14px; height:40px; padding:0 16px; font-weight:800; cursor:pointer; box-shadow: 4px 4px 0 #1F3329; }
+    .body { display:grid; grid-template-columns:1fr 320px; gap:14px; min-height:0; }
+    .card { background:#FBEFE3; border:3px solid #C47A4A; border-radius:24px; box-shadow: 7px 7px 0 #C47A4A, inset -2px -3px 10px rgba(90,40,10,.07), inset 2px 3px 10px #fff; min-height:0; overflow:hidden; display:flex; flex-direction:column; }
+    .tools { display:flex; gap:8px; padding:12px 14px; }
+    .tools button { border:3px solid #C47A4A; background:#F6D7C0; border-radius:12px; height:34px; padding:0 12px; font-weight:700; cursor:pointer; }
+    .tools input { flex:1; border:3px solid #C47A4A; border-radius:12px; height:34px; padding:0 12px; background:#FFF8F1; }
+    .wrap { overflow:auto; padding:0 8px 12px; }
+    table { width:100%; border-collapse:separate; border-spacing:0 6px; }
+    th { text-align:left; font-size:11px; color:#6B4A38; padding:0 10px 4px; }
+    td { background:#FFF8F1; padding:10px; border-top:3px solid #E8C9B0; border-bottom:3px solid #E8C9B0; }
+    td:first-child { border-left:3px solid #E8C9B0; border-radius:12px 0 0 12px; }
+    td:last-child { border-right:3px solid #E8C9B0; border-radius:0 12px 12px 0; }
+    tr.on td { background:#FDE8D4; border-color:#C45C26; }
+    .num { text-align:right; font-variant-numeric:tabular-nums; font-weight:700; }
+    .insp { padding:18px; display:flex; flex-direction:column; gap:10px; }
+    .insp h2 { margin:0; font-size:18px; }
+    label { display:flex; flex-direction:column; gap:4px; font-size:11px; font-weight:700; color:#6B4A38; }
+    label input { border:3px solid #C47A4A; border-radius:12px; height:36px; padding:0 10px; background:#FFF8F1; }
+    .go { background:#C45C26; color:#fff; border:3px solid #8F3A12; border-radius:14px; height:42px; font-weight:800; cursor:pointer; box-shadow: 4px 4px 0 #8F3A12; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="mark">Ae</div>
+      <strong>Al Wasl Tower</strong>
+      <div class="tabs">
+        <button class="tab" type="button">Source</button>
+        <button class="tab" type="button">Take-off</button>
+        <button class="tab on" type="button">Estimate</button>
+        <button class="tab" type="button">Rates</button>
+        <button class="tab" type="button">Buy</button>
+      </div>
+      <div class="sp"></div>
+      <span class="chip">Concept 04 · Clay Workshop</span>
+      <button class="save" type="button">Save .aero</button>
+    </header>
+    <div class="body">
+      <section class="card">
+        <div class="tools">
+          <button type="button">Add item</button>
+          <button type="button">Add section</button>
+          <input placeholder="Filter items" />
+        </div>
+        <div class="wrap">
+          <table>
+            <thead><tr><th>Code</th><th>Description</th><th class="num">Client</th><th class="num">Our</th><th>Unit</th><th class="num">Rate</th><th class="num">Amount</th></tr></thead>
+            <tbody>
+              <tr><td colspan="7" style="background:transparent;border:0;font-weight:800;color:#2F4A3C">3  Concrete works</td></tr>
+              <tr><td>3.1.02</td><td>RC foundations</td><td class="num">240</td><td class="num">240</td><td>m³</td><td class="num">473.80</td><td class="num">113,712</td></tr>
+              <tr class="on"><td>3.2.14</td><td>Cast in-situ RC walls 30 cm</td><td class="num">510</td><td class="num">486.4</td><td>m²</td><td class="num">251.16</td><td class="num">122,164</td></tr>
+              <tr><td>3.3.08</td><td>Suspended slabs 250 mm</td><td class="num">1,840</td><td class="num">1,840</td><td>m²</td><td class="num">225.69</td><td class="num">415,270</td></tr>
+              <tr><td colspan="7" style="background:transparent;border:0;font-weight:800;color:#2F4A3C">4  Masonry</td></tr>
+              <tr><td>4.1.05</td><td>Blockwork 200 mm</td><td class="num">920</td><td class="num">934.5</td><td>m²</td><td class="num">71.42</td><td class="num">66,742</td></tr>
+              <tr><td>4.2.11</td><td>Plaster internal</td><td class="num">1,280</td><td class="num">1,280</td><td>m²</td><td class="num">21.16</td><td class="num">27,085</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <aside class="card insp">
+        <h2>3.2.14</h2>
+        <p style="margin:0;font-weight:700">Cast in-situ RC walls 30 cm</p>
+        <span class="chip" style="align-self:flex-start">Qty diff</span>
+        <label>Client qty<input value="510.00" readonly /></label>
+        <label>Our qty (take-off)<input value="486.40" readonly /></label>
+        <label>Unit cost<input value="218.40" /></label>
+        <p style="margin:0;font-size:13px">Rate 251.16 · Amount 122,164.22 AED</p>
+        <button class="go" type="button">Open rate analysis</button>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

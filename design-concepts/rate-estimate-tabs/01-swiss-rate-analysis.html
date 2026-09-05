@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept 01 · Swiss Industrial — Rate Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --ink:#0F172A; --muted:#475569; --line:#E2E8F0; --bg:#F8FAFC; --card:#fff; --accent:#EA580C; --slate:#64748B; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:1440px; height:900px; overflow:hidden; background:var(--bg); color:var(--ink); font:13.5px/1.4 Inter, system-ui, sans-serif; }
+    button, input, select { font:inherit; }
+    .app { display:grid; grid-template-rows:56px 44px 1fr; height:900px; }
+    header { display:flex; align-items:center; gap:28px; padding:0 32px; border-bottom:1px solid var(--line); background:#fff; }
+    .brand { font-weight:700; letter-spacing:.12em; font-size:11px; text-transform:uppercase; }
+    .project { font-weight:500; }
+    .sp { flex:1; }
+    .save { background:var(--ink); color:#fff; border:0; height:32px; padding:0 16px; cursor:pointer; }
+    nav { display:flex; gap:0; padding:0 24px; border-bottom:1px solid var(--line); background:#fff; }
+    nav a { color:var(--muted); text-decoration:none; padding:12px 14px; font-size:12px; font-weight:500; letter-spacing:.04em; text-transform:uppercase; border-bottom:2px solid transparent; }
+    nav a.on { color:var(--ink); border-bottom-color:var(--accent); }
+    main { display:grid; grid-template-rows:auto auto 1fr; padding:28px 32px 24px; gap:20px; min-height:0; }
+    .crumb { display:flex; align-items:center; gap:16px; }
+    .crumb h1 { margin:0; font-size:22px; font-weight:600; letter-spacing:-.03em; }
+    .crumb .code { color:var(--slate); font-weight:500; margin-right:8px; }
+    .ghost { background:transparent; border:1px solid var(--line); height:32px; padding:0 12px; cursor:pointer; color:var(--ink); }
+    .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:0; border:1px solid var(--line); background:#fff; }
+    .kpi { padding:16px 20px; border-right:1px solid var(--line); }
+    .kpi:last-child { border-right:0; }
+    .kpi b { display:block; font-size:22px; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
+    .kpi span { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; }
+    .sheet { min-height:0; overflow:auto; background:#fff; border:1px solid var(--line); }
+    table { width:100%; border-collapse:collapse; font-size:12.5px; }
+    th { text-align:left; font-weight:500; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-size:10px; padding:10px 12px; border-bottom:1px solid var(--line); background:#F8FAFC; }
+    td { padding:8px 12px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums; }
+    .num { text-align:right; }
+    .sel { background:#FFF7ED; }
+    .foot { display:flex; gap:8px; padding:12px; }
+    .primary { background:var(--accent); color:#000; border:0; height:32px; padding:0 14px; font-weight:600; cursor:pointer; }
+    .tag { font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); border:1px solid var(--accent); padding:3px 8px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">Aerolith Core</div>
+      <div class="project">Al Wasl Tower · Package B · r12</div>
+      <span class="tag">Concept 01 · Swiss Industrial</span>
+      <div class="sp"></div>
+      <button class="ghost" type="button">Open</button>
+      <button class="save" type="button">Save .aero</button>
+    </header>
+    <nav>
+      <a href="#">Dashboard</a><a href="#">Source</a><a href="#">Take-off</a>
+      <a href="#">Estimate</a><a class="on" href="#">Rate analysis</a>
+      <a href="#">Buy</a><a href="#">Submit</a><a href="#">Masters</a>
+    </nav>
+    <main>
+      <div class="crumb">
+        <button class="ghost" type="button">Prev</button>
+        <h1><span class="code">3.2.14</span>Cast in-situ RC walls 30 cm</h1>
+        <button class="ghost" type="button">Next</button>
+        <div class="sp"></div>
+        <button class="ghost" type="button">New</button>
+        <button class="ghost" type="button">Link</button>
+        <button class="ghost" type="button">Clone</button>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><b>486.40 m²</b><span>Take-off qty</span></div>
+        <div class="kpi"><b>218.40</b><span>Unit cost AED</span></div>
+        <div class="kpi"><b>251.16</b><span>Rate + 15% margin</span></div>
+        <div class="kpi"><b>122,164.22</b><span>Amount AED</span></div>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead>
+            <tr><th>Resource</th><th class="num">Nos</th><th class="num">Qty1</th><th class="num">Qty2</th><th class="num">Qty</th><th class="num">Wastage</th><th>Unit</th><th class="num">Rate</th><th class="num">Amount</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>CEM-OPC · Cement OPC 42.5</td><td class="num">1</td><td class="num">0.112</td><td class="num"></td><td class="num">0.112</td><td class="num">2%</td><td>t</td><td class="num">285.00</td><td class="num">32.60</td></tr>
+            <tr class="sel"><td>AGG-10 · 10 mm aggregate</td><td class="num">1</td><td class="num">0.84</td><td class="num"></td><td class="num">0.84</td><td class="num">5%</td><td>m³</td><td class="num">48.00</td><td class="num">42.34</td></tr>
+            <tr><td>SND-WADI · Wadi sand</td><td class="num">1</td><td class="num">0.42</td><td class="num"></td><td class="num">0.42</td><td class="num">5%</td><td>m³</td><td class="num">36.00</td><td class="num">15.88</td></tr>
+            <tr><td>STL-12 · TMT 12 mm</td><td class="num">1</td><td class="num">8.4</td><td class="num"></td><td class="num">8.40</td><td class="num">3%</td><td>kg</td><td class="num">3.15</td><td class="num">27.25</td></tr>
+            <tr><td>FRM-PLY · Formwork ply</td><td class="num">2</td><td class="num">1.05</td><td class="num"></td><td class="num">2.10</td><td class="num">8%</td><td>m²</td><td class="num">22.50</td><td class="num">51.03</td></tr>
+            <tr><td>LAB-MSN · Mason</td><td class="num">1</td><td class="num">0.18</td><td class="num"></td><td class="num">0.18</td><td class="num">0%</td><td>hr</td><td class="num">28.00</td><td class="num">5.04</td></tr>
+            <tr><td>MIX-07 · Mixer 7/5</td><td class="num">1</td><td class="num">0.06</td><td class="num"></td><td class="num">0.06</td><td class="num">0%</td><td>hr</td><td class="num">85.00</td><td class="num">5.10</td></tr>
+          </tbody>
+        </table>
+        <div class="foot">
+          <button class="primary" type="button">Add resource line</button>
+          <button class="ghost" type="button">Use direct cost</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "identifier": "default",
+  "description": "Main window can use native open/save dialogs and .aero commands",
+  "windows": ["*"],
+  "permissions": [
+    "core:default",
+    "dialog:default",
+    "dialog:allow-save",
+    "dialog:allow-open",
+    "dialog:allow-message",
+    "dialog:allow-confirm",
+    "dialog:allow-ask"
+  ]
+}

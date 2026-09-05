@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aerolith · lite futuristic concepts</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@500&amp;display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-primary: #0891b2;
+      --color-background: #f8fafc;
+      --color-foreground: #0f172a;
+      --color-muted: #475569;
+      --color-card: #ffffff;
+      --color-border: #e2e8f0;
+      --typography-font-heading: Inter, sans-serif;
+      --typography-font-body: Inter, sans-serif;
+      --slide-bg: var(--color-background);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--slide-bg);
+      color: var(--color-foreground);
+      font-family: var(--typography-font-body);
+      overflow: hidden;
+    }
+    .slide-deck {
+      position: relative;
+      width: 100vw; height: 100vh;
+    }
+    @media (min-width: 769px) {
+      .slide-deck {
+        max-width: calc(100vh * 16 / 9);
+        max-height: calc(100vw * 9 / 16);
+        margin: auto; position: absolute; inset: 0;
+        border: 1px solid var(--color-border);
+      }
+    }
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center; padding: 56px 64px;
+      opacity: 0; visibility: hidden;
+      background: var(--slide-bg);
+    }
+    .slide.active { opacity: 1; visibility: visible; }
+    .slide-content { width: 100%; max-width: 1080px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .kicker { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-muted); font-weight: 600; }
+    h1 { font-family: var(--typography-font-heading); font-size: 42px; letter-spacing: -.03em; line-height: 1.1; }
+    h2 { font-size: 28px; letter-spacing: -.02em; }
+    p { color: var(--color-muted); font-size: 16px; max-width: 52ch; line-height: 1.5; }
+    .row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; width: 100%; text-align: left; }
+    .card { background: var(--color-card); border: 1px solid var(--color-border); padding: 18px; }
+    .card h3 { font-size: 16px; margin-bottom: 8px; }
+    .card p { font-size: 13px; }
+    .bar { position: absolute; bottom: 0; left: 0; height: 3px; background: var(--color-primary); }
+    .nav { position: absolute; bottom: 16px; right: 24px; font-size: 12px; color: var(--color-muted); }
+    canvas { max-height: 280px; }
+    .mock { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--color-primary); }
+  </style>
+</head>
+<body>
+  <div class="slide-deck">
+    <section class="slide active"><div class="slide-content">
+      <div class="kicker">Aerolith Core Estimation</div>
+      <h1>White, fast, one language</h1>
+      <p>Three lite futuristic concepts of every screen and the price process. Screenshots only — the live app is unchanged.</p>
+      <div class="mock">Concept review · pick one to build</div>
+    </div></section>
+    <section class="slide"><div class="slide-content">
+      <div class="kicker">Problem</div>
+      <h2>The product still reads as mixed chrome</h2>
+      <p>Navy rail, paper grey, orange and blue competing. Estimators need one operable surface: light, high contrast, keyboard-first, tables first.</p>
+    </div></section>
+    <section class="slide"><div class="slide-content">
+      <div class="kicker">Shared contract</div>
+      <h2>Same rooms. Same process. New skin.</h2>
+      <div class="row">
+        <div class="card"><h3>Light only</h3><p>White / lite paper. No dark rail. Accent used for selection, focus, and one primary action.</p></div>
+        <div class="card"><h3>Operable</h3><p>Visible focus ring. 32–36px hits. Tab order matches the visual order. Reduce-motion safe.</p></div>
+        <div class="card"><h3>Process intact</h3><p>Summary owns Pack, Send, Receive, Award. Settle stays a checklist from Summary.</p></div>
+      </div>
+    </div></section>
+    <section class="slide"><div class="slide-content">
+      <div class="kicker">Three directions</div>
+      <h2>How they differ</h2>
+      <canvas id="density" width="800" height="280"></canvas>
+      <p>Density of chrome vs air around the book. Higher is tighter estimating. Lower is more consumer-SaaS.</p>
+    </div></section>
+    <section class="slide"><div class="slide-content">
+      <div class="kicker">Option A</div>
+      <h2>Ice Paper</h2>
+      <p>Swiss top tabs, ice cyan, Inter, 4px corners. Closest to today’s density. Best if the book must stay dense.</p>
+    </div></section>
+    <section class="slide"><div class="slide-content">
+      <div class="kicker">Option B</div>
+      <h2>Cloud Speed</h2>
+      <p>Warm white, Plus Jakarta, 12px corners, 64px icon rail. Best if the goal is “feels fast and friendly” on long days.</p>
+    </div></section>
+    <section class="slide"><div class="slide-content">
+      <div class="kicker">Option C</div>
+      <h2>White Horizon</h2>
+      <p>Mint paper, teal, orange only on Settle, process stepper always visible. Best if sequence and sealing should never get lost.</p>
+    </div></section>
+    <section class="slide"><div class="slide-content">
+      <div class="kicker">Next</div>
+      <h2>Pick A, B, or C</h2>
+      <p>Open the screenshot gallery. The live build does not change until you choose.</p>
+      <p><a href="index.html" style="color:var(--color-primary)">Open screenshot gallery</a></p>
+    </div></section>
+    <div class="bar" id="bar"></div>
+    <div class="nav" id="nav"></div>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    let i = 0;
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, x) => s.classList.toggle("active", x === i));
+      document.getElementById("bar").style.width = ((i + 1) / slides.length * 100) + "%";
+      document.getElementById("nav").textContent = (i + 1) + " / " + slides.length;
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") show(i + 1);
+      if (e.key === "ArrowLeft") show(i - 1);
+    });
+    document.querySelector(".slide-deck").addEventListener("click", () => show(i + 1));
+    show(0);
+    const ctx = document.getElementById("density");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Ice Paper", "Cloud Speed", "White Horizon"],
+        datasets: [
+          { label: "Table density", data: [9, 6, 8], backgroundColor: "#0891b2" },
+          { label: "Chrome quietness", data: [6, 9, 7], backgroundColor: "#0f172a" }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { min: 0, max: 10, ticks: { stepSize: 2 } } },
+        plugins: { legend: { position: "bottom" } }
+      }
+    });
+  </script>
+</body>
+</html>

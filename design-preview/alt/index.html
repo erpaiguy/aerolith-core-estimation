@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aerolith — alternative comps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #94A3B8; }
+    .picker {
+      display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px;
+      background: #0B1220; position: sticky; top: 0; z-index: 30; align-items: center;
+    }
+    .picker b { color: #94A3B8; font: 600 11px/1 IBM Plex Sans, sans-serif; letter-spacing: .12em; text-transform: uppercase; margin-right: 8px; }
+    .picker button {
+      height: 26px; padding: 0 10px; border: 1px solid #334155; background: transparent;
+      color: #E2E8F0; font: 500 11px/1 IBM Plex Sans, sans-serif; cursor: pointer;
+    }
+    .picker button.on { background: #2DD4BF; color: #042F2E; border-color: #2DD4BF; }
+    .picker button.theme.on { background: #F59E0B; color: #1C1917; border-color: #F59E0B; }
+    .picker.hidden { display: none; }
+    .stage { padding: 16px; }
+    .stage.embed { padding: 0; }
+    .app {
+      width: 1440px; height: 900px; overflow: hidden;
+      border: 1px solid #64748B; background: #fff;
+    }
+    .stage.embed .app { border: 0; }
+
+    /* ========== FORGE: CostX / Candy workstation ========== */
+    .forge { font-family: "IBM Plex Sans", "Segoe UI", sans-serif; color: #1A2332; background: #EEF1F4; }
+    .forge .mono { font-family: "IBM Plex Mono", Consolas, monospace; }
+    .forge-shell { display: grid; grid-template-columns: 52px 1fr; height: 100%; }
+    .forge-rail {
+      background: #0A0E12; color: #8B9AAB; display: flex; flex-direction: column; align-items: center;
+      padding: 8px 0; gap: 2px; border-right: 1px solid #1F2937;
+    }
+    .forge-rail .logo {
+      width: 36px; height: 36px; margin: 4px 0 10px; background: #2DD4BF; color: #042F2E;
+      display: grid; place-items: center; font: 700 11px/1 "IBM Plex Sans"; letter-spacing: .04em;
+    }
+    .forge-rail button {
+      width: 44px; height: 44px; border: 0; background: transparent; color: #8B9AAB; cursor: default;
+      display: grid; place-items: center; border-left: 2px solid transparent;
+    }
+    .forge-rail button.on { color: #2DD4BF; background: #12181F; border-left-color: #2DD4BF; }
+    .forge-rail .sp { flex: 1; }
+    .forge-main { min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+    .forge-top {
+      height: 36px; background: #161C24; color: #E7ECF1; display: flex; align-items: center;
+      gap: 12px; padding: 0 12px; font-size: 12px;
+    }
+    .forge-top .job { font-weight: 600; }
+    .forge-top select, .forge-top .boq {
+      height: 24px; background: #0A0E12; color: #E7ECF1; border: 1px solid #2A3441;
+      padding: 0 8px; font: 500 12px "IBM Plex Sans";
+    }
+    .forge-top .sp { flex: 1; }
+    .forge-top .qar { color: #2DD4BF; font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 13px; }
+    .forge-cmd {
+      height: 28px; background: #1C2430; color: #8B9AAB; display: flex; align-items: center;
+      gap: 2px; padding: 0 8px; font-size: 12px; border-bottom: 1px solid #0A0E12;
+    }
+    .forge-cmd span { padding: 4px 8px; }
+    .forge-cmd span.on { color: #E7ECF1; background: #0A0E12; }
+    .forge-cmd input {
+      margin-left: auto; height: 22px; width: 220px; background: #0A0E12; border: 1px solid #2A3441;
+      color: #E7ECF1; padding: 0 8px; font: 12px "IBM Plex Sans";
+    }
+    .forge-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 300px; }
+    .forge-body.full { grid-template-columns: 1fr; }
+    .forge-body.take { grid-template-columns: 220px 1fr 300px; }
+    .forge-sheet { min-width: 0; min-height: 0; background: #fff; display: flex; flex-direction: column; }
+    .forge-cols {
+      display: grid;
+      grid-template-columns: 28px 64px minmax(240px, 1fr) 72px 80px 44px 92px 92px 108px 28px;
+      font: 600 10px/22px "IBM Plex Sans"; letter-spacing: .06em; text-transform: uppercase;
+      color: #5B6B7C; background: #F4F6F8; border-bottom: 1px solid #D5DCE3; height: 22px;
+    }
+    .forge-cols > div, .forge-row > div { padding: 0 8px; border-right: 1px solid #E8EDF2; overflow: hidden; white-space: nowrap; }
+    .forge-row {
+      display: grid;
+      grid-template-columns: 28px 64px minmax(240px, 1fr) 72px 80px 44px 92px 92px 108px 28px;
+      height: 22px; font-size: 12px; align-items: center; border-bottom: 1px solid #EEF1F4;
+    }
+    .forge-row.head { background: #F1F5F9; font-weight: 600; height: 24px; }
+    .forge-row.sel { background: #CCFBF1; }
+    .forge-row .num { font-family: "IBM Plex Mono", monospace; text-align: right; font-size: 11px; }
+    .forge-row .code { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: #475569; }
+    .forge-insp { background: #F8FAFC; border-left: 1px solid #D5DCE3; display: flex; flex-direction: column; min-height: 0; }
+    .forge-insp h3 {
+      margin: 0; height: 28px; padding: 0 12px; font: 600 11px/28px "IBM Plex Sans";
+      letter-spacing: .1em; text-transform: uppercase; color: #5B6B7C; border-bottom: 1px solid #D5DCE3;
+      display: flex; gap: 12px; align-items: center;
+    }
+    .forge-insp h3 span.on { color: #0F766E; border-bottom: 2px solid #2DD4BF; height: 28px; }
+    .forge-insp .pad { padding: 12px; font-size: 12px; display: grid; gap: 8px; }
+    .forge-insp label { color: #5B6B7C; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 3px; }
+    .forge-insp input, .forge-insp select, .forge-insp textarea {
+      width: 100%; border: 1px solid #D5DCE3; background: #fff; height: 26px; padding: 0 8px;
+      font: 12px "IBM Plex Sans"; color: #1A2332;
+    }
+    .forge-insp textarea { height: 64px; padding: 6px 8px; resize: none; }
+    .forge-insp table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .forge-insp td { border-bottom: 1px solid #E8EDF2; padding: 4px 0; }
+    .forge-insp td.num { font-family: "IBM Plex Mono", monospace; text-align: right; }
+    .forge-stat {
+      height: 22px; background: #161C24; color: #8B9AAB; display: flex; align-items: center;
+      gap: 16px; padding: 0 12px; font-size: 11px; font-family: "IBM Plex Mono", monospace;
+    }
+    .forge-stat b { color: #2DD4BF; font-weight: 500; }
+    .forge-tree { background: #F4F6F8; border-right: 1px solid #D5DCE3; font-size: 12px; overflow: hidden; }
+    .forge-tree .t { padding: 6px 10px; color: #5B6B7C; font: 600 10px/1 "IBM Plex Sans"; letter-spacing: .1em; text-transform: uppercase; }
+    .forge-tree .n { padding: 5px 10px 5px 16px; display: flex; justify-content: space-between; }
+    .forge-tree .n.on { background: #CCFBF1; color: #0F766E; font-weight: 600; }
+    .forge-login {
+      height: 100%; display: grid; grid-template-columns: 520px 1fr; background: #0A0E12;
+    }
+    .forge-login .brand-side { padding: 48px 44px; color: #E7ECF1; display: flex; flex-direction: column; }
+    .forge-login .mark { width: 48px; height: 48px; background: #2DD4BF; color: #042F2E; display: grid; place-items: center; font: 700 14px "IBM Plex Sans"; }
+    .forge-login h1 { font-size: 28px; font-weight: 600; margin: 28px 0 8px; letter-spacing: -.02em; }
+    .forge-login p { color: #8B9AAB; font-size: 14px; line-height: 1.5; max-width: 360px; }
+    .forge-login .specs { margin-top: auto; display: grid; gap: 6px; font: 12px/1.4 "IBM Plex Mono", monospace; color: #5B6B7C; }
+    .forge-login .form-side { background: #EEF1F4; display: grid; place-items: center; }
+    .forge-login form {
+      width: 360px; background: #fff; border: 1px solid #D5DCE3; padding: 28px;
+      display: grid; gap: 12px;
+    }
+    .forge-login form h2 { margin: 0 0 4px; font-size: 16px; }
+    .forge-login label { font-size: 11px; color: #5B6B7C; letter-spacing: .06em; text-transform: uppercase; }
+    .forge-login input { height: 32px; border: 1px solid #D5DCE3; padding: 0 10px; font: 13px "IBM Plex Sans"; }
+    .forge-login button {
+      height: 36px; border: 0; background: #0A0E12; color: #2DD4BF; font: 600 13px "IBM Plex Sans";
+      letter-spacing: .08em; text-transform: uppercase; cursor: default;
+    }
+    .forge-jobs { flex: 1; background: #fff; display: flex; flex-direction: column; min-height: 0; }
+    .forge-jobs .bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-bottom: 1px solid #D5DCE3; background: #F8FAFC; }
+    .forge-jobs .bar button { height: 28px; padding: 0 12px; border: 1px solid #D5DCE3; background: #fff; font: 500 12px "IBM Plex Sans"; }
+    .forge-jobs .bar button.pri { background: #0A0E12; color: #2DD4BF; border-color: #0A0E12; }
+    .jhead, .jrow {
+      display: grid; grid-template-columns: 1.4fr 140px 90px 90px 160px 120px 88px;
+      height: 36px; align-items: center; padding: 0 12px; font-size: 12px; border-bottom: 1px solid #EEF1F4;
+    }
+    .jhead { height: 28px; background: #F4F6F8; font: 600 10px/28px "IBM Plex Sans"; letter-spacing: .08em; text-transform: uppercase; color: #5B6B7C; }
+    .jrow:hover { background: #F8FAFC; }
+    .jrow .num { font-family: "IBM Plex Mono", monospace; text-align: right; }
+    .pill { display: inline-block; padding: 2px 8px; font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+    .pill.ok { background: #CCFBF1; color: #0F766E; }
+    .pill.warn { background: #FEF3C7; color: #92400E; }
+    .pill.off { background: #E2E8F0; color: #475569; }
+
+    /* ========== LEDGER: print drawing-office ========== */
+    .ledger { font-family: "Source Sans 3", "Segoe UI", sans-serif; color: #1C1917; background: #E8DFD0; }
+    .ledger-shell { height: 100%; display: flex; flex-direction: column; }
+    .ledger-bar {
+      height: 44px; background: #1C1917; color: #F5F0E8; display: flex; align-items: center;
+      gap: 16px; padding: 0 16px; font-size: 12px;
+    }
+    .ledger-bar .wordmark { font-family: "Source Serif 4", Georgia, serif; font-weight: 600; font-size: 16px; letter-spacing: .02em; }
+    .ledger-bar .wordmark em { font-style: italic; color: #D6A15C; font-weight: 500; }
+    .ledger-bar nav { display: flex; gap: 2px; }
+    .ledger-bar nav span { padding: 6px 10px; color: #A8A29A; }
+    .ledger-bar nav span.on { color: #F5F0E8; background: #292524; }
+    .ledger-bar .sp { flex: 1; }
+    .ledger-bar .qar { font-family: "IBM Plex Mono", monospace; color: #D6A15C; font-weight: 500; }
+    .ledger-doc { flex: 1; min-height: 0; display: grid; grid-template-columns: 240px 1fr 280px; margin: 10px; background: #FFFAF3; border: 1px solid #C4B8A4; box-shadow: 0 8px 24px rgba(28,25,23,.12); }
+    .ledger-doc.home { grid-template-columns: 1fr; margin: 16px 48px; }
+    .ledger-doc.login { grid-template-columns: 1fr; margin: 0; border: 0; box-shadow: none; background: #E8DFD0; }
+    .ledger-tree { background: #F3EEE4; border-right: 1px solid #D6CBB8; font-size: 13px; }
+    .ledger-tree .cap {
+      padding: 14px 14px 8px; font-family: "Source Serif 4", Georgia, serif; font-size: 15px; font-weight: 600;
+    }
+    .ledger-tree .n { padding: 7px 14px; border-left: 3px solid transparent; color: #57534E; }
+    .ledger-tree .n.on { background: #EFE6D4; border-left-color: #9A3412; color: #1C1917; font-weight: 600; }
+    .ledger-tree .n.sec { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #A8A29A; padding-top: 14px; }
+    .ledger-sheet { min-width: 0; display: flex; flex-direction: column; }
+    .ledger-mast {
+      padding: 16px 20px 10px; border-bottom: 2px solid #1C1917; display: flex; justify-content: space-between; align-items: end;
+    }
+    .ledger-mast h1 { margin: 0; font-family: "Source Serif 4", Georgia, serif; font-size: 22px; font-weight: 600; }
+    .ledger-mast .meta { font-size: 11px; color: #78716C; text-align: right; font-family: "IBM Plex Mono", monospace; line-height: 1.5; }
+    .ledger-cols {
+      display: grid;
+      grid-template-columns: 70px minmax(220px, 1fr) 70px 88px 44px 96px 96px 112px;
+      height: 26px; font: 600 10px/26px "Source Sans 3"; letter-spacing: .08em; text-transform: uppercase;
+      color: #78716C; border-bottom: 1px solid #1C1917;
+    }
+    .ledger-cols > div, .ledger-row > div { padding: 0 10px; }
+    .ledger-row {
+      display: grid;
+      grid-template-columns: 70px minmax(220px, 1fr) 70px 88px 44px 96px 96px 112px;
+      height: 24px; font-size: 12.5px; align-items: center; border-bottom: 1px solid #E8DFD0;
+    }
+    .ledger-row.head { background: #F3EEE4; font-weight: 600; font-family: "Source Serif 4", Georgia, serif; height: 28px; }
+    .ledger-row.sel { background: #F5E6D3; outline: 1px solid #9A3412; outline-offset: -1px; }
+    .ledger-row .num { font-family: "IBM Plex Mono", monospace; text-align: right; font-size: 11px; }
+    .ledger-row .code { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: #78716C; }
+    .ledger-side { border-left: 1px solid #D6CBB8; background: #F3EEE4; padding: 14px; font-size: 12px; }
+    .ledger-side h3 { margin: 0 0 10px; font-family: "Source Serif 4", Georgia, serif; font-size: 16px; font-weight: 600; }
+    .ledger-side .kv { display: grid; grid-template-columns: 72px 1fr; gap: 6px 8px; margin-bottom: 12px; }
+    .ledger-side .kv span { color: #78716C; }
+    .ledger-side table { width: 100%; border-collapse: collapse; }
+    .ledger-side td { border-bottom: 1px solid #D6CBB8; padding: 5px 0; }
+    .ledger-side td.num { font-family: "IBM Plex Mono", monospace; text-align: right; }
+    .ledger-login {
+      height: 100%; display: grid; place-items: center; background:
+        repeating-linear-gradient(0deg, transparent, transparent 23px, #D6CBB8 24px),
+        #E8DFD0;
+    }
+    .ledger-card {
+      width: 420px; background: #FFFAF3; border: 1px solid #1C1917; padding: 32px 36px;
+      box-shadow: 8px 8px 0 #1C1917;
+    }
+    .ledger-card .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: #9A3412; font-weight: 600; }
+    .ledger-card h1 { font-family: "Source Serif 4", Georgia, serif; font-size: 28px; margin: 8px 0 20px; }
+    .ledger-card label { display: block; font-size: 12px; margin: 10px 0 4px; }
+    .ledger-card input { width: 100%; height: 34px; border: 0; border-bottom: 1px solid #1C1917; background: transparent; font: 15px "Source Sans 3"; }
+    .ledger-card button {
+      margin-top: 22px; width: 100%; height: 40px; background: #1C1917; color: #F5F0E8;
+      border: 0; font: 600 13px "Source Sans 3"; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .ledger-home { padding: 28px 36px; overflow: hidden; }
+    .ledger-home h1 { font-family: "Source Serif 4", Georgia, serif; font-size: 28px; margin: 0 0 6px; }
+    .ledger-home .sub { color: #78716C; margin-bottom: 20px; }
+    .jobcard {
+      display: grid; grid-template-columns: minmax(0, 1.6fr) 140px 168px 72px; gap: 16px;
+      border-bottom: 1px solid #D6CBB8; padding: 14px 0; align-items: center;
+    }
+    .jobcard b { font-family: "Source Serif 4", Georgia, serif; font-size: 16px; font-weight: 600; }
+    .jobcard .num { font-family: "IBM Plex Mono", monospace; text-align: right; white-space: nowrap; }
+    .jobcard .go { text-align: right; color: #9A3412; font-weight: 600; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+    .ledger-foot {
+      height: 22px; background: #1C1917; color: #A8A29A; font: 11px/22px "IBM Plex Mono", monospace;
+      padding: 0 16px; display: flex; gap: 18px;
+    }
+    svg.ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="picker" id="picker">
+    <b>Theme</b>
+    <button class="theme" data-theme="forge">A · Forge</button>
+    <button class="theme" data-theme="ledger">B · Ledger</button>
+    <b style="margin-left:16px">Screen</b>
+    <button data-s="login">Login</button>
+    <button data-s="home">Home</button>
+    <button data-s="bill">Bill</button>
+    <button data-s="takeoff">Take-off</button>
+    <button data-s="buy">Buy</button>
+    <button data-s="submit">Submit</button>
+  </div>
+  <div class="stage" id="stage"><div class="app" id="app"></div></div>
+
+<script>
+const params = new URLSearchParams(location.search);
+let theme = params.get("theme") || "forge";
+let screen = params.get("s") || "bill";
+if (params.get("embed") === "1") {
+  document.getElementById("picker").classList.add("hidden");
+  document.getElementById("stage").classList.add("embed");
+}
+
+const I = {
+  home: '<svg class="ico" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20H4z"/><path d="M9 20v-7h6v7"/></svg>',
+  bill: '<svg class="ico" viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>',
+  take: '<svg class="ico" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16"/><path d="M8 8h8v8H8z"/></svg>',
+  buy: '<svg class="ico" viewBox="0 0 24 24"><path d="M4 7h16l-1.5 10H6L4 7z"/><path d="M9 7V5h6v2"/></svg>',
+  query: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 16v-1m0-6a2 2 0 0 1 1.7 3C13 13 12 13.2 12 15"/></svg>',
+  send: '<svg class="ico" viewBox="0 0 24 24"><path d="M4 12h16M13 6l7 6-7 6"/></svg>',
+  more: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>',
+  gear: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 4v2M12 18v2M4 12h2M18 12h2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4M6.3 17.7l1.4-1.4M16.3 7.7l1.4-1.4"/></svg>'
+};
+
+const rows = [
+  ["h","B1","BILL 1 — SUBSTRUCTURE","","","","","",""],
+  ["","2.1","Excavate to reduced levels","m3","1,842.00","—","18.50","34,077.00","·"],
+  ["","2.2","Excavate foundation trenches","m3","416.50","—","22.00","9,163.00","·"],
+  ["s","2.3","Plain concrete blinding 1:3:6","m3","128.40","T","185.00","23,754.00","·"],
+  ["","2.4","Reinforced concrete foundations","m3","286.00","T","420.00","120,120.00","·"],
+  ["","2.5","Formwork to sides of foundations","m2","612.00","—","28.00","17,136.00","·"],
+  ["","2.6","High tensile reinforcement to foundations","t","42.80","T","4,850.00","207,580.00","·"],
+  ["h","B2","BILL 2 — SUPERSTRUCTURE","","","","","",""],
+  ["","3.1","Reinforced concrete columns","m3","198.60","T","465.00","92,349.00","·"],
+  ["","3.2","Reinforced concrete beams","m3","246.40","T","445.00","109,648.00","·"],
+  ["","3.3","Solid RC slabs 200mm","m3","512.00","T","390.00","199,680.00","·"],
+  ["","3.4","Formwork to soffit of slabs","m2","2,560.00","—","32.00","81,920.00","·"],
+  ["","3.5","High tensile reinforcement to superstructure","t","118.40","T","4,850.00","574,240.00","·"],
+  ["","3.6","Blockwork 200mm to external walls","m2","3,210.00","—","85.00","272,850.00","·"],
+  ["h","B3","BILL 3 — FINISHES","","","","","",""],
+  ["","4.1","Ceramic floor tiles 600×600","m2","8,420.00","—","95.00","799,900.00","·"],
+  ["","4.2","Gypsum board suspended ceiling","m2","7,860.00","—","62.00","487,320.00","·"],
+  ["","4.3","Emulsion paint to walls three coats","m2","12,440.00","—","18.00","223,920.00","·"],
+  ["","4.4","Aluminium windows powder coated","m2","1,186.00","—","640.00","759,040.00","·"],
+  ["","4.5","Fire-rated timber doors 1hr","nr","86.00","—","2,450.00","210,700.00","·"],
+  ["","4.6","Stainless steel balustrades","m","412.00","—","380.00","156,560.00","·"],
+  ["h","B4","BILL 4 — SERVICES","","","","","",""],
+  ["","5.1","Electrical installation complete","item","1.00","—","4,280,000.00","4,280,000.00","·"],
+  ["","5.2","HVAC VRV system","item","1.00","—","6,140,000.00","6,140,000.00","·"],
+  ["","5.3","Fire fighting & detection","item","1.00","—","1,860,000.00","1,860,000.00","·"],
+];
+
+function gridRows(selCode, kind) {
+  return rows.map(r => {
+    const [type, code, desc, unit, qty, tk, rate, amt] = r;
+    const cls = type === "h" ? "head" : (code === selCode ? "sel" : "");
+    if (kind === "forge") {
+      return `<div class="forge-row ${cls}">
+        <div></div><div class="code">${code}</div><div>${desc}</div>
+        <div>${unit}</div><div class="num">${qty}</div><div>${tk}</div>
+        <div class="num">${rate}</div><div class="num">${amt}</div><div class="num">${amt && type!=="h" ? amt : ""}</div><div></div>
+      </div>`;
+    }
+    return `<div class="ledger-row ${cls}">
+      <div class="code">${code}</div><div>${desc}</div>
+      <div>${unit}</div><div class="num">${qty}</div><div>${tk}</div>
+      <div class="num">${rate}</div><div class="num">${amt}</div><div class="num">${amt && type!=="h" ? amt : ""}</div>
+    </div>`;
+  }).join("");
+}
+
+function forgeRail(active) {
+  const items = [
+    ["home", I.home], ["bill", I.bill], ["takeoff", I.take],
+    ["buy", I.buy], ["queries", I.query], ["submit", I.send]
+  ];
+  return `<aside class="forge-rail">
+    <div class="logo">AE</div>
+    ${items.map(([id, ico]) => `<button class="${id===active?"on":""}">${ico}</button>`).join("")}
+    <div class="sp"></div>
+    <button>${I.more}</button>
+    <button>${I.gear}</button>
+  </aside>`;
+}
+
+function forgeTop() {
+  return `<div class="forge-top">
+    <span class="job">Al Maha Campus — Lusail</span>
+    <span class="boq">B1 Residential · 10,000 m²</span>
+    <span style="color:#5B6B7C">Rev 03</span>
+    <span class="sp"></span>
+    <span class="mono" style="color:#8B9AAB">Working</span>
+    <span class="qar">QAR 100,826,297.13</span>
+    <span style="color:#8B9AAB">HS</span>
+  </div>
+  <div class="forge-cmd">
+    <span>File</span><span>Edit</span><span class="on">Measure</span><span>Rate</span><span>Print</span>
+    <input value="Find item, resource, drawing…" />
+  </div>`;
+}
+
+function forgeInsp(mode) {
+  if (mode === "take") {
+    return `<aside class="forge-insp">
+      <h3><span class="on">Measure</span><span>Identity</span><span>Rate</span></h3>
+      <div class="pad">
+        <div><label>Drawing</label><input value="ARC-B1-02 Plan Level 02" /></div>
+        <div><label>Tool</label><select><option>Area</option></select></div>
+        <div><label>Linked qty</label><input class="mono" value="128.40 m³" /></div>
+        <table>
+          <tr><td>Poly 01 · slab pour A</td><td class="num">42.10</td></tr>
+          <tr><td>Poly 02 · slab pour B</td><td class="num">51.80</td></tr>
+          <tr><td>Poly 03 · lift pit</td><td class="num">34.50</td></tr>
+        </table>
+      </div>
+    </aside>`;
+  }
+  if (mode === "buy") {
+    return `<aside class="forge-insp">
+      <h3><span class="on">Package</span></h3>
+      <div class="pad">
+        <div><label>Package</label><input value="PK-04 Concrete works" /></div>
+        <div><label>Vendor</label><input value="Qatar Ready Mix" /></div>
+        <div><label>Enquiry status</label><input value="3 of 5 returned" /></div>
+      </div>
+    </aside>`;
+  }
+  return `<aside class="forge-insp">
+    <h3><span>Identity</span><span class="on">Take-off</span><span>Rate</span></h3>
+    <div class="pad">
+      <div><label>Issued code</label><input value="2.3" /></div>
+      <div><label>Description</label><textarea>Plain concrete blinding 1:3:6</textarea></div>
+      <div><label>Build-up</label></div>
+      <table>
+        <tr><td>Cement OPC</td><td class="num">42.00</td></tr>
+        <tr><td>Washed sand</td><td class="num">28.50</td></tr>
+        <tr><td>20mm aggregate</td><td class="num">61.00</td></tr>
+        <tr><td>Labour gang</td><td class="num">53.50</td></tr>
+        <tr><td style="font-weight:600">Rate / m³</td><td class="num">185.00</td></tr>
+      </table>
+    </div>
+  </aside>`;
+}
+
+function forgeStat() {
+  return `<div class="forge-stat">B1 · 248 items · 3 locked · source IFC-04 <span class="sp"></span> <b>QAR 100,826,297.13</b></div>`;
+}
+
+function renderForge() {
+  if (screen === "login") {
+    return `<div class="forge forge-login">
+      <div class="brand-side">
+        <div class="mark">AE</div>
+        <h1>Aerolith Core</h1>
+        <p>Quantity surveying workstation. One job, several issued bills, a single resource catalogue.</p>
+        <div class="specs">
+          <div>KERNEL  ·  itemKey = billId::boqCode</div>
+          <div>SEAL    ·  project-level margin & revision</div>
+          <div>LOCK    ·  per-bill source</div>
+        </div>
+      </div>
+      <div class="form-side">
+        <form>
+          <h2>Sign in</h2>
+          <div><label>User</label><br/><input value="admin" /></div>
+          <div><label>Password</label><br/><input type="password" value="admin" /></div>
+          <button type="button">Open workstation</button>
+        </form>
+      </div>
+    </div>`;
+  }
+  if (screen === "home") {
+    return `<div class="forge" style="height:100%">
+      <div class="forge-shell">
+        ${forgeRail("home")}
+        <div class="forge-main">
+          <div class="forge-top"><span class="job">Jobs</span><span class="sp"></span><span style="color:#8B9AAB">HS · admin</span></div>
+          <div class="forge-jobs">
+            <div class="bar">
+              <button class="pri">New job</button>
+              <button>Open .aero</button>
+              <button>Import</button>
+              <span class="sp"></span>
+              <input style="height:28px;border:1px solid #D5DCE3;padding:0 8px;width:240px" value="Search jobs…" />
+            </div>
+            <div class="jhead"><div>Job</div><div>Client</div><div>Bills</div><div>Status</div><div class="num">Working total</div><div>Revised</div><div></div></div>
+            <div class="jrow"><div><b>Al Maha Campus, Lusail</b><div style="color:#5B6B7C">Multi-BOQ · B1 B2 B3</div></div><div>Al Maha Dev.</div><div>3</div><div><span class="pill ok">Live</span></div><div class="num">48,210,440.00</div><div>02 Sep 2026</div><div>Open</div></div>
+            <div class="jrow"><div><b>Medical Institute interiors</b><div style="color:#5B6B7C">Single BOQ · GREEN</div></div><div>MoPH</div><div>1</div><div><span class="pill ok">Sealed</span></div><div class="num">100,826,297.13</div><div>28 Aug 2026</div><div>Open</div></div>
+            <div class="jrow"><div><b>Lusail Boulevard fit-out</b><div style="color:#5B6B7C">Draft</div></div><div>Qatari Diar</div><div>2</div><div><span class="pill warn">Queries</span></div><div class="num">12,441,900.00</div><div>19 Aug 2026</div><div>Open</div></div>
+            <div class="jrow"><div><b>West Bay Tower 4 envelope</b></div><div>Urbacon</div><div>1</div><div><span class="pill off">Archive</span></div><div class="num">6,882,150.00</div><div>03 Jun 2026</div><div>Open</div></div>
+            <div class="jrow"><div><b>Education City laboratory block</b></div><div>QF</div><div>4</div><div><span class="pill ok">Live</span></div><div class="num">31,004,220.00</div><div>11 Jul 2026</div><div>Open</div></div>
+          </div>
+          <div class="forge-stat">5 jobs · last opened Al Maha Campus</div>
+        </div>
+      </div>
+    </div>`;
+  }
+  if (screen === "submit") {
+    return `<div class="forge" style="height:100%"><div class="forge-shell">
+      ${forgeRail("submit")}<div class="forge-main">${forgeTop()}
+      <div class="forge-body full" style="background:#fff;padding:28px 36px;display:grid;grid-template-columns:1fr 320px;gap:28px">
+        <div>
+          <div style="font:600 11px IBM Plex Sans;letter-spacing:.1em;text-transform:uppercase;color:#5B6B7C">Issue pack</div>
+          <h2 style="margin:6px 0 16px;font-size:20px">Revision 03 — Al Maha Campus</h2>
+          <div style="display:grid;gap:8px;font-size:13px">
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid #E8EDF2;padding:8px 0"><span>B1 Residential 10,000 m²</span><b class="mono">QAR 18,440,120.00</b></div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid #E8EDF2;padding:8px 0"><span>B2 Residential 15,000 m²</span><b class="mono">QAR 24,210,880.00</b></div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid #E8EDF2;padding:8px 0"><span>B3 Commercial & office 2,500 m²</span><b class="mono">QAR 5,559,440.00</b></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:15px"><span>Grand</span><b class="mono" style="color:#0F766E">QAR 48,210,440.00</b></div>
+          </div>
+        </div>
+        <div style="border:1px solid #D5DCE3;padding:16px;background:#F8FAFC">
+          <div style="font:600 11px IBM Plex Sans;letter-spacing:.1em;text-transform:uppercase;color:#5B6B7C;margin-bottom:10px">Seal</div>
+          <div style="font-size:12px;line-height:1.6">Margin 8.5% · project-level<br/>Source lock per bill<br/>3 open queries on B2</div>
+          <button style="margin-top:16px;height:32px;width:100%;background:#0A0E12;color:#2DD4BF;border:0;font:600 12px IBM Plex Sans">Export tender PDF</button>
+        </div>
+      </div>${forgeStat()}</div></div></div>`;
+  }
+  const take = screen === "takeoff";
+  const buy = screen === "buy";
+  const bodyClass = take ? "take" : "";
+  const tree = take ? `<aside class="forge-tree">
+    <div class="t">Drawings</div>
+    <div class="n">ARC-B1-00 Cover</div>
+    <div class="n on">ARC-B1-02 Plan L02</div>
+    <div class="n">ARC-B1-03 Plan L03</div>
+    <div class="n">STR-B1-11 Foundations</div>
+    <div class="n">STR-B1-20 Columns</div>
+    <div class="t">Groups</div>
+    <div class="n">Blinding 2.3</div>
+    <div class="n">Foundations 2.4</div>
+  </aside>` : "";
+  return `<div class="forge" style="height:100%"><div class="forge-shell">
+    ${forgeRail(screen)}
+    <div class="forge-main">${forgeTop()}
+      <div class="forge-body ${bodyClass}">
+        ${tree}
+        <div class="forge-sheet">
+          <div class="forge-cols">
+            <div></div><div>Code</div><div>Description</div><div>Unit</div><div>Qty</div><div>T/O</div><div>Rate</div><div>Amount</div><div>Working</div><div></div>
+          </div>
+          <div style="flex:1;overflow:hidden">${gridRows("2.3","forge")}</div>
+        </div>
+        ${forgeInsp(take ? "take" : buy ? "buy" : "rate")}
+      </div>
+      ${forgeStat()}
+    </div>
+  </div></div>`;
+}
+
+function renderLedger() {
+  if (screen === "login") {
+    return `<div class="ledger" style="height:100%"><div class="ledger-login">
+      <div class="ledger-card">
+        <div class="eyebrow">Aerolith Core Estimation</div>
+        <h1>Open the bill.</h1>
+        <label>Surveyor</label><input value="admin" />
+        <label>Password</label><input type="password" value="admin" />
+        <button type="button">Enter office</button>
+      </div>
+    </div></div>`;
+  }
+  const nav = (id) => `<nav>
+    <span class="${id==="home"?"on":""}">Jobs</span>
+    <span class="${id==="bill"||id==="takeoff"?"on":""}">Bill</span>
+    <span class="${id==="takeoff"?"on":""}">Take-off</span>
+    <span class="${id==="buy"?"on":""}">Buy</span>
+    <span class="${id==="submit"?"on":""}">Issue</span>
+  </nav>`;
+  if (screen === "home") {
+    return `<div class="ledger" style="height:100%"><div class="ledger-shell">
+      <div class="ledger-bar"><span class="wordmark">Aerolith <em>Core</em></span>${nav("home")}<span class="sp"></span><span>H. Sejdiu</span></div>
+      <div class="ledger-doc home"><div class="ledger-home">
+        <h1>Current jobs</h1>
+        <div class="sub">Each file is one contract. Several issued bills may sit inside it.</div>
+        <div class="jobcard"><div><b>Al Maha Campus, Lusail</b><div style="color:#78716C;font-size:12px">Three buildings · residential / commercial</div></div><div>Al Maha Dev.</div><div class="num">48,210,440.00</div><div class="go">Open</div></div>
+        <div class="jobcard"><div><b>Medical Institute interiors</b><div style="color:#78716C;font-size:12px">Single issued BOQ · working total sealed</div></div><div>MoPH</div><div class="num">100,826,297.13</div><div class="go">Open</div></div>
+        <div class="jobcard"><div><b>Lusail Boulevard fit-out</b><div style="color:#78716C;font-size:12px">Queries outstanding on finishes</div></div><div>Qatari Diar</div><div class="num">12,441,900.00</div><div class="go">Open</div></div>
+        <div class="jobcard"><div><b>West Bay Tower 4 envelope</b></div><div>Urbacon</div><div class="num">6,882,150.00</div><div class="go">Open</div></div>
+      </div></div>
+      <div class="ledger-foot">Office · QAR · revision stays on the job</div>
+    </div></div>`;
+  }
+  if (screen === "submit") {
+    return `<div class="ledger" style="height:100%"><div class="ledger-shell">
+      <div class="ledger-bar"><span class="wordmark">Aerolith <em>Core</em></span>${nav("submit")}<span class="sp"></span><span class="qar">QAR 48,210,440.00</span></div>
+      <div class="ledger-doc home"><div class="ledger-home">
+        <h1>Issue — Revision 03</h1>
+        <div class="sub">Al Maha Campus, Lusail. Margin and seal are project-level. Source lock is per bill.</div>
+        <div class="jobcard"><div><b>B1 Residential 10,000 m²</b></div><div>Locked</div><div class="num">18,440,120.00</div><div></div></div>
+        <div class="jobcard"><div><b>B2 Residential 15,000 m²</b></div><div>Open queries</div><div class="num">24,210,880.00</div><div></div></div>
+        <div class="jobcard"><div><b>B3 Commercial & office 2,500 m²</b></div><div>Locked</div><div class="num">5,559,440.00</div><div></div></div>
+        <div class="jobcard"><div><b>Grand</b></div><div></div><div class="num" style="color:#9A3412;font-size:16px">48,210,440.00</div><div></div></div>
+      </div></div>
+      <div class="ledger-foot">Print · Export PDF · Seal revision</div>
+    </div></div>`;
+  }
+  const take = screen === "takeoff";
+  return `<div class="ledger" style="height:100%"><div class="ledger-shell">
+    <div class="ledger-bar">
+      <span class="wordmark">Aerolith <em>Core</em></span>
+      ${nav(screen)}
+      <span class="sp"></span>
+      <span class="qar">QAR 100,826,297.13</span>
+    </div>
+    <div class="ledger-doc">
+      <aside class="ledger-tree">
+        <div class="cap">${take ? "Drawings" : "Contents"}</div>
+        ${take ? `
+          <div class="n">ARC-B1-00 Cover</div>
+          <div class="n on">ARC-B1-02 Plan Level 02</div>
+          <div class="n">ARC-B1-03 Plan Level 03</div>
+          <div class="n">STR-B1-11 Foundations</div>
+          <div class="n sec">Linked items</div>
+          <div class="n on">2.3 Blinding</div>
+          <div class="n">2.4 Foundations</div>
+        ` : `
+          <div class="n sec">Bills</div>
+          <div class="n on">B1 Residential 10,000 m²</div>
+          <div class="n">B2 Residential 15,000 m²</div>
+          <div class="n">B3 Commercial 2,500 m²</div>
+          <div class="n sec">This bill</div>
+          <div class="n">Preliminaries</div>
+          <div class="n on">Substructure</div>
+          <div class="n">Superstructure</div>
+          <div class="n">Finishes</div>
+          <div class="n">Services</div>
+        `}
+      </aside>
+      <div class="ledger-sheet">
+        <div class="ledger-mast">
+          <div>
+            <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9A3412">Bill of Quantities</div>
+            <h1>${take ? "Take-off · Plan Level 02" : "B1 Residential — Substructure"}</h1>
+          </div>
+          <div class="meta">Job ALM-2026-04<br/>Rev 03 · 02 Sep 2026<br/>IFC-04 locked</div>
+        </div>
+        <div class="ledger-cols">
+          <div>Item</div><div>Description</div><div>Unit</div><div>Qty</div><div>T/O</div><div>Rate</div><div>Amount</div><div>Working</div>
+        </div>
+        <div style="flex:1;overflow:hidden">${gridRows("2.3","ledger")}</div>
+      </div>
+      <aside class="ledger-side">
+        <h3>${take ? "Measure 2.3" : "Item 2.3"}</h3>
+        <div class="kv">
+          <span>Unit</span><b>m³</b>
+          <span>Qty</span><b>128.40</b>
+          <span>Rate</span><b>185.00</b>
+        </div>
+        <table>
+          <tr><td>Cement OPC</td><td class="num">42.00</td></tr>
+          <tr><td>Washed sand</td><td class="num">28.50</td></tr>
+          <tr><td>20mm aggregate</td><td class="num">61.00</td></tr>
+          <tr><td>Labour gang</td><td class="num">53.50</td></tr>
+          <tr><td><b>Rate</b></td><td class="num"><b>185.00</b></td></tr>
+        </table>
+      </aside>
+    </div>
+    <div class="ledger-foot">Al Maha Campus · B1 · 248 items · working QAR 100,826,297.13</div>
+  </div></div>`;
+}
+
+function paint() {
+  document.querySelectorAll(".picker button").forEach(b => {
+    b.classList.toggle("on", b.dataset.theme === theme || b.dataset.s === screen);
+  });
+  document.getElementById("app").innerHTML = theme === "ledger" ? renderLedger() : renderForge();
+}
+document.getElementById("picker").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  if (b.dataset.theme) theme = b.dataset.theme;
+  if (b.dataset.s) screen = b.dataset.s;
+  paint();
+});
+paint();
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+[
+  {
+    "sl": 1.0,
+    "code": "UN001",
+    "description": "Metre",
+    "symbol": "m"
+  },
+  {
+    "sl": 2.0,
+    "code": "UN002",
+    "description": "Square metre",
+    "symbol": "m2"
+  },
+  {
+    "sl": 3.0,
+    "code": "UN003",
+    "description": "Cubic metre",
+    "symbol": "m3"
+  },
+  {
+    "sl": 4.0,
+    "code": "UN004",
+    "description": "Feet",
+    "symbol": "ft"
+  },
+  {
+    "sl": 5.0,
+    "code": "UN005",
+    "description": "Square feet",
+    "symbol": "ft2"
+  },
+  {
+    "sl": 6.0,
+    "code": "UN006",
+    "description": "Cubic feet",
+    "symbol": "ft3"
+  },
+  {
+    "sl": 7.0,
+    "code": "UN007",
+    "description": "Number",
+    "symbol": "nos"
+  },
+  {
+    "sl": 8.0,
+    "code": "UN008",
+    "description": "Board",
+    "symbol": "board"
+  },
+  {
+    "sl": 9.0,
+    "code": "UN009",
+    "description": "Each",
+    "symbol": "each"
+  },
+  {
+    "sl": 10.0,
+    "code": "UN010",
+    "description": "Sheet",
+    "symbol": "sheet"
+  },
+  {
+    "sl": 11.0,
+    "code": "UN011",
+    "description": "Litre",
+    "symbol": "ltr"
+  },
+  {
+    "sl": 12.0,
+    "code": "UN012",
+    "description": "Millimetre",
+    "symbol": "mm"
+  },
+  {
+    "sl": 13.0,
+    "code": "UN013",
+    "description": "Square millimetre",
+    "symbol": "mm2"
+  },
+  {
+    "sl": 14.0,
+    "code": "UN014",
+    "description": "Cubic millimetre",
+    "symbol": "mm3"
+  },
+  {
+    "sl": 15.0,
+    "code": "UN015",
+    "description": "Centimetre",
+    "symbol": "cm"
+  },
+  {
+    "sl": 16.0,
+    "code": "UN016",
+    "description": "Square centimetre",
+    "symbol": "cm2"
+  },
+  {
+    "sl": 17.0,
+    "code": "UN017",
+    "description": "Cubic centimetre",
+    "symbol": "cm3"
+  },
+  {
+    "sl": 18.0,
+    "code": "UN018",
+    "description": "Gram",
+    "symbol": "gm"
+  },
+  {
+    "sl": 19.0,
+    "code": "UN019",
+    "description": "Kilogram",
+    "symbol": "kg"
+  },
+  {
+    "sl": 20.0,
+    "code": "UN020",
+    "description": "Ton",
+    "symbol": "ton"
+  },
+  {
+    "sl": 21.0,
+    "code": "UN021",
+    "description": "Bars",
+    "symbol": "bar"
+  },
+  {
+    "sl": 22.0,
+    "code": "UN022",
+    "description": "Tube",
+    "symbol": "tube"
+  },
+  {
+    "sl": 23.0,
+    "code": "UN023",
+    "description": "Tin",
+    "symbol": "tin"
+  },
+  {
+    "sl": 24.0,
+    "code": "UN024",
+    "description": "Can",
+    "symbol": "can"
+  },
+  {
+    "sl": 25.0,
+    "code": "UN025",
+    "description": "Trip",
+    "symbol": "trip"
+  },
+  {
+    "sl": 26.0,
+    "code": "UN026",
+    "description": "Hour",
+    "symbol": "hr"
+  },
+  {
+    "sl": 27.0,
+    "code": "UN027",
+    "description": "Day",
+    "symbol": "day"
+  },
+  {
+    "sl": 28.0,
+    "code": "UN028",
+    "description": "Lumpsum",
+    "symbol": "ls"
+  },
+  {
+    "sl": 29.0,
+    "code": "UN029",
+    "description": "Length",
+    "symbol": "length"
+  },
+  {
+    "sl": 30.0,
+    "code": "UN030",
+    "description": "Box",
+    "symbol": "box"
+  },
+  {
+    "sl": 31.0,
+    "code": "UN031",
+    "description": "Bundle",
+    "symbol": "bundle"
+  },
+  {
+    "sl": 32.0,
+    "code": "UN032",
+    "description": "Provisional Sum",
+    "symbol": "PS"
+  },
+  {
+    "sl": 33.0,
+    "code": "UN033",
+    "description": "Cost",
+    "symbol": "cost"
+  },
+  {
+    "sl": 34.0,
+    "code": "UN034",
+    "description": "Rate",
+    "symbol": "rate"
+  },
+  {
+    "sl": 35.0,
+    "code": "UN035",
+    "description": "Bag",
+    "symbol": "bag"
+  },
+  {
+    "sl": 36.0,
+    "code": "UN036",
+    "description": "Unit",
+    "symbol": "unit"
+  },
+  {
+    "sl": 37.0,
+    "code": "UN037",
+    "description": "Pair",
+    "symbol": "pair"
+  }
+]

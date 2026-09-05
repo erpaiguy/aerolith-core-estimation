@@ -1,0 +1,5316 @@
+[
+  {
+    "boq_code": "1a",
+    "description": "Site Co-ordination",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 1,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PRLM-001",
+        "description": "Site Co-ordination",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "1a",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "1b",
+    "description": "Shop Drawings",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 12,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PRLM-002",
+        "description": "Shop Drawings",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "1b",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "1c",
+    "description": "As-Built Drawings",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 23,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PRLM-003",
+        "description": "As-Built Drawings",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "1c",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "1d",
+    "description": "Material Submittals",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 34,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PRLM-004",
+        "description": "Material Submittals",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "1d",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "1e",
+    "description": "Sample Preparation",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 45,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PRLM-005",
+        "description": "Sample Preparation",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "1e",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "1f",
+    "description": "Mock-ups",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 56,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PRLM-006",
+        "description": "Mock-ups",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "1f",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "1g",
+    "description": "Bonds",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 67,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PRLM-007",
+        "description": "Bonds",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "1g",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "1h",
+    "description": "Site-Office Setup",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 78,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PRLM-008",
+        "description": "Site-Office Setup",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "1h",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "1I",
+    "description": "Insurances",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 89,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PRLM-009",
+        "description": "Insurances",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "1I",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "2a",
+    "description": "Demolition of Blockwork",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 100,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-L-001",
+        "description": "Stone Mason",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 80.0,
+        "amount": 840.0,
+        "total_qty": 10.5,
+        "total_amount": 840.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 10.5,
+        "total_amount": 525.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2a",
+      "amount": 1365.0,
+      "total_amount": 1365.0
+    }
+  },
+  {
+    "boq_code": "2b",
+    "description": "Demolition of Gypsum Partition",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 112,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-L-002",
+        "description": "Brick Mason",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 10.5,
+        "total_amount": 525.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2b",
+      "amount": 1075.0,
+      "total_amount": 1075.0
+    }
+  },
+  {
+    "boq_code": "2c",
+    "description": "Stripping out HVAC Systems",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 124,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MEP-L-003",
+        "description": "HVAC Technician",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-MEP-L-001",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2c",
+      "amount": 1100.0,
+      "total_amount": 1100.0
+    }
+  },
+  {
+    "boq_code": "2d",
+    "description": "Removal of Fire Sprinklers",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 136,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MEP-L-002",
+        "description": "Mechanic",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 80.0,
+        "amount": 840.0,
+        "total_qty": 10.5,
+        "total_amount": 840.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-MEP-L-001",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2d",
+      "amount": 1390.0,
+      "total_amount": 1390.0
+    }
+  },
+  {
+    "boq_code": "2e",
+    "description": "Removal of Smoke & Fire Detectors",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 148,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MEP-L-002",
+        "description": "Mechanic",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 80.0,
+        "amount": 840.0,
+        "total_qty": 10.5,
+        "total_amount": 840.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-MEP-L-001",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2e",
+      "amount": 1390.0,
+      "total_amount": 1390.0
+    }
+  },
+  {
+    "boq_code": "2f",
+    "description": "Removal of Fire Hose Reel",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 160,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MEP-L-002",
+        "description": "Mechanic",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 80.0,
+        "amount": 840.0,
+        "total_qty": 10.5,
+        "total_amount": 840.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-MEP-L-001",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2f",
+      "amount": 1390.0,
+      "total_amount": 1390.0
+    }
+  },
+  {
+    "boq_code": "2g",
+    "description": "Removal of Fire Water Piping",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 172,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MEP-L-002",
+        "description": "Mechanic",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 80.0,
+        "amount": 840.0,
+        "total_qty": 10.5,
+        "total_amount": 840.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-MEP-L-001",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2g",
+      "amount": 1390.0,
+      "total_amount": 1390.0
+    }
+  },
+  {
+    "boq_code": "2h",
+    "description": "Removal of IT items",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 184,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MEP-L-004",
+        "description": "IT Technician",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 10.5,
+        "total_amount": 525.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-MEP-L-001",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2h",
+      "amount": 1075.0,
+      "total_amount": 1075.0
+    }
+  },
+  {
+    "boq_code": "2i",
+    "description": "Removal of Loose Furniture",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 196,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 4.0,
+        "item_qty": 24.0,
+        "resource_rate": 100.0,
+        "amount": 2400.0,
+        "total_qty": 24.0,
+        "total_amount": 2400.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2i",
+      "amount": 2400.0,
+      "total_amount": 2400.0
+    }
+  },
+  {
+    "boq_code": "2j",
+    "description": "Removal of Wall Panelling",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 207,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 4.0,
+        "item_qty": 24.0,
+        "resource_rate": 100.0,
+        "amount": 2400.0,
+        "total_qty": 24.0,
+        "total_amount": 2400.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2j",
+      "amount": 2400.0,
+      "total_amount": 2400.0
+    }
+  },
+  {
+    "boq_code": "2k",
+    "description": "Removal of Custom-Joinery",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 218,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 2.0,
+        "item_qty": 12.0,
+        "resource_rate": 100.0,
+        "amount": 1200.0,
+        "total_qty": 12.0,
+        "total_amount": 1200.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 2.0,
+        "item_qty": 12.0,
+        "resource_rate": 100.0,
+        "amount": 1200.0,
+        "total_qty": 12.0,
+        "total_amount": 1200.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2k",
+      "amount": 2400.0,
+      "total_amount": 2400.0
+    }
+  },
+  {
+    "boq_code": "2l",
+    "description": "Removal of CCTV",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 230,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MEP-L-004",
+        "description": "IT Technician",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 10.5,
+        "total_amount": 525.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-MEP-L-001",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2l",
+      "amount": 1075.0,
+      "total_amount": 1075.0
+    }
+  },
+  {
+    "boq_code": "2m",
+    "description": "Removal of Flooring",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 242,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-L-002",
+        "description": "Brick Mason",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 10.5,
+        "total_amount": 525.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2m",
+      "amount": 1075.0,
+      "total_amount": 1075.0
+    }
+  },
+  {
+    "boq_code": "2n",
+    "description": "Removal of Ceiling",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 254,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 2.0,
+        "item_qty": 12.0,
+        "resource_rate": 100.0,
+        "amount": 1200.0,
+        "total_qty": 12.0,
+        "total_amount": 1200.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 2.0,
+        "item_qty": 12.0,
+        "resource_rate": 100.0,
+        "amount": 1200.0,
+        "total_qty": 12.0,
+        "total_amount": 1200.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2n",
+      "amount": 2400.0,
+      "total_amount": 2400.0
+    }
+  },
+  {
+    "boq_code": "2o",
+    "description": "Removal of Signages",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 266,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 2.0,
+        "item_qty": 12.0,
+        "resource_rate": 100.0,
+        "amount": 1200.0,
+        "total_qty": 12.0,
+        "total_amount": 1200.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2o",
+      "amount": 1200.0,
+      "total_amount": 1200.0
+    }
+  },
+  {
+    "boq_code": "2p",
+    "description": "Removal of Doors",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 277,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 0.2,
+        "item_qty": 1.2,
+        "resource_rate": 100.0,
+        "amount": 120.0,
+        "total_qty": 1.2,
+        "total_amount": 120.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 0.2,
+        "item_qty": 1.2,
+        "resource_rate": 100.0,
+        "amount": 120.0,
+        "total_qty": 1.2,
+        "total_amount": 120.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2p",
+      "amount": 240.0,
+      "total_amount": 240.0
+    }
+  },
+  {
+    "boq_code": "2q",
+    "description": "Removal of Windows",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 289,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 0.2,
+        "item_qty": 1.2,
+        "resource_rate": 100.0,
+        "amount": 120.0,
+        "total_qty": 1.2,
+        "total_amount": 120.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 0.2,
+        "item_qty": 1.2,
+        "resource_rate": 100.0,
+        "amount": 120.0,
+        "total_qty": 1.2,
+        "total_amount": 120.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2q",
+      "amount": 240.0,
+      "total_amount": 240.0
+    }
+  },
+  {
+    "boq_code": "2r",
+    "description": "Demolition of Glass Partition",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 301,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.05,
+        "item_qty": 1.05,
+        "resource_rate": 50.0,
+        "amount": 52.5,
+        "total_qty": 1.05,
+        "total_amount": 52.5
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "2r",
+      "amount": 52.5,
+      "total_amount": 52.5
+    }
+  },
+  {
+    "boq_code": "6a",
+    "description": "Loose Furniture",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 312,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PS-001",
+        "description": "Loose Furniture",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "6a",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "6b",
+    "description": "MEP Works",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 323,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PS-002",
+        "description": "MEP Works",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "6b",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "6c",
+    "description": "HVAC Works",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 334,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PS-003",
+        "description": "HVAC Works",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "6c",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "6d",
+    "description": "Elevators",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 345,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PS-004",
+        "description": "Elevators",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "6d",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "6e",
+    "description": "IT Systems",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 356,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PS-005",
+        "description": "IT Systems",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "6e",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "6f",
+    "description": "CCTV Systems",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 367,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PS-006",
+        "description": "CCTV Systems",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "6f",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "6g",
+    "description": "Signage Works",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 378,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-MIS-PS-007",
+        "description": "Signage Works",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "L/s",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100000.0,
+        "amount": 100000.0,
+        "total_qty": 1.0,
+        "total_amount": 100000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "6g",
+      "amount": 100000.0,
+      "total_amount": 100000.0
+    }
+  },
+  {
+    "boq_code": "5a",
+    "description": "D1 - Door",
+    "analysis_qty": 20.0,
+    "unit": "Nos",
+    "header_row": 388,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-DR-001",
+        "description": "44mm thick NON FR Solid Door Core",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "board",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.05,
+        "item_qty": 1.05,
+        "resource_rate": 50.0,
+        "amount": 52.5,
+        "total_qty": 21.0,
+        "total_amount": 1050.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-001",
+        "description": "Ash veneer - Q-Cut",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.2,
+        "item_qty": 4.2,
+        "resource_rate": 80.0,
+        "amount": 336.0,
+        "total_qty": 84.0,
+        "total_amount": 6720.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-002",
+        "description": "Balancer Veneer",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.2,
+        "item_qty": 4.2,
+        "resource_rate": 50.0,
+        "amount": 210.0,
+        "total_qty": 84.0,
+        "total_amount": 4200.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-001",
+        "description": "Ash wood - 2\" x 8\" - AD",
+        "factors": [
+          2.5,
+          1.0,
+          8.0,
+          0.8333333333333334,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 2.7777777777777777,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.2777777777777778,
+        "item_qty": 3.0555555555555554,
+        "resource_rate": 50.0,
+        "amount": 152.77777777777777,
+        "total_qty": 61.11111111111111,
+        "total_amount": 3055.555555555555
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 4.0,
+        "item_qty": 24.0,
+        "resource_rate": 100.0,
+        "amount": 2400.0,
+        "total_qty": 480.0,
+        "total_amount": 48000.0
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          10.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 4.0,
+        "item_qty": 24.0,
+        "resource_rate": 100.0,
+        "amount": 2400.0,
+        "total_qty": 480.0,
+        "total_amount": 48000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5a",
+      "amount": 5551.277777777777,
+      "total_amount": 111025.55555555556
+    }
+  },
+  {
+    "boq_code": "5b",
+    "description": "D2 - Door",
+    "analysis_qty": 20.0,
+    "unit": "Nos",
+    "header_row": 404,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-DR-002",
+        "description": "44mm thick NON FR Hollow Door Core",
+        "factors": [
+          1.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 2.0,
+        "unit": "board",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.2,
+        "item_qty": 2.2,
+        "resource_rate": 50.0,
+        "amount": 110.00000000000001,
+        "total_qty": 44.0,
+        "total_amount": 2200.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-003",
+        "description": "Beech veneer - Q-Cut",
+        "factors": [
+          2.0,
+          2.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 8.0,
+        "unit": "sqm",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.8,
+        "item_qty": 8.8,
+        "resource_rate": 50.0,
+        "amount": 440.00000000000006,
+        "total_qty": 176.0,
+        "total_amount": 8800.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-002",
+        "description": "Balancer Veneer",
+        "factors": [
+          2.0,
+          2.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 8.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.4,
+        "item_qty": 8.4,
+        "resource_rate": 50.0,
+        "amount": 420.0,
+        "total_qty": 168.0,
+        "total_amount": 8400.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-002",
+        "description": "Beech wood - 2\" x 8\" - KD",
+        "factors": [
+          2.5,
+          2.0,
+          8.0,
+          0.8333333333333334,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 5.555555555555555,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5555555555555556,
+        "item_qty": 6.111111111111111,
+        "resource_rate": 50.0,
+        "amount": 305.55555555555554,
+        "total_qty": 122.22222222222221,
+        "total_amount": 6111.11111111111
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          15.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 30.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 6.0,
+        "item_qty": 36.0,
+        "resource_rate": 100.0,
+        "amount": 3600.0,
+        "total_qty": 720.0,
+        "total_amount": 72000.0
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          15.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 30.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 6.0,
+        "item_qty": 36.0,
+        "resource_rate": 100.0,
+        "amount": 3600.0,
+        "total_qty": 720.0,
+        "total_amount": 72000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5b",
+      "amount": 8475.555555555555,
+      "total_amount": 169511.11111111112
+    }
+  },
+  {
+    "boq_code": "5c",
+    "description": "D3 - Door",
+    "analysis_qty": 5.0,
+    "unit": "Nos",
+    "header_row": 420,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-DR-001",
+        "description": "44mm thick NON FR Solid Door Core",
+        "factors": [
+          1.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 2.0,
+        "unit": "board",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.1,
+        "item_qty": 2.1,
+        "resource_rate": 50.0,
+        "amount": 105.0,
+        "total_qty": 10.5,
+        "total_amount": 525.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-003",
+        "description": "Beech veneer - Q-Cut",
+        "factors": [
+          2.0,
+          2.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 8.0,
+        "unit": "sqm",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.8,
+        "item_qty": 8.8,
+        "resource_rate": 50.0,
+        "amount": 440.00000000000006,
+        "total_qty": 44.0,
+        "total_amount": 2200.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-001",
+        "description": "Ash veneer - Q-Cut",
+        "factors": [
+          2.0,
+          2.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 8.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.4,
+        "item_qty": 8.4,
+        "resource_rate": 80.0,
+        "amount": 672.0,
+        "total_qty": 42.0,
+        "total_amount": 3360.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-002",
+        "description": "Beech wood - 2\" x 8\" - KD",
+        "factors": [
+          2.5,
+          2.0,
+          8.0,
+          0.8333333333333334,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 5.555555555555555,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5555555555555556,
+        "item_qty": 6.111111111111111,
+        "resource_rate": 50.0,
+        "amount": 305.55555555555554,
+        "total_qty": 30.555555555555554,
+        "total_amount": 1527.7777777777776
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-001",
+        "description": "Ash wood - 2\" x 8\" - AD",
+        "factors": [
+          2.5,
+          2.0,
+          8.0,
+          0.8333333333333334,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 5.555555555555555,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5555555555555556,
+        "item_qty": 6.111111111111111,
+        "resource_rate": 50.0,
+        "amount": 305.55555555555554,
+        "total_qty": 30.555555555555554,
+        "total_amount": 1527.7777777777776
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          15.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 30.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 6.0,
+        "item_qty": 36.0,
+        "resource_rate": 100.0,
+        "amount": 3600.0,
+        "total_qty": 180.0,
+        "total_amount": 18000.0
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          15.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 30.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 6.0,
+        "item_qty": 36.0,
+        "resource_rate": 100.0,
+        "amount": 3600.0,
+        "total_qty": 180.0,
+        "total_amount": 18000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5c",
+      "amount": 9028.111111111111,
+      "total_amount": 45140.555555555555
+    }
+  },
+  {
+    "boq_code": "5d",
+    "description": "D4 - Door",
+    "analysis_qty": 5.0,
+    "unit": "Nos",
+    "header_row": 437,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-DR-003",
+        "description": "54mm thick 60mins FR Door Core",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "board",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.1,
+        "item_qty": 1.1,
+        "resource_rate": 50.0,
+        "amount": 55.00000000000001,
+        "total_qty": 5.5,
+        "total_amount": 275.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-003",
+        "description": "Beech veneer - Q-Cut",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "sqm",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.4,
+        "item_qty": 4.4,
+        "resource_rate": 50.0,
+        "amount": 220.00000000000003,
+        "total_qty": 22.0,
+        "total_amount": 1100.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-001",
+        "description": "Ash veneer - Q-Cut",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.2,
+        "item_qty": 4.2,
+        "resource_rate": 80.0,
+        "amount": 336.0,
+        "total_qty": 21.0,
+        "total_amount": 1680.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-002",
+        "description": "Beech wood - 2\" x 8\" - KD",
+        "factors": [
+          2.5,
+          1.0,
+          8.0,
+          1.0,
+          0.25,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5,
+        "item_qty": 5.5,
+        "resource_rate": 50.0,
+        "amount": 275.0,
+        "total_qty": 27.5,
+        "total_amount": 1375.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-001",
+        "description": "Ash wood - 2\" x 8\" - AD",
+        "factors": [
+          2.5,
+          1.0,
+          8.0,
+          0.8333333333333334,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 2.7777777777777777,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.2777777777777778,
+        "item_qty": 3.0555555555555554,
+        "resource_rate": 50.0,
+        "amount": 152.77777777777777,
+        "total_qty": 15.277777777777777,
+        "total_amount": 763.8888888888888
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 4.0,
+        "item_qty": 24.0,
+        "resource_rate": 100.0,
+        "amount": 2400.0,
+        "total_qty": 120.0,
+        "total_amount": 12000.0
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          10.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 4.0,
+        "item_qty": 24.0,
+        "resource_rate": 100.0,
+        "amount": 2400.0,
+        "total_qty": 120.0,
+        "total_amount": 12000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5d",
+      "amount": 5838.777777777777,
+      "total_amount": 29193.88888888889
+    }
+  },
+  {
+    "boq_code": "5e",
+    "description": "D5 - Door",
+    "analysis_qty": 10.0,
+    "unit": "Nos",
+    "header_row": 454,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-DR-004",
+        "description": "64mm thick 120mins FR Door Core",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "board",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.1,
+        "item_qty": 1.1,
+        "resource_rate": 50.0,
+        "amount": 55.00000000000001,
+        "total_qty": 11.0,
+        "total_amount": 550.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-001",
+        "description": "Ash veneer - Q-Cut",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.2,
+        "item_qty": 4.2,
+        "resource_rate": 80.0,
+        "amount": 336.0,
+        "total_qty": 42.0,
+        "total_amount": 3360.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-WD-001",
+        "description": "Ash wood - 2\" x 8\" - AD",
+        "factors": [
+          2.5,
+          1.0,
+          8.0,
+          0.8333333333333334,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 2.7777777777777777,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.2777777777777778,
+        "item_qty": 3.0555555555555554,
+        "resource_rate": 50.0,
+        "amount": 152.77777777777777,
+        "total_qty": 30.555555555555554,
+        "total_amount": 1527.7777777777776
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          10.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 4.0,
+        "item_qty": 24.0,
+        "resource_rate": 100.0,
+        "amount": 2400.0,
+        "total_qty": 240.0,
+        "total_amount": 24000.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          10.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 4.0,
+        "item_qty": 24.0,
+        "resource_rate": 100.0,
+        "amount": 2400.0,
+        "total_qty": 240.0,
+        "total_amount": 24000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5e",
+      "amount": 5343.777777777777,
+      "total_amount": 53437.77777777778
+    }
+  },
+  {
+    "boq_code": "5f",
+    "description": "Wall Panelling A",
+    "analysis_qty": 160.0,
+    "unit": "sqm",
+    "header_row": 469,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-BRD-001",
+        "description": "18mm MDF - Normal",
+        "factors": [
+          1.0,
+          1.0,
+          0.8333333333333334,
+          1.0,
+          0.4166666666666667,
+          1.0
+        ],
+        "qty": 0.34722222222222227,
+        "unit": "board",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.017361111111111115,
+        "item_qty": 0.36458333333333337,
+        "resource_rate": 50.0,
+        "amount": 18.229166666666668,
+        "total_qty": 58.33333333333334,
+        "total_amount": 2916.666666666667
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-001",
+        "description": "Ash veneer - Q-Cut",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 2.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.1,
+        "item_qty": 2.1,
+        "resource_rate": 80.0,
+        "amount": 168.0,
+        "total_qty": 336.0,
+        "total_amount": 26880.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-002",
+        "description": "Balancer Veneer",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 2.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.1,
+        "item_qty": 2.1,
+        "resource_rate": 50.0,
+        "amount": 105.0,
+        "total_qty": 336.0,
+        "total_amount": 16800.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-001",
+        "description": "Ash wood - 2\" x 8\" - AD",
+        "factors": [
+          4.0,
+          1.0,
+          1.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.013888888888888888,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.001388888888888889,
+        "item_qty": 0.015277777777777777,
+        "resource_rate": 50.0,
+        "amount": 0.7638888888888888,
+        "total_qty": 2.444444444444444,
+        "total_amount": 122.22222222222221
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          4.0,
+          1.0,
+          1.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 0.1111111111111111,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.011111111111111112,
+        "item_qty": 0.12222222222222222,
+        "resource_rate": 80.0,
+        "amount": 9.777777777777777,
+        "total_qty": 19.555555555555554,
+        "total_amount": 1564.4444444444443
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          4.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 8.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 1.6,
+        "item_qty": 9.6,
+        "resource_rate": 100.0,
+        "amount": 960.0,
+        "total_qty": 1536.0,
+        "total_amount": 153600.0
+      },
+      {
+        "sl": 7.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          4.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 8.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 1.6,
+        "item_qty": 9.6,
+        "resource_rate": 100.0,
+        "amount": 960.0,
+        "total_qty": 1536.0,
+        "total_amount": 153600.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5f",
+      "amount": 2221.770833333333,
+      "total_amount": 355483.3333333334
+    }
+  },
+  {
+    "boq_code": "5g",
+    "description": "Wall Panelling B",
+    "analysis_qty": 80.0,
+    "unit": "sqm",
+    "header_row": 486,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-BRD-001",
+        "description": "18mm MDF - Normal",
+        "factors": [
+          1.0,
+          2.0,
+          0.8333333333333334,
+          1.0,
+          0.4166666666666667,
+          1.0
+        ],
+        "qty": 0.6944444444444445,
+        "unit": "board",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.03472222222222223,
+        "item_qty": 0.7291666666666667,
+        "resource_rate": 50.0,
+        "amount": 36.458333333333336,
+        "total_qty": 58.33333333333334,
+        "total_amount": 2916.666666666667
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-003",
+        "description": "Beech veneer - Q-Cut",
+        "factors": [
+          2.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "sqm",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.4,
+        "item_qty": 4.4,
+        "resource_rate": 50.0,
+        "amount": 220.00000000000003,
+        "total_qty": 352.0,
+        "total_amount": 17600.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-002",
+        "description": "Balancer Veneer",
+        "factors": [
+          2.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.2,
+        "item_qty": 4.2,
+        "resource_rate": 50.0,
+        "amount": 210.0,
+        "total_qty": 336.0,
+        "total_amount": 16800.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-002",
+        "description": "Beech wood - 2\" x 8\" - KD",
+        "factors": [
+          4.0,
+          2.0,
+          1.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.027777777777777776,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.002777777777777778,
+        "item_qty": 0.030555555555555555,
+        "resource_rate": 50.0,
+        "amount": 1.5277777777777777,
+        "total_qty": 2.444444444444444,
+        "total_amount": 122.22222222222221
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          4.0,
+          2.0,
+          1.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 0.2222222222222222,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.022222222222222223,
+        "item_qty": 0.24444444444444444,
+        "resource_rate": 80.0,
+        "amount": 19.555555555555554,
+        "total_qty": 19.555555555555554,
+        "total_amount": 1564.4444444444443
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          6.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 12.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 2.4000000000000004,
+        "item_qty": 14.4,
+        "resource_rate": 100.0,
+        "amount": 1440.0,
+        "total_qty": 1152.0,
+        "total_amount": 115200.0
+      },
+      {
+        "sl": 7.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          6.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 12.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 2.4000000000000004,
+        "item_qty": 14.4,
+        "resource_rate": 100.0,
+        "amount": 1440.0,
+        "total_qty": 1152.0,
+        "total_amount": 115200.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5g",
+      "amount": 3367.541666666667,
+      "total_amount": 269403.3333333334
+    }
+  },
+  {
+    "boq_code": "5h",
+    "description": "Ceiling Panelling",
+    "analysis_qty": 300.0,
+    "unit": "Nos",
+    "header_row": 503,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-BRD-001",
+        "description": "18mm MDF - Normal",
+        "factors": [
+          5.0,
+          1.0,
+          0.8333333333333334,
+          1.0,
+          0.8333333333333334,
+          1.0
+        ],
+        "qty": 3.4722222222222228,
+        "unit": "board",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.17361111111111116,
+        "item_qty": 3.645833333333334,
+        "resource_rate": 50.0,
+        "amount": 182.29166666666669,
+        "total_qty": 1093.7500000000002,
+        "total_amount": 54687.500000000015
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-003",
+        "description": "Beech veneer - Q-Cut",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "sqm",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 50.0,
+        "amount": 550.0,
+        "total_qty": 3300.0,
+        "total_amount": 165000.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-002",
+        "description": "Balancer Veneer",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 3150.0,
+        "total_amount": 157500.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-002",
+        "description": "Beech wood - 2\" x 8\" - KD",
+        "factors": [
+          2.0,
+          5.0,
+          1.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.03472222222222222,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.003472222222222222,
+        "item_qty": 0.03819444444444444,
+        "resource_rate": 50.0,
+        "amount": 1.909722222222222,
+        "total_qty": 11.458333333333332,
+        "total_amount": 572.9166666666666
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-M-WD-002",
+        "description": "Beech wood - 2\" x 8\" - KD",
+        "factors": [
+          2.0,
+          5.0,
+          2.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.06944444444444443,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.006944444444444444,
+        "item_qty": 0.07638888888888888,
+        "resource_rate": 50.0,
+        "amount": 3.819444444444444,
+        "total_qty": 22.916666666666664,
+        "total_amount": 1145.8333333333333
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          8.0,
+          5.0,
+          1.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 1.111111111111111,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.1111111111111111,
+        "item_qty": 1.222222222222222,
+        "resource_rate": 80.0,
+        "amount": 97.77777777777777,
+        "total_qty": 366.66666666666663,
+        "total_amount": 29333.33333333333
+      },
+      {
+        "sl": 7.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          4.0,
+          5.0,
+          2.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 1.111111111111111,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.1111111111111111,
+        "item_qty": 1.222222222222222,
+        "resource_rate": 80.0,
+        "amount": 97.77777777777777,
+        "total_qty": 366.66666666666663,
+        "total_amount": 29333.33333333333
+      },
+      {
+        "sl": 8.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          20.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 40.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 8.0,
+        "item_qty": 48.0,
+        "resource_rate": 100.0,
+        "amount": 4800.0,
+        "total_qty": 14400.0,
+        "total_amount": 1440000.0
+      },
+      {
+        "sl": 9.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          20.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 40.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 8.0,
+        "item_qty": 48.0,
+        "resource_rate": 100.0,
+        "amount": 4800.0,
+        "total_qty": 14400.0,
+        "total_amount": 1440000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5h",
+      "amount": 11058.576388888889,
+      "total_amount": 3317572.9166666665
+    }
+  },
+  {
+    "boq_code": "5i",
+    "description": "Wardrobe A",
+    "analysis_qty": 15.0,
+    "unit": "Nos",
+    "header_row": 522,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-BRD-001",
+        "description": "18mm MDF - Normal",
+        "factors": [
+          2.0,
+          1.0,
+          0.8333333333333334,
+          1.0,
+          0.8333333333333334,
+          1.0
+        ],
+        "qty": 1.388888888888889,
+        "unit": "board",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.06944444444444446,
+        "item_qty": 1.4583333333333335,
+        "resource_rate": 50.0,
+        "amount": 72.91666666666667,
+        "total_qty": 21.875000000000004,
+        "total_amount": 1093.7500000000002
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-003",
+        "description": "Beech veneer - Q-Cut",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "sqm",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.4,
+        "item_qty": 4.4,
+        "resource_rate": 50.0,
+        "amount": 220.00000000000003,
+        "total_qty": 66.0,
+        "total_amount": 3300.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-002",
+        "description": "Balancer Veneer",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.2,
+        "item_qty": 4.2,
+        "resource_rate": 50.0,
+        "amount": 210.0,
+        "total_qty": 63.0,
+        "total_amount": 3150.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-002",
+        "description": "Beech wood - 2\" x 8\" - KD",
+        "factors": [
+          2.0,
+          2.0,
+          1.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.013888888888888888,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.001388888888888889,
+        "item_qty": 0.015277777777777777,
+        "resource_rate": 50.0,
+        "amount": 0.7638888888888888,
+        "total_qty": 0.22916666666666666,
+        "total_amount": 11.458333333333332
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-M-WD-002",
+        "description": "Beech wood - 2\" x 8\" - KD",
+        "factors": [
+          2.0,
+          2.0,
+          2.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.027777777777777776,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.002777777777777778,
+        "item_qty": 0.030555555555555555,
+        "resource_rate": 50.0,
+        "amount": 1.5277777777777777,
+        "total_qty": 0.4583333333333333,
+        "total_amount": 22.916666666666664
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          8.0,
+          2.0,
+          1.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 0.4444444444444444,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.044444444444444446,
+        "item_qty": 0.4888888888888889,
+        "resource_rate": 80.0,
+        "amount": 39.11111111111111,
+        "total_qty": 7.333333333333333,
+        "total_amount": 586.6666666666666
+      },
+      {
+        "sl": 7.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          4.0,
+          2.0,
+          2.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 0.4444444444444444,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.044444444444444446,
+        "item_qty": 0.4888888888888889,
+        "resource_rate": 80.0,
+        "amount": 39.11111111111111,
+        "total_qty": 7.333333333333333,
+        "total_amount": 586.6666666666666
+      },
+      {
+        "sl": 8.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          20.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 40.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 8.0,
+        "item_qty": 48.0,
+        "resource_rate": 100.0,
+        "amount": 4800.0,
+        "total_qty": 720.0,
+        "total_amount": 72000.0
+      },
+      {
+        "sl": 9.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          20.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 40.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 8.0,
+        "item_qty": 48.0,
+        "resource_rate": 100.0,
+        "amount": 4800.0,
+        "total_qty": 720.0,
+        "total_amount": 72000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5i",
+      "amount": 10183.430555555555,
+      "total_amount": 152751.4583333333
+    }
+  },
+  {
+    "boq_code": "5j",
+    "description": "Wardrobe B",
+    "analysis_qty": 15.0,
+    "unit": "Nos",
+    "header_row": 541,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-BRD-001",
+        "description": "18mm MDF - Normal",
+        "factors": [
+          2.5,
+          1.0,
+          0.8333333333333334,
+          1.0,
+          0.8333333333333334,
+          1.0
+        ],
+        "qty": 1.7361111111111114,
+        "unit": "board",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.08680555555555558,
+        "item_qty": 1.822916666666667,
+        "resource_rate": 50.0,
+        "amount": 91.14583333333334,
+        "total_qty": 27.343750000000004,
+        "total_amount": 1367.1875000000002
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-VNR-001",
+        "description": "Ash veneer - Q-Cut",
+        "factors": [
+          2.5,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 80.0,
+        "amount": 420.0,
+        "total_qty": 78.75,
+        "total_amount": 6300.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-002",
+        "description": "Balancer Veneer",
+        "factors": [
+          2.5,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 78.75,
+        "total_amount": 3937.5
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-WD-001",
+        "description": "Ash wood - 2\" x 8\" - AD",
+        "factors": [
+          2.0,
+          2.5,
+          1.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.01736111111111111,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.001736111111111111,
+        "item_qty": 0.01909722222222222,
+        "resource_rate": 50.0,
+        "amount": 0.954861111111111,
+        "total_qty": 0.2864583333333333,
+        "total_amount": 14.322916666666666
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-M-WD-001",
+        "description": "Ash wood - 2\" x 8\" - AD",
+        "factors": [
+          2.0,
+          2.5,
+          2.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.03472222222222222,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.003472222222222222,
+        "item_qty": 0.03819444444444444,
+        "resource_rate": 50.0,
+        "amount": 1.909722222222222,
+        "total_qty": 0.5729166666666666,
+        "total_amount": 28.645833333333332
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          8.0,
+          2.5,
+          1.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 0.5555555555555555,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.05555555555555555,
+        "item_qty": 0.611111111111111,
+        "resource_rate": 80.0,
+        "amount": 48.888888888888886,
+        "total_qty": 9.166666666666666,
+        "total_amount": 733.3333333333333
+      },
+      {
+        "sl": 7.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          4.0,
+          2.5,
+          2.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 0.5555555555555555,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.05555555555555555,
+        "item_qty": 0.611111111111111,
+        "resource_rate": 80.0,
+        "amount": 48.888888888888886,
+        "total_qty": 9.166666666666666,
+        "total_amount": 733.3333333333333
+      },
+      {
+        "sl": 8.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          25.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 50.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 10.0,
+        "item_qty": 60.0,
+        "resource_rate": 100.0,
+        "amount": 6000.0,
+        "total_qty": 900.0,
+        "total_amount": 90000.0
+      },
+      {
+        "sl": 9.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          25.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 50.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 10.0,
+        "item_qty": 60.0,
+        "resource_rate": 100.0,
+        "amount": 6000.0,
+        "total_qty": 900.0,
+        "total_amount": 90000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5j",
+      "amount": 12874.288194444445,
+      "total_amount": 193114.3229166667
+    }
+  },
+  {
+    "boq_code": "5k",
+    "description": "Reception Desk",
+    "analysis_qty": 100.0,
+    "unit": "Nos",
+    "header_row": 560,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-ID-M-BRD-002",
+        "description": "18mm MDF - MR Grade",
+        "factors": [
+          5.0,
+          1.0,
+          0.8333333333333334,
+          1.0,
+          0.8333333333333334,
+          1.0
+        ],
+        "qty": 3.4722222222222228,
+        "unit": "board",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.3472222222222223,
+        "item_qty": 3.819444444444445,
+        "resource_rate": 50.0,
+        "amount": 190.97222222222226,
+        "total_qty": 381.9444444444445,
+        "total_amount": 19097.222222222226
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-ID-M-BRD-003",
+        "description": "9mm MDF - MR Grade",
+        "factors": [
+          5.0,
+          1.0,
+          0.8333333333333334,
+          1.0,
+          0.8333333333333334,
+          1.0
+        ],
+        "qty": 3.4722222222222228,
+        "unit": "board",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.17361111111111116,
+        "item_qty": 3.645833333333334,
+        "resource_rate": 50.0,
+        "amount": 182.29166666666669,
+        "total_qty": 364.58333333333337,
+        "total_amount": 18229.166666666668
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-ID-M-VNR-001",
+        "description": "Ash veneer - Q-Cut",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 80.0,
+        "amount": 840.0,
+        "total_qty": 1050.0,
+        "total_amount": 84000.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-ID-M-VNR-002",
+        "description": "Balancer Veneer",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          2.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "sqm",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 1050.0,
+        "total_amount": 52500.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-ID-M-WD-001",
+        "description": "Ash wood - 2\" x 8\" - AD",
+        "factors": [
+          2.0,
+          5.0,
+          1.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.03472222222222222,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.003472222222222222,
+        "item_qty": 0.03819444444444444,
+        "resource_rate": 50.0,
+        "amount": 1.909722222222222,
+        "total_qty": 3.819444444444444,
+        "total_amount": 190.9722222222222
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-ID-M-WD-001",
+        "description": "Ash wood - 2\" x 8\" - AD",
+        "factors": [
+          2.0,
+          5.0,
+          2.0,
+          0.08333333333333333,
+          0.041666666666666664,
+          1.0
+        ],
+        "qty": 0.06944444444444443,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.006944444444444444,
+        "item_qty": 0.07638888888888888,
+        "resource_rate": 50.0,
+        "amount": 3.819444444444444,
+        "total_qty": 7.638888888888888,
+        "total_amount": 381.9444444444444
+      },
+      {
+        "sl": 7.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          8.0,
+          5.0,
+          1.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 1.111111111111111,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.1111111111111111,
+        "item_qty": 1.222222222222222,
+        "resource_rate": 80.0,
+        "amount": 97.77777777777777,
+        "total_qty": 122.22222222222221,
+        "total_amount": 9777.777777777777
+      },
+      {
+        "sl": 8.0,
+        "project_resource_code": "PRJ-ID-M-WD-003",
+        "description": "Meranti wood - 2\" x 8\" - AD",
+        "factors": [
+          4.0,
+          5.0,
+          2.0,
+          0.16666666666666666,
+          0.16666666666666666,
+          1.0
+        ],
+        "qty": 1.111111111111111,
+        "unit": "cft",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.1111111111111111,
+        "item_qty": 1.222222222222222,
+        "resource_rate": 80.0,
+        "amount": 97.77777777777777,
+        "total_qty": 122.22222222222221,
+        "total_amount": 9777.777777777777
+      },
+      {
+        "sl": 9.0,
+        "project_resource_code": "PRJ-ID-L-002",
+        "description": "Helper",
+        "factors": [
+          50.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 100.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 20.0,
+        "item_qty": 120.0,
+        "resource_rate": 100.0,
+        "amount": 12000.0,
+        "total_qty": 12000.0,
+        "total_amount": 1200000.0
+      },
+      {
+        "sl": 10.0,
+        "project_resource_code": "PRJ-ID-L-001",
+        "description": "Carpenter",
+        "factors": [
+          50.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 100.0,
+        "unit": "hr",
+        "wastage_pct": 0.2,
+        "wastage_qty": 20.0,
+        "item_qty": 120.0,
+        "resource_rate": 100.0,
+        "amount": 12000.0,
+        "total_qty": 12000.0,
+        "total_amount": 1200000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "5k",
+      "amount": 25939.54861111111,
+      "total_amount": 2593954.861111111
+    }
+  },
+  {
+    "boq_code": "3a",
+    "description": "M30 Concrete for Columns",
+    "analysis_qty": 1025.0,
+    "unit": "cbm",
+    "header_row": 580,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-001",
+        "description": "Cement OPC 43 Grade",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "bag",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5,
+        "item_qty": 5.5,
+        "resource_rate": 50.0,
+        "amount": 275.0,
+        "total_qty": 5637.5,
+        "total_amount": 281875.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-SND-001",
+        "description": "M-Sand Grade A",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "unit",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.1,
+        "item_qty": 1.1,
+        "resource_rate": 50.0,
+        "amount": 55.00000000000001,
+        "total_qty": 1127.5,
+        "total_amount": 56375.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-001",
+        "description": "Water - Grade A",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "ltr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 10762.5,
+        "total_amount": 538125.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-L-004",
+        "description": "Concrete Mason",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5,
+        "item_qty": 5.5,
+        "resource_rate": 100.0,
+        "amount": 550.0,
+        "total_qty": 5637.5,
+        "total_amount": 563750.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 5381.25,
+        "total_amount": 269062.5
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3a",
+      "amount": 1667.5,
+      "total_amount": 1709187.5
+    }
+  },
+  {
+    "boq_code": "3b",
+    "description": "M30 Concrete for Beams",
+    "analysis_qty": 600.0,
+    "unit": "cbm",
+    "header_row": 595,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-002",
+        "description": "Cement OPC 53 Grade",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "bag",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 3150.0,
+        "total_amount": 157500.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-SND-002",
+        "description": "M-Sand Grade B",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "unit",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.05,
+        "item_qty": 1.05,
+        "resource_rate": 400.0,
+        "amount": 420.0,
+        "total_qty": 630.0,
+        "total_amount": 252000.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-002",
+        "description": "Water - Grade B",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "ltr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.0,
+        "item_qty": 11.0,
+        "resource_rate": 80.0,
+        "amount": 880.0,
+        "total_qty": 6600.0,
+        "total_amount": 528000.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-L-004",
+        "description": "Concrete Mason",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5,
+        "item_qty": 5.5,
+        "resource_rate": 100.0,
+        "amount": 550.0,
+        "total_qty": 3300.0,
+        "total_amount": 330000.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 3150.0,
+        "total_amount": 157500.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3b",
+      "amount": 2375.0,
+      "total_amount": 1425000.0
+    }
+  },
+  {
+    "boq_code": "3c",
+    "description": "M30 Concrete for Slabs",
+    "analysis_qty": 400.0,
+    "unit": "cbm",
+    "header_row": 610,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-002",
+        "description": "Cement OPC 53 Grade",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "bag",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 2100.0,
+        "total_amount": 105000.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-SND-001",
+        "description": "M-Sand Grade A",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "unit",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.1,
+        "item_qty": 1.1,
+        "resource_rate": 50.0,
+        "amount": 55.00000000000001,
+        "total_qty": 440.00000000000006,
+        "total_amount": 22000.000000000004
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-001",
+        "description": "Water - Grade A",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "ltr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 4200.0,
+        "total_amount": 210000.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-L-004",
+        "description": "Concrete Mason",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5,
+        "item_qty": 5.5,
+        "resource_rate": 100.0,
+        "amount": 550.0,
+        "total_qty": 2200.0,
+        "total_amount": 220000.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 2100.0,
+        "total_amount": 105000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3c",
+      "amount": 1655.0,
+      "total_amount": 662000.0
+    }
+  },
+  {
+    "boq_code": "4a",
+    "description": "Column Plastering",
+    "analysis_qty": 6000.0,
+    "unit": "sqm",
+    "header_row": 625,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-001",
+        "description": "Cement OPC 43 Grade",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "bag",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5,
+        "item_qty": 5.5,
+        "resource_rate": 50.0,
+        "amount": 275.0,
+        "total_qty": 33000.0,
+        "total_amount": 1650000.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-SND-003",
+        "description": "P-Sand Grade A",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "unit",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.05,
+        "item_qty": 1.05,
+        "resource_rate": 50.0,
+        "amount": 52.5,
+        "total_qty": 6300.0,
+        "total_amount": 315000.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-001",
+        "description": "Water - Grade A",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "ltr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 63000.0,
+        "total_amount": 3150000.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-L-003",
+        "description": "Plastering Mason",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 31500.0,
+        "total_amount": 1575000.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 31500.0,
+        "total_amount": 1575000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "4a",
+      "amount": 1377.5,
+      "total_amount": 8265000.0
+    }
+  },
+  {
+    "boq_code": "4b",
+    "description": "Beam Plastering",
+    "analysis_qty": 3000.0,
+    "unit": "sqm",
+    "header_row": 640,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-001",
+        "description": "Cement OPC 43 Grade",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "bag",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5,
+        "item_qty": 5.5,
+        "resource_rate": 50.0,
+        "amount": 275.0,
+        "total_qty": 16500.0,
+        "total_amount": 825000.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-SND-003",
+        "description": "P-Sand Grade A",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "unit",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.05,
+        "item_qty": 1.05,
+        "resource_rate": 50.0,
+        "amount": 52.5,
+        "total_qty": 3150.0,
+        "total_amount": 157500.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-001",
+        "description": "Water - Grade A",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "ltr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 31500.0,
+        "total_amount": 1575000.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-L-003",
+        "description": "Plastering Mason",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 15750.0,
+        "total_amount": 787500.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 15750.0,
+        "total_amount": 787500.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "4b",
+      "amount": 1377.5,
+      "total_amount": 4132500.0
+    }
+  },
+  {
+    "boq_code": "4c",
+    "description": "Ceiling Plastering",
+    "analysis_qty": 1500.0,
+    "unit": "sqm",
+    "header_row": 655,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-001",
+        "description": "Cement OPC 43 Grade",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "bag",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.5,
+        "item_qty": 5.5,
+        "resource_rate": 50.0,
+        "amount": 275.0,
+        "total_qty": 8250.0,
+        "total_amount": 412500.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-SND-003",
+        "description": "P-Sand Grade A",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "unit",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.05,
+        "item_qty": 1.05,
+        "resource_rate": 50.0,
+        "amount": 52.5,
+        "total_qty": 1575.0,
+        "total_amount": 78750.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-001",
+        "description": "Water - Grade A",
+        "factors": [
+          10.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 10.0,
+        "unit": "ltr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.5,
+        "item_qty": 10.5,
+        "resource_rate": 50.0,
+        "amount": 525.0,
+        "total_qty": 15750.0,
+        "total_amount": 787500.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-L-003",
+        "description": "Plastering Mason",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 7875.0,
+        "total_amount": 393750.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          5.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 5.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.25,
+        "item_qty": 5.25,
+        "resource_rate": 50.0,
+        "amount": 262.5,
+        "total_qty": 7875.0,
+        "total_amount": 393750.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "4c",
+      "amount": 1377.5,
+      "total_amount": 2066250.0
+    }
+  },
+  {
+    "boq_code": "4d",
+    "description": "Jamb finishing for Doors",
+    "analysis_qty": 75.0,
+    "unit": "sqm",
+    "header_row": 670,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-001",
+        "description": "Cement OPC 43 Grade",
+        "factors": [
+          7.5,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 7.5,
+        "unit": "bag",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.75,
+        "item_qty": 8.25,
+        "resource_rate": 50.0,
+        "amount": 412.5,
+        "total_qty": 618.75,
+        "total_amount": 30937.5
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-SND-003",
+        "description": "P-Sand Grade A",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 2.0,
+        "unit": "unit",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.1,
+        "item_qty": 2.1,
+        "resource_rate": 50.0,
+        "amount": 105.0,
+        "total_qty": 157.5,
+        "total_amount": 7875.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-001",
+        "description": "Water - Grade A",
+        "factors": [
+          20.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "ltr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 1.0,
+        "item_qty": 21.0,
+        "resource_rate": 50.0,
+        "amount": 1050.0,
+        "total_qty": 1575.0,
+        "total_amount": 78750.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-L-003",
+        "description": "Plastering Mason",
+        "factors": [
+          20.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 1.0,
+        "item_qty": 21.0,
+        "resource_rate": 50.0,
+        "amount": 1050.0,
+        "total_qty": 1575.0,
+        "total_amount": 78750.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          20.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 1.0,
+        "item_qty": 21.0,
+        "resource_rate": 50.0,
+        "amount": 1050.0,
+        "total_qty": 1575.0,
+        "total_amount": 78750.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "4d",
+      "amount": 3667.5,
+      "total_amount": 275062.5
+    }
+  },
+  {
+    "boq_code": "4e",
+    "description": "Jamb finishing for Windows",
+    "analysis_qty": 18.0,
+    "unit": "sqm",
+    "header_row": 685,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-001",
+        "description": "Cement OPC 43 Grade",
+        "factors": [
+          7.5,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 7.5,
+        "unit": "bag",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.75,
+        "item_qty": 8.25,
+        "resource_rate": 50.0,
+        "amount": 412.5,
+        "total_qty": 148.5,
+        "total_amount": 7425.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-SND-003",
+        "description": "P-Sand Grade A",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 2.0,
+        "unit": "unit",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.1,
+        "item_qty": 2.1,
+        "resource_rate": 50.0,
+        "amount": 105.0,
+        "total_qty": 37.800000000000004,
+        "total_amount": 1890.0000000000002
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-001",
+        "description": "Water - Grade A",
+        "factors": [
+          20.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "ltr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 1.0,
+        "item_qty": 21.0,
+        "resource_rate": 50.0,
+        "amount": 1050.0,
+        "total_qty": 378.0,
+        "total_amount": 18900.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-L-003",
+        "description": "Plastering Mason",
+        "factors": [
+          20.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 1.0,
+        "item_qty": 21.0,
+        "resource_rate": 50.0,
+        "amount": 1050.0,
+        "total_qty": 378.0,
+        "total_amount": 18900.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          20.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 1.0,
+        "item_qty": 21.0,
+        "resource_rate": 50.0,
+        "amount": 1050.0,
+        "total_qty": 378.0,
+        "total_amount": 18900.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "4e",
+      "amount": 3667.5,
+      "total_amount": 66015.0
+    }
+  },
+  {
+    "boq_code": "3d",
+    "description": "Pre-tensioning works",
+    "analysis_qty": 1.0,
+    "unit": "L/s",
+    "header_row": 700,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-001",
+        "description": "Pre-tensioning works",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 123500.0,
+        "amount": 123500.0,
+        "total_qty": 1.0,
+        "total_amount": 123500.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3d",
+      "amount": 123500.0,
+      "total_amount": 123500.0
+    }
+  },
+  {
+    "boq_code": "3e",
+    "description": "Shuttering for Columns",
+    "analysis_qty": 6850.0,
+    "unit": "sqm",
+    "header_row": 711,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-002",
+        "description": "Shuttering for Columns",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 150.0,
+        "amount": 150.0,
+        "total_qty": 6850.0,
+        "total_amount": 1027500.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3e",
+      "amount": 150.0,
+      "total_amount": 1027500.0
+    }
+  },
+  {
+    "boq_code": "3f",
+    "description": "Shuttering for Beams",
+    "analysis_qty": 1400.0,
+    "unit": "sqm",
+    "header_row": 722,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-003",
+        "description": "Shuttering for Beams",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 180.0,
+        "amount": 180.0,
+        "total_qty": 1400.0,
+        "total_amount": 252000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3f",
+      "amount": 180.0,
+      "total_amount": 252000.0
+    }
+  },
+  {
+    "boq_code": "3g",
+    "description": "Shuttering for Slabs",
+    "analysis_qty": 2000.0,
+    "unit": "sqm",
+    "header_row": 733,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-004",
+        "description": "Shuttering for Slabs",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 190.0,
+        "amount": 190.0,
+        "total_qty": 2000.0,
+        "total_amount": 380000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3g",
+      "amount": 190.0,
+      "total_amount": 380000.0
+    }
+  },
+  {
+    "boq_code": "3h",
+    "description": "Scaffolding for Columns",
+    "analysis_qty": 6850.0,
+    "unit": "sqm",
+    "header_row": 744,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-005",
+        "description": "Scaffolding for Columns",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 80.0,
+        "amount": 80.0,
+        "total_qty": 6850.0,
+        "total_amount": 548000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3h",
+      "amount": 80.0,
+      "total_amount": 548000.0
+    }
+  },
+  {
+    "boq_code": "3i",
+    "description": "Scaffolding for Beams",
+    "analysis_qty": 1400.0,
+    "unit": "sqm",
+    "header_row": 755,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-006",
+        "description": "Scaffolding for Beams",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 50.0,
+        "amount": 50.0,
+        "total_qty": 1400.0,
+        "total_amount": 70000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3i",
+      "amount": 50.0,
+      "total_amount": 70000.0
+    }
+  },
+  {
+    "boq_code": "3j",
+    "description": "Scaffolding for Slabs",
+    "analysis_qty": 2000.0,
+    "unit": "sqm",
+    "header_row": 766,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-007",
+        "description": "Scaffolding for Slabs",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 80.0,
+        "amount": 80.0,
+        "total_qty": 2000.0,
+        "total_amount": 160000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3j",
+      "amount": 80.0,
+      "total_amount": 160000.0
+    }
+  },
+  {
+    "boq_code": "3k",
+    "description": "100mm Gypsum Partitions",
+    "analysis_qty": 680.0,
+    "unit": "sqm",
+    "header_row": 777,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-008",
+        "description": "100mm Gypsum Partitions",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 125.0,
+        "amount": 125.0,
+        "total_qty": 680.0,
+        "total_amount": 85000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3k",
+      "amount": 125.0,
+      "total_amount": 85000.0
+    }
+  },
+  {
+    "boq_code": "3l",
+    "description": "150mm Gypsum Partitions",
+    "analysis_qty": 680.0,
+    "unit": "sqm",
+    "header_row": 788,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-009",
+        "description": "150mm Gypsum Partitions",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 100.0,
+        "amount": 100.0,
+        "total_qty": 680.0,
+        "total_amount": 68000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3l",
+      "amount": 100.0,
+      "total_amount": 68000.0
+    }
+  },
+  {
+    "boq_code": "3m",
+    "description": "200mm Gypsum Partitions",
+    "analysis_qty": 680.0,
+    "unit": "sqm",
+    "header_row": 799,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-010",
+        "description": "200mm Gypsum Partitions",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 50.0,
+        "amount": 50.0,
+        "total_qty": 680.0,
+        "total_amount": 34000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3m",
+      "amount": 50.0,
+      "total_amount": 34000.0
+    }
+  },
+  {
+    "boq_code": "4f",
+    "description": "600x600mm Porcelain Tile Flooring",
+    "analysis_qty": 1500.0,
+    "unit": "sqm",
+    "header_row": 810,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-011",
+        "description": "600x600mm Porcelain Tile Flooring",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 125.0,
+        "amount": 125.0,
+        "total_qty": 1500.0,
+        "total_amount": 187500.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "4f",
+      "amount": 125.0,
+      "total_amount": 187500.0
+    }
+  },
+  {
+    "boq_code": "4g",
+    "description": "Interior Emulsion Paint Finish",
+    "analysis_qty": 3720.0,
+    "unit": "sqm",
+    "header_row": 821,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-012",
+        "description": "Interior Emulsion Paint Finish",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 45.0,
+        "amount": 45.0,
+        "total_qty": 3720.0,
+        "total_amount": 167400.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "4g",
+      "amount": 45.0,
+      "total_amount": 167400.0
+    }
+  },
+  {
+    "boq_code": "4h",
+    "description": "Exerior Emulsion Paint Finish",
+    "analysis_qty": 1560.0,
+    "unit": "sqm",
+    "header_row": 832,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-013",
+        "description": "Exerior Emulsion Paint Finish",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 45.0,
+        "amount": 45.0,
+        "total_qty": 1560.0,
+        "total_amount": 70200.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "4h",
+      "amount": 45.0,
+      "total_amount": 70200.0
+    }
+  },
+  {
+    "boq_code": "4i",
+    "description": "Decorative Texture Plaster Finish",
+    "analysis_qty": 900.0,
+    "unit": "sqm",
+    "header_row": 843,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-014",
+        "description": "Decorative Texture Plaster Finish",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 25.0,
+        "amount": 25.0,
+        "total_qty": 900.0,
+        "total_amount": 22500.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "4i",
+      "amount": 25.0,
+      "total_amount": 22500.0
+    }
+  },
+  {
+    "boq_code": "3n",
+    "description": "100mm Blockwork",
+    "analysis_qty": 1380.0,
+    "unit": "sqm",
+    "header_row": 854,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-BRK-001",
+        "description": "Hollow Block Grade A",
+        "factors": [
+          100.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 100.0,
+        "unit": "nos",
+        "wastage_pct": 0.05,
+        "wastage_qty": 5.0,
+        "item_qty": 105.0,
+        "resource_rate": 50.0,
+        "amount": 5250.0,
+        "total_qty": 144900.0,
+        "total_amount": 7245000.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-001",
+        "description": "Cement OPC 43 Grade",
+        "factors": [
+          7.5,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 7.5,
+        "unit": "bag",
+        "wastage_pct": 0.1,
+        "wastage_qty": 0.75,
+        "item_qty": 8.25,
+        "resource_rate": 50.0,
+        "amount": 412.5,
+        "total_qty": 11385.0,
+        "total_amount": 569250.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-SND-003",
+        "description": "P-Sand Grade A",
+        "factors": [
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 2.0,
+        "unit": "unit",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.1,
+        "item_qty": 2.1,
+        "resource_rate": 50.0,
+        "amount": 105.0,
+        "total_qty": 2898.0,
+        "total_amount": 144900.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-001",
+        "description": "Water - Grade A",
+        "factors": [
+          20.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "ltr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 1.0,
+        "item_qty": 21.0,
+        "resource_rate": 50.0,
+        "amount": 1050.0,
+        "total_qty": 28980.0,
+        "total_amount": 1449000.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-003",
+        "description": "Plastering Mason",
+        "factors": [
+          20.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 1.0,
+        "item_qty": 21.0,
+        "resource_rate": 50.0,
+        "amount": 1050.0,
+        "total_qty": 28980.0,
+        "total_amount": 1449000.0
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          20.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 20.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 1.0,
+        "item_qty": 21.0,
+        "resource_rate": 50.0,
+        "amount": 1050.0,
+        "total_qty": 28980.0,
+        "total_amount": 1449000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3n",
+      "amount": 8917.5,
+      "total_amount": 12306150.0
+    }
+  },
+  {
+    "boq_code": "3o",
+    "description": "200mm Blockwork",
+    "analysis_qty": 1380.0,
+    "unit": "sqm",
+    "header_row": 870,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-CIV-M-BRK-002",
+        "description": "Solid Block Grade A",
+        "factors": [
+          100.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 200.0,
+        "unit": "nos",
+        "wastage_pct": 0.1,
+        "wastage_qty": 20.0,
+        "item_qty": 220.0,
+        "resource_rate": 50.0,
+        "amount": 11000.0,
+        "total_qty": 303600.0,
+        "total_amount": 15180000.0
+      },
+      {
+        "sl": 2.0,
+        "project_resource_code": "PRJ-CIV-M-CEM-001",
+        "description": "Cement OPC 43 Grade",
+        "factors": [
+          7.5,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 15.0,
+        "unit": "bag",
+        "wastage_pct": 0.1,
+        "wastage_qty": 1.5,
+        "item_qty": 16.5,
+        "resource_rate": 50.0,
+        "amount": 825.0,
+        "total_qty": 22770.0,
+        "total_amount": 1138500.0
+      },
+      {
+        "sl": 3.0,
+        "project_resource_code": "PRJ-CIV-M-SND-003",
+        "description": "P-Sand Grade A",
+        "factors": [
+          2.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 4.0,
+        "unit": "unit",
+        "wastage_pct": 0.05,
+        "wastage_qty": 0.2,
+        "item_qty": 4.2,
+        "resource_rate": 50.0,
+        "amount": 210.0,
+        "total_qty": 5796.0,
+        "total_amount": 289800.0
+      },
+      {
+        "sl": 4.0,
+        "project_resource_code": "PRJ-CIV-M-WTR-001",
+        "description": "Water - Grade A",
+        "factors": [
+          20.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 40.0,
+        "unit": "ltr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 2.0,
+        "item_qty": 42.0,
+        "resource_rate": 50.0,
+        "amount": 2100.0,
+        "total_qty": 57960.0,
+        "total_amount": 2898000.0
+      },
+      {
+        "sl": 5.0,
+        "project_resource_code": "PRJ-CIV-L-003",
+        "description": "Plastering Mason",
+        "factors": [
+          20.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 40.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 2.0,
+        "item_qty": 42.0,
+        "resource_rate": 50.0,
+        "amount": 2100.0,
+        "total_qty": 57960.0,
+        "total_amount": 2898000.0
+      },
+      {
+        "sl": 6.0,
+        "project_resource_code": "PRJ-CIV-L-005",
+        "description": "Helper",
+        "factors": [
+          20.0,
+          2.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 40.0,
+        "unit": "hr",
+        "wastage_pct": 0.05,
+        "wastage_qty": 2.0,
+        "item_qty": 42.0,
+        "resource_rate": 50.0,
+        "amount": 2100.0,
+        "total_qty": 57960.0,
+        "total_amount": 2898000.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3o",
+      "amount": 18335.0,
+      "total_amount": 25302300.0
+    }
+  },
+  {
+    "boq_code": "3p",
+    "description": "Gypsum False Ceiling",
+    "analysis_qty": 300.0,
+    "unit": "sqm",
+    "header_row": 886,
+    "lines": [
+      {
+        "sl": 1.0,
+        "project_resource_code": "PRJ-SUB-015",
+        "description": "Gypsum False Ceiling",
+        "factors": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "qty": 1.0,
+        "unit": "Cost",
+        "wastage_pct": 0.0,
+        "wastage_qty": 0.0,
+        "item_qty": 1.0,
+        "resource_rate": 125.0,
+        "amount": 125.0,
+        "total_qty": 300.0,
+        "total_amount": 37500.0
+      }
+    ],
+    "item_total_cost": {
+      "boq_code": "3p",
+      "amount": 125.0,
+      "total_amount": 37500.0
+    }
+  }
+]

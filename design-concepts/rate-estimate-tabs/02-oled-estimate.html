@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept 02 · OLED Terminal — Estimate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:1440px; height:900px; overflow:hidden; background:#000; color:#E8EDF2; font:12px/1.35 "Fira Code", ui-monospace, monospace; }
+    .app { display:grid; grid-template-columns:72px 1fr; height:900px; }
+    .rail { background:#000; border-right:1px solid #1A1A1A; display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:6px; }
+    .mark { width:36px; height:36px; border:1px solid #F59E0B; color:#F59E0B; display:grid; place-items:center; font:14px "Share Tech Mono"; }
+    .ri { width:56px; height:52px; border:0; background:transparent; color:#6B7280; font:9px/1.2 "Share Tech Mono"; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; }
+    .ri.on { color:#F59E0B; background:#121212; box-shadow:inset 2px 0 0 #F59E0B; }
+    .stage { display:grid; grid-template-rows:48px 40px 1fr 36px; min-width:0; }
+    header { display:flex; align-items:center; gap:16px; padding:0 16px; border-bottom:1px solid #1A1A1A; background:#0A0A0A; }
+    .hud { font-family:"Share Tech Mono"; color:#F59E0B; letter-spacing:.16em; font-size:11px; }
+    .dim { color:#6B7280; }
+    .sp { flex:1; }
+    .gold { background:#F59E0B; color:#000; border:0; height:28px; padding:0 12px; font-weight:600; cursor:pointer; }
+    .bar { display:flex; gap:8px; align-items:center; padding:0 12px; border-bottom:1px solid #1A1A1A; background:#050505; }
+    .bar button { background:#121212; color:#E8EDF2; border:1px solid #222; height:26px; padding:0 10px; cursor:pointer; }
+    input.filter { background:#000; border:1px solid #222; color:#E8EDF2; height:26px; padding:0 8px; width:220px; }
+    .wrap { overflow:auto; }
+    table { width:100%; border-collapse:collapse; }
+    th { position:sticky; top:0; background:#121212; color:#94A3B8; font-weight:500; font-size:10px; letter-spacing:.08em; text-transform:uppercase; text-align:left; padding:8px 10px; border-bottom:1px solid #222; }
+    td { padding:6px 10px; border-bottom:1px solid #141414; font-variant-numeric:tabular-nums; }
+    .num { text-align:right; }
+    tr.sec td { color:#F59E0B; background:#0A0A0A; letter-spacing:.1em; text-transform:uppercase; font-size:10px; }
+    tr.on td { background:#1A1408; outline:1px solid #F59E0B; }
+    tr.diff td:nth-child(5) { color:#F87171; }
+    .ok { color:#34D399; }
+    .warn { color:#FBBF24; }
+    footer { display:flex; gap:24px; align-items:center; padding:0 16px; background:#0A0A0A; border-top:1px solid #1A1A1A; font-size:11px; }
+    footer b { color:#F59E0B; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail">
+      <div class="mark">A</div>
+      <button class="ri" type="button">Dash</button>
+      <button class="ri" type="button">Src</button>
+      <button class="ri" type="button">QTO</button>
+      <button class="ri on" type="button">Est</button>
+      <button class="ri" type="button">Rate</button>
+      <button class="ri" type="button">Buy</button>
+      <button class="ri" type="button">Out</button>
+    </aside>
+    <div class="stage">
+      <header>
+        <span class="hud">AEROLITH // ESTIMATE</span>
+        <span class="dim">AL WASL TOWER / PKG-B / R12</span>
+        <span class="sp"></span>
+        <span class="dim">Concept 02 · OLED Terminal</span>
+        <button class="gold" type="button">SAVE .AERO</button>
+      </header>
+      <div class="bar">
+        <button type="button">+ ITEM</button>
+        <button type="button">+ SECTION</button>
+        <button type="button">+ COL</button>
+        <input class="filter" placeholder="FILTER /" />
+        <span class="dim">LOCKED CLIENT BOQ</span>
+      </div>
+      <div class="wrap">
+        <table>
+          <thead>
+            <tr><th>Code</th><th>Description</th><th class="num">Client</th><th class="num">Our</th><th>Unit</th><th class="num">Cost</th><th class="num">Rate</th><th class="num">Amount</th><th>Flag</th></tr>
+          </thead>
+          <tbody>
+            <tr class="sec"><td>3</td><td colspan="8">Concrete works</td></tr>
+            <tr><td>3.1.02</td><td>RC foundations</td><td class="num">240.00</td><td class="num">240.00</td><td>m³</td><td class="num">412.00</td><td class="num">473.80</td><td class="num">113,712.00</td><td class="ok">OK</td></tr>
+            <tr class="on"><td>3.2.14</td><td>Cast in-situ RC walls 30 cm</td><td class="num">510.00</td><td class="num">486.40</td><td>m²</td><td class="num">218.40</td><td class="num">251.16</td><td class="num">122,164.22</td><td class="warn">Δ QTY</td></tr>
+            <tr><td>3.3.08</td><td>Suspended slabs 250 mm</td><td class="num">1,840.00</td><td class="num">1,840.00</td><td>m²</td><td class="num">196.25</td><td class="num">225.69</td><td class="num">415,269.60</td><td class="ok">OK</td></tr>
+            <tr class="sec"><td>4</td><td colspan="8">Masonry</td></tr>
+            <tr><td>4.1.05</td><td>Blockwork 200 mm</td><td class="num">920.00</td><td class="num">934.50</td><td>m²</td><td class="num">62.10</td><td class="num">71.42</td><td class="num">66,741.99</td><td class="warn">Δ QTY</td></tr>
+            <tr><td>4.2.11</td><td>Plaster internal</td><td class="num">1,280.00</td><td class="num">1,280.00</td><td>m²</td><td class="num">18.40</td><td class="num">21.16</td><td class="num">27,084.80</td><td></td></tr>
+            <tr><td>4.3.02</td><td>Plaster external</td><td class="num">640.00</td><td class="num">0.00</td><td>m²</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">0.00</td><td style="color:#F87171">UNPRICED</td></tr>
+            <tr class="sec"><td>5</td><td colspan="8">Finishes</td></tr>
+            <tr><td>5.1.09</td><td>Ceramic floor tiles 600×600</td><td class="num">1,120.00</td><td class="num">1,118.00</td><td>m²</td><td class="num">84.50</td><td class="num">97.18</td><td class="num">108,647.24</td><td class="ok">Q</td></tr>
+            <tr><td>5.2.04</td><td>Emulsion paint 2 coats</td><td class="num">2,400.00</td><td class="num">2,400.00</td><td>m²</td><td class="num">9.80</td><td class="num">11.27</td><td class="num">27,048.00</td><td class="ok">OK</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <footer>
+        <span>ITEMS <b>48</b></span>
+        <span>UNPRICED <b>3</b></span>
+        <span>COST <b>AED 1,842,910.44</b></span>
+        <span>MARGIN <b>15.00%</b></span>
+        <span>TOTAL <b>AED 2,119,346.99</b></span>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

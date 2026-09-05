@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept 05 · Editorial Ledger — Rate Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:1440px; height:900px; overflow:hidden; background:#F4F0E6; color:#1A1814; font:15px/1.45 Newsreader, Georgia, serif; }
+    .page { height:900px; display:grid; grid-template-rows:auto 1fr; padding:22px 36px 28px; }
+    .mast { display:grid; grid-template-columns:1fr auto 1fr; align-items:end; border-bottom:3px solid #1A1814; padding-bottom:10px; }
+    .mast .kicker { font-family:Inter,sans-serif; font-size:10px; letter-spacing:.22em; text-transform:uppercase; }
+    .mast h1 { font-family:Fraunces, serif; font-size:34px; margin:4px 0 0; font-weight:500; letter-spacing:-.03em; }
+    .mast .mid { text-align:center; font-family:Inter,sans-serif; font-size:10px; letter-spacing:.18em; text-transform:uppercase; }
+    .mast .right { text-align:right; font-size:13px; }
+    nav { display:flex; gap:22px; border-bottom:1px solid #1A1814; padding:8px 0 10px; font-family:Inter,sans-serif; font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+    nav span { opacity:.45; }
+    nav .on { opacity:1; border-bottom:2px solid #1A1814; padding-bottom:6px; }
+    .grid { display:grid; grid-template-columns: 280px 1fr; gap:28px; padding-top:18px; min-height:0; }
+    .folio h2 { font-family:Fraunces,serif; font-size:28px; line-height:1.15; margin:0 0 8px; font-weight:500; }
+    .drop { float:left; font-family:Fraunces,serif; font-size:56px; line-height:.8; padding-right:8px; }
+    .meta { clear:both; margin-top:16px; border-top:1px solid #1A1814; padding-top:12px; }
+    .meta div { display:flex; justify-content:space-between; border-bottom:1px dotted #1A1814; padding:6px 0; }
+    .quote { font-style:italic; font-size:18px; margin:18px 0 0; }
+    table { width:100%; border-collapse:collapse; font-size:13.5px; }
+    caption { text-align:left; font-family:Inter,sans-serif; font-size:10px; letter-spacing:.16em; text-transform:uppercase; padding-bottom:8px; }
+    th { font-family:Inter,sans-serif; font-size:10px; letter-spacing:.1em; text-transform:uppercase; text-align:left; border-bottom:2px solid #1A1814; padding:6px 8px; }
+    td { padding:7px 8px; border-bottom:1px solid #D4CBB8; font-variant-numeric:tabular-nums; }
+    .num { text-align:right; font-family:Inter,sans-serif; font-size:12.5px; }
+    tr.pick td { background:#EDE6D4; }
+    .rule { height:8px; background:#1A1814; margin:0 0 10px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div>
+      <div class="mast">
+        <div>
+          <div class="kicker">Aerolith Core · Rate Analysis</div>
+          <h1>The Wall Sheet</h1>
+        </div>
+        <div class="mid">Al Wasl Tower<br/>Package B · Revision 12<br/>Concept 05 · Editorial</div>
+        <div class="right">Tuesday 1 Sep 2026<br/>AED · 15% margin<br/><strong>Save .aero</strong></div>
+      </div>
+      <nav>
+        <span>Dashboard</span><span>Source</span><span>Take-off</span><span>Estimate</span>
+        <span class="on">Rate analysis</span><span>Buy</span><span>Submit</span>
+      </nav>
+    </div>
+    <div class="grid">
+      <aside class="folio">
+        <div class="rule"></div>
+        <h2>Cast in-situ RC walls, thirty centimetres.</h2>
+        <p><span class="drop">I</span>tem 3.2.14 is priced from own resources plus a live include from foundations. Client quantity 510 m²; take-off 486.40 m².</p>
+        <p class="quote">“Rate is cost plus margin. Analysis stays cost-only.”</p>
+        <div class="meta">
+          <div><span>Take-off</span><b>486.40 m²</b></div>
+          <div><span>Unit cost</span><b>218.40</b></div>
+          <div><span>Rate</span><b>251.16</b></div>
+          <div><span>Amount</span><b>122,164.22</b></div>
+        </div>
+      </aside>
+      <div>
+        <table>
+          <caption>Schedule of resources — per m² of wall</caption>
+          <thead>
+            <tr><th>Resource</th><th class="num">Qty</th><th class="num">Waste</th><th>Unit</th><th class="num">Rate</th><th class="num">Amount</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cement OPC 42.5</td><td class="num">0.112</td><td class="num">2%</td><td>tonne</td><td class="num">285.00</td><td class="num">32.60</td></tr>
+            <tr class="pick"><td>10 mm aggregate</td><td class="num">0.840</td><td class="num">5%</td><td>m³</td><td class="num">48.00</td><td class="num">42.34</td></tr>
+            <tr><td>Wadi sand</td><td class="num">0.420</td><td class="num">5%</td><td>m³</td><td class="num">36.00</td><td class="num">15.88</td></tr>
+            <tr><td>TMT 12 mm</td><td class="num">8.40</td><td class="num">3%</td><td>kg</td><td class="num">3.15</td><td class="num">27.25</td></tr>
+            <tr><td>Formwork plywood</td><td class="num">2.10</td><td class="num">8%</td><td>m²</td><td class="num">22.50</td><td class="num">51.03</td></tr>
+            <tr><td>Mason</td><td class="num">0.18</td><td class="num">0%</td><td>hour</td><td class="num">28.00</td><td class="num">5.04</td></tr>
+            <tr><td>Mixer 7/5</td><td class="num">0.06</td><td class="num">0%</td><td>hour</td><td class="num">85.00</td><td class="num">5.10</td></tr>
+            <tr><td colspan="5">Included analysis 3.1.02 (live × 0.35)</td><td class="num">39.16</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

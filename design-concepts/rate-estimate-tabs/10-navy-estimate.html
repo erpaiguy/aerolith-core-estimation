@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept 10 · Navy Split Luxury — Estimate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:1440px; height:900px; overflow:hidden; background:#071525; color:#E8E4D9; font:13px/1.4 Inter, system-ui, sans-serif; }
+    .app { height:900px; display:grid; grid-template-rows:80px 1fr; }
+    header { display:flex; align-items:center; padding:0 28px; gap:24px; border-bottom:1px solid #C4A35A55; }
+    .word { font-family:"Cormorant Garamond", serif; font-size:28px; font-weight:600; letter-spacing:-.02em; color:#F3EFE6; }
+    .word span { color:#C4A35A; }
+    .pills { display:flex; gap:6px; background:#0B1F3A; padding:5px; border:1px solid #1E3A5F; }
+    .pills button { border:0; background:transparent; color:#A8B4C4; height:30px; padding:0 14px; cursor:pointer; }
+    .pills .on { background:#C4A35A; color:#071525; font-weight:600; }
+    .sp { flex:1; }
+    .gold { border:1px solid #C4A35A; background:transparent; color:#C4A35A; height:34px; padding:0 16px; cursor:pointer; letter-spacing:.08em; font-size:11px; text-transform:uppercase; }
+    .split { display:grid; grid-template-columns: 58% 42%; min-height:0; }
+    .list { border-right:1px solid #1E3A5F; display:flex; flex-direction:column; min-width:0; }
+    .tools { display:flex; gap:8px; padding:14px 20px; }
+    .tools button, .tools input { background:#0B1F3A; border:1px solid #1E3A5F; color:#E8E4D9; height:32px; padding:0 10px; }
+    .wrap { overflow:auto; }
+    table { width:100%; border-collapse:collapse; }
+    th { text-align:left; color:#A8B4C4; font-weight:500; font-size:10px; letter-spacing:.12em; text-transform:uppercase; padding:8px 16px; border-bottom:1px solid #1E3A5F; }
+    td { padding:10px 16px; border-bottom:1px solid #12263C; font-variant-numeric:tabular-nums; }
+    .num { text-align:right; font-feature-settings:"tnum"; }
+    tr.sec td { color:#C4A35A; font-family:"Cormorant Garamond", serif; font-size:16px; letter-spacing:.04em; background:#0B1F3A; }
+    tr.on td { background:#C4A35A18; box-shadow:inset 3px 0 0 #C4A35A; }
+    .detail { padding:28px 32px; background:linear-gradient(180deg,#0B1F3A,#071525); }
+    .detail .code { color:#C4A35A; letter-spacing:.16em; font-size:11px; text-transform:uppercase; }
+    .detail h1 { font-family:"Cormorant Garamond", serif; font-size:36px; font-weight:500; margin:8px 0 16px; color:#F3EFE6; }
+    .kv { display:grid; grid-template-columns:1fr 1fr; gap:16px 24px; margin:20px 0 28px; }
+    .kv div { border-top:1px solid #1E3A5F; padding-top:10px; }
+    .kv span { display:block; color:#A8B4C4; font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+    .kv b { font-size:18px; font-weight:500; }
+    .cta { background:#C4A35A; color:#071525; border:0; height:44px; padding:0 22px; font-weight:600; letter-spacing:.04em; cursor:pointer; }
+    .ghost { background:transparent; border:1px solid #1E3A5F; color:#E8E4D9; height:44px; padding:0 18px; cursor:pointer; }
+    .concept { font-size:11px; color:#A8B4C4; letter-spacing:.1em; text-transform:uppercase; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="word">Aerolith <span>Core</span></div>
+      <div class="pills">
+        <button type="button">Source</button>
+        <button type="button">Take-off</button>
+        <button class="on" type="button">Estimate</button>
+        <button type="button">Rates</button>
+        <button type="button">Buy</button>
+      </div>
+      <div class="sp"></div>
+      <span class="concept">Concept 10 · Navy Split</span>
+      <button class="gold" type="button">Save .aero</button>
+    </header>
+    <div class="split">
+      <section class="list">
+        <div class="tools">
+          <button type="button">Add item</button>
+          <button type="button">Add section</button>
+          <input placeholder="Filter items" style="flex:1" />
+        </div>
+        <div class="wrap">
+          <table>
+            <thead><tr><th>Code</th><th>Description</th><th class="num">Our</th><th class="num">Rate</th><th class="num">Amount</th></tr></thead>
+            <tbody>
+              <tr class="sec"><td>03</td><td colspan="4">Concrete</td></tr>
+              <tr><td>3.1.02</td><td>RC foundations</td><td class="num">240 m³</td><td class="num">473.80</td><td class="num">113,712</td></tr>
+              <tr class="on"><td>3.2.14</td><td>Cast in-situ RC walls 30 cm</td><td class="num">486.4 m²</td><td class="num">251.16</td><td class="num">122,164</td></tr>
+              <tr><td>3.3.08</td><td>Suspended slabs 250 mm</td><td class="num">1,840 m²</td><td class="num">225.69</td><td class="num">415,270</td></tr>
+              <tr class="sec"><td>04</td><td colspan="4">Masonry</td></tr>
+              <tr><td>4.1.05</td><td>Blockwork 200 mm</td><td class="num">934.5 m²</td><td class="num">71.42</td><td class="num">66,742</td></tr>
+              <tr><td>4.2.11</td><td>Plaster internal</td><td class="num">1,280 m²</td><td class="num">21.16</td><td class="num">27,085</td></tr>
+              <tr><td>4.3.02</td><td>Plaster external</td><td class="num">—</td><td class="num">—</td><td class="num">Unpriced</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <aside class="detail">
+        <div class="code">Al Wasl Tower · Item 3.2.14</div>
+        <h1>Cast in-situ RC walls, thirty centimetres.</h1>
+        <div class="kv">
+          <div><span>Client qty</span><b>510.00 m²</b></div>
+          <div><span>Our qty</span><b>486.40 m²</b></div>
+          <div><span>Unit cost</span><b>218.40 AED</b></div>
+          <div><span>Selling rate</span><b>251.16 AED</b></div>
+          <div><span>Amount</span><b>122,164.22</b></div>
+          <div><span>Origin</span><b>Own analysis</b></div>
+        </div>
+        <p style="color:#A8B4C4;max-width:36em">Take-off is 23.6 m² under the client bill. Six resource lines plus a live include from foundations. Open Rate analysis to edit factors and wastage.</p>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <button class="cta" type="button">Open rate analysis</button>
+          <button class="ghost" type="button">Delete item</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

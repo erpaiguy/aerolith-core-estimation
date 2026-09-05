@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Aerolith Core — Document-App Feature Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="proposal.css" />
+<style>
+  svg .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+  svg .box.key { stroke: #0891b2; }
+  svg .box.new { fill: #f3e8ff; stroke: #7c3aed; }
+  svg .box.global { fill: #ecfeff; stroke: #0891b2; }
+  svg .box.file { fill: #f8fafc; stroke: #94a3b8; }
+  svg .t { font-family: "Inter", sans-serif; font-size: 13px; fill: #0f172a; font-weight: 600; }
+  svg .t.sm { font-size: 11px; font-weight: 500; fill: #475569; }
+  svg .t.mono { font-family: "IBM Plex Mono", monospace; font-size: 11px; fill: #0e7490; font-weight: 600; }
+  svg .t.hd { font-size: 14px; font-weight: 700; }
+  svg .t.no { fill: #b91c1c; font-weight: 700; }
+  svg .flow { stroke: #0891b2; stroke-width: 1.75; fill: none; marker-end: url(#ah); }
+  svg .flow.back { stroke: #7c3aed; stroke-dasharray: 6 4; marker-end: url(#ahv); }
+  svg .flow.two { marker-start: url(#ahs); }
+  svg .cut { stroke: #b91c1c; stroke-width: 2; stroke-dasharray: 7 5; fill: none; }
+  .phaseboard { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
+  .phase { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .phase header { padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--bg); }
+  .phase header b { display: block; font-size: 14px; }
+  .phase header span { font-size: 11px; color: var(--muted); }
+  .phase ul { margin: 0; padding: 12px 14px 14px 30px; }
+  .phase li { margin-bottom: 6px; }
+  .phase.p1 header { background: #ecfeff; border-bottom-color: #a5f3fc; }
+  .phase.p2 header { background: #f5f3ff; border-bottom-color: #ddd6fe; }
+  .phase.p3 header { background: #f0fdf4; border-bottom-color: #bbf7d0; }
+  .phase.p4 header { background: #fff7ed; border-bottom-color: #fed7aa; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-head">
+    <div class="kicker">Aerolith Core Estimation · Proposal, not built</div>
+    <h1>Making Aerolith behave like a document app for estimating</h1>
+    <p>Excel is trusted because of three things that have nothing to do with formulas: a file you own, an edit loop you can always take back, and a save you can always reopen. Aerolith already has the estimating depth. These are the document-container behaviours it still needs.</p>
+    <p><strong>Hard rule respected throughout:</strong> one <code>.aero</code> file never references another <code>.aero</code> file. Anything shared between jobs travels through the tenant global layer only.</p>
+  </div>
+
+  <!-- ============ DIAGRAM 1 : LIFECYCLE ============ -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Diagram 1 — The .aero document lifecycle</strong><span>purple = proposed</span></div>
+    <div class="artboard diagram" data-shot="diagram-lifecycle">
+      <h2>The file loop: create, edit, review, seal, save, reopen</h2>
+      <p class="sub">Today the loop breaks in two places — there is no way to undo an edit, and nothing survives a crash between saves.</p>
+      <svg width="1376" height="372" viewBox="0 0 1376 372">
+        <defs>
+          <marker id="ah" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#0891b2" />
+          </marker>
+          <marker id="ahv" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#7c3aed" />
+          </marker>
+          <marker id="ahs" markerWidth="9" markerHeight="9" refX="1" refY="4.5" orient="auto-start-reverse">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#0891b2" />
+          </marker>
+        </defs>
+
+        <!-- return arrow above -->
+        <path class="flow back" d="M1208 108 L1208 46 L344 46 L344 104" />
+        <text class="t sm" x="776" y="38" text-anchor="middle" fill="#7c3aed">New revision r(N+1) — unseal and carry on. Prior revision stays inside the file.</text>
+
+        <g>
+          <rect class="box key" x="40" y="108" width="176" height="76" rx="4" />
+          <text class="t" x="128" y="138" text-anchor="middle">New · Open · Import</text>
+          <text class="t sm" x="128" y="158" text-anchor="middle">blank, template, or</text>
+          <text class="t sm" x="128" y="173" text-anchor="middle">client XLSX / PDF</text>
+        </g>
+        <path class="flow" d="M216 146 L250 146" />
+
+        <g>
+          <rect class="box key" x="256" y="108" width="176" height="76" rx="4" />
+          <text class="t" x="344" y="138" text-anchor="middle">Edit</text>
+          <text class="t sm" x="344" y="158" text-anchor="middle">take-off, BOQ, rates,</text>
+          <text class="t sm" x="344" y="173" text-anchor="middle">margins, buying</text>
+        </g>
+        <path class="flow" d="M432 146 L466 146" />
+
+        <g>
+          <rect class="box key" x="472" y="108" width="176" height="76" rx="4" />
+          <text class="t" x="560" y="138" text-anchor="middle">Review</text>
+          <text class="t sm" x="560" y="158" text-anchor="middle">checks, comments,</text>
+          <text class="t sm" x="560" y="173" text-anchor="middle">sign-off</text>
+        </g>
+        <path class="flow" d="M648 146 L682 146" />
+
+        <g>
+          <rect class="box key" x="688" y="108" width="176" height="76" rx="4" />
+          <text class="t" x="776" y="138" text-anchor="middle">Seal revision rN</text>
+          <text class="t sm" x="776" y="158" text-anchor="middle">freeze the numbers</text>
+          <text class="t sm" x="776" y="173" text-anchor="middle">that were submitted</text>
+        </g>
+        <path class="flow" d="M864 146 L898 146" />
+
+        <g>
+          <rect class="box key" x="904" y="108" width="176" height="76" rx="4" />
+          <text class="t" x="992" y="138" text-anchor="middle">Save</text>
+          <text class="t mono" x="992" y="158" text-anchor="middle">job.aero</text>
+          <text class="t sm" x="992" y="175" text-anchor="middle">one self-contained file</text>
+        </g>
+        <path class="flow" d="M1080 146 L1114 146" />
+
+        <g>
+          <rect class="box key" x="1120" y="108" width="176" height="76" rx="4" />
+          <text class="t" x="1208" y="138" text-anchor="middle">Reopen later</text>
+          <text class="t sm" x="1208" y="158" text-anchor="middle">recent list, double-click,</text>
+          <text class="t sm" x="1208" y="173" text-anchor="middle">or shared folder</text>
+        </g>
+
+        <!-- undo/redo under Edit -->
+        <path class="flow two" d="M344 184 L344 246" />
+        <g>
+          <rect class="box new" x="248" y="248" width="192" height="60" rx="4" />
+          <text class="t" x="344" y="272" text-anchor="middle" fill="#7c3aed">Undo / redo stack</text>
+          <text class="t sm" x="344" y="292" text-anchor="middle">named steps, always reversible</text>
+        </g>
+        <text class="t sm" x="356" y="222">every change is a reversible step</text>
+
+        <!-- journal under Edit-right -->
+        <path class="flow two" d="M560 184 L560 246" />
+        <g>
+          <rect class="box new" x="464" y="248" width="192" height="60" rx="4" />
+          <text class="t" x="560" y="272" text-anchor="middle" fill="#7c3aed">Autosave journal</text>
+          <text class="t sm" x="560" y="292" text-anchor="middle">survives an unexpected close</text>
+        </g>
+
+        <!-- revision store under Seal -->
+        <path class="flow two" d="M776 184 L776 246" />
+        <g>
+          <rect class="box new" x="680" y="248" width="192" height="60" rx="4" />
+          <text class="t" x="776" y="272" text-anchor="middle" fill="#7c3aed">Revision history in-file</text>
+          <text class="t sm" x="776" y="292" text-anchor="middle">r1 · r2 · r3, diff any two</text>
+        </g>
+
+        <!-- backups under Save -->
+        <path class="flow two" d="M992 184 L992 246" />
+        <g>
+          <rect class="box new" x="896" y="248" width="192" height="60" rx="4" />
+          <text class="t" x="992" y="272" text-anchor="middle" fill="#7c3aed">Rolling backups</text>
+          <text class="t sm" x="992" y="292" text-anchor="middle">last 10 saves, restore any</text>
+        </g>
+
+        <!-- dirty guard on reopen/close -->
+        <path class="flow two" d="M1208 184 L1208 246" />
+        <g>
+          <rect class="box new" x="1112" y="248" width="192" height="60" rx="4" />
+          <text class="t" x="1208" y="272" text-anchor="middle" fill="#7c3aed">Unsaved-changes guard</text>
+          <text class="t sm" x="1208" y="292" text-anchor="middle">nothing lost on close</text>
+        </g>
+
+        <text class="t sm" x="40" y="344">Today: steps 1, 2, 4, 5, 6 exist. The five purple boxes do not — which is why the file does not yet feel as safe to work in as a spreadsheet.</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ============ DIAGRAM 2 : LINK BOUNDARY ============ -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Diagram 2 — Where linking is allowed</strong><span>the rule that keeps .aero files portable</span></div>
+    <div class="artboard diagram" data-shot="diagram-boundary">
+      <h2>Files never link to files. Everything shared goes through the tenant global layer.</h2>
+      <p class="sub">A job file must stay openable on a laptop that has never seen the other jobs. So a job takes a <em>copy</em> of anything global, stamped with the version it copied.</p>
+      <svg width="1376" height="500" viewBox="0 0 1376 500">
+        <defs>
+          <marker id="ah2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#0891b2" />
+          </marker>
+          <marker id="ah3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#7c3aed" />
+          </marker>
+        </defs>
+
+        <rect class="box global" x="288" y="16" width="800" height="128" rx="4" />
+        <text class="t hd" x="312" y="44" fill="#0e7490">Tenant global layer — declared once, usable by every job</text>
+        <g>
+          <rect class="box" x="312" y="60" width="176" height="64" rx="4" />
+          <text class="t" x="400" y="86" text-anchor="middle">Masters</text>
+          <text class="t sm" x="400" y="105" text-anchor="middle">units, categories, vendors</text>
+        </g>
+        <g>
+          <rect class="box" x="504" y="60" width="176" height="64" rx="4" />
+          <text class="t" x="592" y="86" text-anchor="middle">Price book</text>
+          <text class="t sm" x="592" y="105" text-anchor="middle">resource rates by date</text>
+        </g>
+        <g>
+          <rect class="box new" x="696" y="60" width="176" height="64" rx="4" />
+          <text class="t" x="784" y="86" text-anchor="middle" fill="#7c3aed">Assembly library</text>
+          <text class="t sm" x="784" y="105" text-anchor="middle">reusable rate analyses</text>
+        </g>
+        <g>
+          <rect class="box new" x="888" y="60" width="176" height="64" rx="4" />
+          <text class="t" x="976" y="86" text-anchor="middle" fill="#7c3aed">Templates</text>
+          <text class="t sm" x="976" y="105" text-anchor="middle">job, BOQ, report, margin</text>
+        </g>
+
+        <!-- down arrows -->
+        <path class="flow" d="M470 144 L470 200 L360 200 L360 254" />
+        <text class="t sm" x="300" y="184">copy in at v12</text>
+        <path class="flow" d="M906 144 L906 200 L1016 200 L1016 254" />
+        <text class="t sm" x="960" y="184">copy in at v11 — stale, refresh offered</text>
+        <!-- up arrows -->
+        <path class="flow" style="marker-end:url(#ah3);stroke:#7c3aed;stroke-dasharray:6 4" d="M290 254 L290 200 L410 200 L410 146" />
+        <text class="t sm" x="180" y="230" fill="#7c3aed">promote up (needs approval)</text>
+
+        <!-- file A -->
+        <rect class="box file" x="140" y="256" width="440" height="200" rx="4" />
+        <text class="t hd" x="164" y="284">Riyadh Tower — Fit-out.aero</text>
+        <text class="t mono" x="164" y="304">catalog v12 · r3 sealed · 4 revisions inside</text>
+        <g>
+          <rect class="box" x="164" y="318" width="184" height="52" rx="4" />
+          <text class="t sm" x="256" y="340" text-anchor="middle">Client BOQ · Take-off</text>
+          <text class="t sm" x="256" y="358" text-anchor="middle">Working BOQ · Rates</text>
+        </g>
+        <g>
+          <rect class="box" x="364" y="318" width="192" height="52" rx="4" />
+          <text class="t sm" x="460" y="340" text-anchor="middle">Its own copy of masters,</text>
+          <text class="t sm" x="460" y="358" text-anchor="middle">prices, assemblies used</text>
+        </g>
+        <g>
+          <rect class="box new" x="164" y="382" width="392" height="52" rx="4" />
+          <text class="t sm" x="360" y="404" text-anchor="middle" fill="#7c3aed">Attachments, comments, revisions, scenarios — all in this file</text>
+          <text class="t sm" x="360" y="422" text-anchor="middle">hand it to anyone, it opens complete</text>
+        </g>
+
+        <!-- file B -->
+        <rect class="box file" x="796" y="256" width="440" height="200" rx="4" />
+        <text class="t hd" x="820" y="284">Jeddah Mall — Shell.aero</text>
+        <text class="t mono" x="820" y="304">catalog v11 · r1 working</text>
+        <g>
+          <rect class="box" x="820" y="318" width="184" height="52" rx="4" />
+          <text class="t sm" x="912" y="340" text-anchor="middle">Client BOQ · Take-off</text>
+          <text class="t sm" x="912" y="358" text-anchor="middle">Working BOQ · Rates</text>
+        </g>
+        <g>
+          <rect class="box" x="1020" y="318" width="192" height="52" rx="4" />
+          <text class="t sm" x="1116" y="340" text-anchor="middle">Its own copy of masters,</text>
+          <text class="t sm" x="1116" y="358" text-anchor="middle">prices, assemblies used</text>
+        </g>
+        <g>
+          <rect class="box new" x="820" y="382" width="392" height="52" rx="4" />
+          <text class="t sm" x="1016" y="404" text-anchor="middle" fill="#7c3aed">Same file, opened next year, still computes the same numbers</text>
+          <text class="t sm" x="1016" y="422" text-anchor="middle">nothing outside it is required</text>
+        </g>
+
+        <!-- forbidden link -->
+        <path class="cut" d="M584 356 L790 356" />
+        <path class="cut" d="M666 334 L710 378" />
+        <path class="cut" d="M710 334 L666 378" />
+        <text class="t no" x="688" y="404" text-anchor="middle">no direct link</text>
+        <text class="t sm" x="688" y="424" text-anchor="middle">to reuse across jobs,</text>
+        <text class="t sm" x="688" y="440" text-anchor="middle">promote it up first</text>
+
+        <text class="t sm" x="140" y="484">Copying a rate from job A to job B is a paste of values plus a promotion request — never a live reference. That is what keeps a 5-year-old file readable.</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 1 : REVISION HISTORY + DIFF ============ -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Screen 1 — Revision history and revision diff</strong><span>1440 × 900 concept</span></div>
+    <div class="artboard screen" data-shot="screen-revisions">
+      <div class="desk">
+        <div class="titlebar">
+          <div class="mark">A</div>
+          <div class="job">Riyadh Tower — Fit-out <small>r3 sealed · saved 2 min ago</small></div>
+          <div class="sp"></div>
+          <div class="gold">SAR 48,214,900</div>
+          <button class="btn ghost">Save</button>
+          <button class="btn primary">New revision</button>
+          <div class="who">H. Sejal · Estimator</div>
+        </div>
+        <div class="modules">
+          <button class="mod">Dashboard</button>
+          <button class="mod">Client BOQ</button>
+          <button class="mod">Take-off</button>
+          <button class="mod">Working BOQ</button>
+          <button class="mod">Rate Analysis</button>
+          <button class="mod">Margins</button>
+          <button class="mod">Submission</button>
+          <button class="mod on">History <span class="tag-new" style="margin-left:6px">new</span></button>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar-row">
+            <h1>Revision history</h1>
+            <span class="crumb">4 revisions stored in this file · 1.8 MB</span>
+            <div class="sp"></div>
+            <span class="chip">Compare r2 → r3</span>
+            <button class="btn">Export diff</button>
+            <button class="btn">Restore r2 as new revision</button>
+          </div>
+        </div>
+        <div class="body">
+          <div class="grid-side">
+            <div class="panel accentbar">
+              <h2>Revisions <span class="tag-new">new</span></h2>
+              <div class="scroll">
+                <div class="rev"><strong>r4 — working</strong><span>H. Sejal · edited 2 min ago</span><em>Unsealed. 38 changes since r3.</em></div>
+                <div class="rev on"><strong>r3 — sealed</strong><span>H. Sejal · 04 Sep 2026, 17:40</span><em>Post-query re-pricing, MEP resubmitted</em></div>
+                <div class="rev"><strong>r2 — sealed</strong><span>A. Rahman · 28 Aug 2026, 11:02</span><em>Client BOQ addendum 2 absorbed</em></div>
+                <div class="rev"><strong>r1 — sealed</strong><span>H. Sejal · 19 Aug 2026, 09:15</span><em>First submission</em></div>
+              </div>
+              <div class="pad" style="border-top:1px solid var(--line);color:var(--muted)">
+                Every seal stores a full snapshot inside the <code>.aero</code>. No side files, no server.
+              </div>
+            </div>
+            <div class="panel">
+              <h2>What changed between r2 and r3</h2>
+              <div class="kpis" style="padding:14px;grid-template-columns:repeat(4,minmax(0,1fr))">
+                <div class="kpi"><div class="lbl">r2 total</div><div class="val">46,902,110</div></div>
+                <div class="kpi"><div class="lbl">r3 total</div><div class="val">48,214,900</div></div>
+                <div class="kpi"><div class="lbl">Movement</div><div class="val up">+1,312,790</div></div>
+                <div class="kpi"><div class="lbl">Lines touched</div><div class="val">64</div></div>
+              </div>
+              <div class="scroll">
+                <table class="grid">
+                  <thead><tr><th style="width:90px">Code</th><th>Description</th><th style="width:110px">Field</th><th class="num" style="width:120px">r2</th><th class="num" style="width:120px">r3</th><th class="num" style="width:130px">Movement</th></tr></thead>
+                  <tbody>
+                    <tr class="add"><td>4.12.03</td><td>Chilled water pump set, 90 kW — added</td><td>new line</td><td class="num">—</td><td class="num">412,000</td><td class="num up">+412,000</td></tr>
+                    <tr><td>2.04.11</td><td>Gypsum partition, 128 mm, acoustic</td><td>rate</td><td class="num">186.40</td><td class="num">214.75</td><td class="num up">+238,140</td></tr>
+                    <tr><td>2.04.11</td><td>Gypsum partition, 128 mm, acoustic</td><td>qty</td><td class="num">8,400.00</td><td class="num">8,400.00</td><td class="num">—</td></tr>
+                    <tr><td>3.01.02</td><td>Raised access floor, 150 mm void</td><td>qty</td><td class="num">6,120.00</td><td class="num">6,940.00</td><td class="num up">+301,760</td></tr>
+                    <tr class="cut"><td>5.08.07</td><td>Feature lighting to lobby soffit — removed</td><td>deleted</td><td class="num">96,400</td><td class="num">—</td><td class="num down">−96,400</td></tr>
+                    <tr><td>—</td><td>Job margin</td><td>margin</td><td class="num">11.50%</td><td class="num">12.25%</td><td class="num up">+457,290</td></tr>
+                    <tr><td>6.02.01</td><td>Ductwork, GI, rectangular</td><td>rate</td><td class="num">142.00</td><td class="num">142.00</td><td class="num">—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="status">
+          <span class="ok">Saved</span><span>Autosaved 40 s ago</span><span>Undo 12 · Redo 0</span><span>Catalog v12 current</span><div class="sp"></div><span class="live">Selection: 5 rows · Sum 1,312,790</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 2 : FORMULA BAR ============ -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Screen 2 — Formula bar, cell references and dependency inspector</strong><span>1440 × 900 concept</span></div>
+    <div class="artboard screen" data-shot="screen-formula">
+      <div class="desk">
+        <div class="titlebar">
+          <div class="mark">A</div>
+          <div class="job">Riyadh Tower — Fit-out <small>r4 working · unsaved changes</small></div>
+          <div class="sp"></div>
+          <div class="gold">SAR 48,691,400</div>
+          <button class="btn ghost">Undo</button>
+          <button class="btn ghost">Redo</button>
+          <button class="btn primary">Save</button>
+          <div class="who">H. Sejal · Estimator</div>
+        </div>
+        <div class="modules">
+          <button class="mod">Dashboard</button>
+          <button class="mod">Client BOQ</button>
+          <button class="mod">Take-off</button>
+          <button class="mod on">Working BOQ</button>
+          <button class="mod">Rate Analysis</button>
+          <button class="mod">Margins</button>
+          <button class="mod">Submission</button>
+          <button class="mod">History</button>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar-row">
+            <h1>Working BOQ</h1>
+            <span class="crumb">Bill 2 — Architectural finishes · 412 lines</span>
+            <div class="sp"></div>
+            <button class="btn">Paste special</button>
+            <button class="btn">Fill down</button>
+            <button class="btn new">Formula view</button>
+            <button class="btn">Freeze columns</button>
+          </div>
+          <div class="toolbar-row">
+            <div class="formula-bar">
+              <span class="cellref">2.04.11 · Qty</span>
+              <span class="fx">fx</span>
+              <input value="=TAKEOFF(&quot;L02-partitions&quot;) * 1.05   → 8,820.00" readonly />
+              <span class="tag-new">new</span>
+            </div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="grid-drawer">
+            <div class="panel">
+              <h2>Items</h2>
+              <div class="scroll">
+                <table class="grid">
+                  <thead><tr><th style="width:88px">Code</th><th>Description</th><th style="width:58px">Unit</th><th class="num" style="width:110px">Qty</th><th class="num" style="width:110px">Rate</th><th class="num" style="width:130px">Amount</th></tr></thead>
+                  <tbody>
+                    <tr><td>2.04.08</td><td>Blockwork, 200 mm, to core walls</td><td>m²</td><td class="num">3,412.00</td><td class="num">128.40</td><td class="num">438,100</td></tr>
+                    <tr><td>2.04.09</td><td>Cement plaster, two coat</td><td>m²</td><td class="num">6,824.00</td><td class="num">46.10</td><td class="num">314,586</td></tr>
+                    <tr><td>2.04.10</td><td>Gypsum partition, 100 mm</td><td>m²</td><td class="num">2,140.00</td><td class="num">178.20</td><td class="num">381,348</td></tr>
+                    <tr class="on"><td>2.04.11</td><td>Gypsum partition, 128 mm, acoustic</td><td>m²</td><td class="num">8,820.00</td><td class="num">214.75</td><td class="num">1,894,095</td></tr>
+                    <tr><td>2.04.12</td><td>Partition head detail, deflection</td><td>m</td><td class="num">1,204.00</td><td class="num">64.00</td><td class="num">77,056</td></tr>
+                    <tr><td>2.05.01</td><td>Suspended ceiling, mineral fibre</td><td>m²</td><td class="num">5,940.00</td><td class="num">96.80</td><td class="num">574,992</td></tr>
+                    <tr><td>2.05.02</td><td>Bulkhead, gypsum, 600 mm drop</td><td>m</td><td class="num">840.00</td><td class="num">210.00</td><td class="num">176,400</td></tr>
+                    <tr><td>2.05.03</td><td>Access hatch, 600 × 600</td><td>nr</td><td class="num">148.00</td><td class="num">340.00</td><td class="num">50,320</td></tr>
+                    <tr><td>2.06.01</td><td>Porcelain tiling to floors</td><td>m²</td><td class="num">4,210.00</td><td class="num">184.00</td><td class="num">774,640</td></tr>
+                    <tr><td>2.06.02</td><td>Skirting, porcelain, 100 mm</td><td>m</td><td class="num">2,880.00</td><td class="num">42.00</td><td class="num">120,960</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="panel accentbar">
+              <h2>Dependencies <span class="tag-new">new</span></h2>
+              <div class="pad" style="border-bottom:1px solid var(--line)">
+                <div style="font-weight:600;margin-bottom:4px">2.04.11 · Qty</div>
+                <div style="color:var(--muted)">Driven by a formula. Editing the number by hand will break the link — the app will ask first.</div>
+              </div>
+              <div class="pad" style="border-bottom:1px solid var(--line)">
+                <div class="lbl" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Feeds from</div>
+                <div class="attach" style="padding-left:0"><span class="kind">QTO</span><div>Take-off group <strong>L02-partitions</strong><br /><small>28 measurement lines · 8,400.00 m²</small></div></div>
+                <div class="attach" style="padding-left:0;border-bottom:0"><span class="kind">×</span><div>Waste factor <strong>1.05</strong><br /><small>typed in the formula</small></div></div>
+              </div>
+              <div class="pad">
+                <div class="lbl" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Feeds into</div>
+                <div class="attach" style="padding-left:0"><span class="kind">RA</span><div>Rate analysis <strong>2.04.11</strong><br /><small>6 resource lines</small></div></div>
+                <div class="attach" style="padding-left:0"><span class="kind">BUY</span><div>Enquiry pack <strong>EP-014 Drywall</strong><br /><small>3 vendors quoted</small></div></div>
+                <div class="attach" style="padding-left:0;border-bottom:0"><span class="kind">SUB</span><div>Submission BOQ <strong>line 214</strong><br /><small>priced, included</small></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="status">
+          <span style="color:var(--warn)">Unsaved changes</span><span>Autosaved 12 s ago</span><span>Undo 38 · Redo 2</span><div class="sp"></div><span class="live">Selection: 4 cells · Sum 3,247,899 · Avg 811,974 · Count 4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 3 : SCENARIOS ============ -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Screen 3 — Scenarios: what-if branches inside one file</strong><span>1440 × 900 concept</span></div>
+    <div class="artboard screen" data-shot="screen-scenarios">
+      <div class="desk">
+        <div class="titlebar">
+          <div class="mark">A</div>
+          <div class="job">Riyadh Tower — Fit-out <small>r4 working · scenario “Value engineered”</small></div>
+          <div class="sp"></div>
+          <div class="gold">SAR 45,980,200</div>
+          <button class="btn ghost">Save</button>
+          <button class="btn primary">Promote scenario to base</button>
+          <div class="who">H. Sejal · Estimator</div>
+        </div>
+        <div class="modules">
+          <button class="mod">Dashboard</button>
+          <button class="mod">Client BOQ</button>
+          <button class="mod">Take-off</button>
+          <button class="mod">Working BOQ</button>
+          <button class="mod">Rate Analysis</button>
+          <button class="mod">Margins</button>
+          <button class="mod on">Scenarios <span class="tag-new" style="margin-left:6px">new</span></button>
+          <button class="mod">Submission</button>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar-row">
+            <h1>Scenarios</h1>
+            <span class="crumb">All branches live inside this file. Only one can be promoted to base.</span>
+            <div class="sp"></div>
+            <span class="chip">Base</span>
+            <span class="chip on">Value engineered</span>
+            <span class="chip">Alt MEP vendor</span>
+            <span class="chip">Fast track +6 wks</span>
+            <button class="btn new">New scenario</button>
+          </div>
+        </div>
+        <div class="body">
+          <div class="banner">
+            <strong>Scenario mode</strong>
+            <span>Edits are recorded against “Value engineered” only. Base stays untouched until you promote.</span>
+            <div class="sp"></div>
+            <button class="btn">Exit to base</button>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><div class="lbl">Base total</div><div class="val">48,691,400</div></div>
+            <div class="kpi"><div class="lbl">This scenario</div><div class="val">45,980,200</div></div>
+            <div class="kpi"><div class="lbl">Saving</div><div class="val down">−2,711,200</div></div>
+            <div class="kpi"><div class="lbl">Margin held</div><div class="val">12.25%</div></div>
+          </div>
+          <div class="panel" style="flex:1">
+            <h2>Side by side</h2>
+            <div class="scroll">
+              <table class="grid">
+                <thead>
+                  <tr>
+                    <th style="width:80px">Bill</th><th>Section</th>
+                    <th class="num" style="width:150px">Base</th>
+                    <th class="num" style="width:150px">Value engineered</th>
+                    <th class="num" style="width:150px">Alt MEP vendor</th>
+                    <th class="num" style="width:140px">Best case</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>Preliminaries</td><td class="num">4,120,000</td><td class="num">3,880,000</td><td class="num">4,120,000</td><td class="num down">3,880,000</td></tr>
+                  <tr><td>2</td><td>Architectural finishes</td><td class="num">12,480,600</td><td class="num down">10,940,200</td><td class="num">12,480,600</td><td class="num down">10,940,200</td></tr>
+                  <tr><td>3</td><td>Joinery and fit-out</td><td class="num">8,214,000</td><td class="num">8,214,000</td><td class="num">8,214,000</td><td class="num">8,214,000</td></tr>
+                  <tr><td>4</td><td>Mechanical</td><td class="num">9,640,800</td><td class="num">9,640,800</td><td class="num down">8,902,400</td><td class="num down">8,902,400</td></tr>
+                  <tr><td>5</td><td>Electrical</td><td class="num">7,908,000</td><td class="num down">7,472,200</td><td class="num">7,908,000</td><td class="num down">7,472,200</td></tr>
+                  <tr><td>6</td><td>External works</td><td class="num">1,204,000</td><td class="num">1,204,000</td><td class="num">1,204,000</td><td class="num">1,204,000</td></tr>
+                  <tr class="on"><td>7</td><td>Tender adjustments</td><td class="num">5,124,000</td><td class="num">4,629,000</td><td class="num">4,980,100</td><td class="num down">4,629,000</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="status">
+          <span class="ok">Saved</span><span>Scenario: Value engineered</span><span>3 scenarios · 1 base</span><span>Undo 6 · Redo 0</span><div class="sp"></div><span class="live">Delta vs base −5.57%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 4 : ATTACHMENTS + COMMENTS ============ -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Screen 4 — Evidence: attachments, comments and cell history on a line</strong><span>1440 × 900 concept</span></div>
+    <div class="artboard screen" data-shot="screen-evidence">
+      <div class="desk">
+        <div class="titlebar">
+          <div class="mark">A</div>
+          <div class="job">Riyadh Tower — Fit-out <small>r4 working</small></div>
+          <div class="sp"></div>
+          <div class="gold">SAR 48,691,400</div>
+          <button class="btn ghost">Undo</button>
+          <button class="btn primary">Save</button>
+          <div class="who">H. Sejal · Estimator</div>
+        </div>
+        <div class="modules">
+          <button class="mod">Dashboard</button>
+          <button class="mod">Client BOQ</button>
+          <button class="mod">Take-off</button>
+          <button class="mod on">Working BOQ</button>
+          <button class="mod">Rate Analysis</button>
+          <button class="mod">Margins</button>
+          <button class="mod">Scenarios</button>
+          <button class="mod">Submission</button>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar-row">
+            <h1>Line evidence</h1>
+            <span class="crumb">2.04.11 · Gypsum partition, 128 mm, acoustic</span>
+            <div class="sp"></div>
+            <span class="chip new">3 comments</span>
+            <span class="chip new">2 files attached</span>
+            <span class="chip">Flagged for review</span>
+            <button class="btn">Mark resolved</button>
+          </div>
+        </div>
+        <div class="body">
+          <div class="grid-drawer">
+            <div class="panel">
+              <h2>Rate build-up</h2>
+              <div class="scroll">
+                <table class="grid">
+                  <thead><tr><th>Resource</th><th style="width:60px">Unit</th><th class="num" style="width:90px">Factor</th><th class="num" style="width:110px">Rate</th><th class="num" style="width:120px">Cost / m²</th></tr></thead>
+                  <tbody>
+                    <tr><td>Metal stud, 92 mm, 0.6 mm gauge</td><td>m</td><td class="num">2.80</td><td class="num">14.20</td><td class="num">39.76</td></tr>
+                    <tr><td>Gypsum board, 12.5 mm, moisture resistant</td><td>m²</td><td class="num">4.00</td><td class="num">18.40</td><td class="num">73.60</td></tr>
+                    <tr class="on"><td>Acoustic infill, 50 mm, 48 kg/m³</td><td>m²</td><td class="num">1.00</td><td class="num">22.50</td><td class="num">22.50</td></tr>
+                    <tr><td>Jointing compound and tape</td><td>m²</td><td class="num">1.00</td><td class="num">6.80</td><td class="num">6.80</td></tr>
+                    <tr><td>Drywall fixer</td><td>hr</td><td class="num">0.85</td><td class="num">42.00</td><td class="num">35.70</td></tr>
+                    <tr><td>Helper</td><td>hr</td><td class="num">0.85</td><td class="num">26.00</td><td class="num">22.10</td></tr>
+                    <tr><td>Sundries and fixings</td><td>%</td><td class="num">4.00</td><td class="num">—</td><td class="num">8.02</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="pad" style="border-top:1px solid var(--line);display:flex;gap:24px">
+                <span>Cost <strong style="font-family:var(--mono)">208.48</strong></span>
+                <span>Margin <strong style="font-family:var(--mono)">12.25%</strong></span>
+                <span>Rate <strong style="font-family:var(--mono)">214.75</strong></span>
+              </div>
+            </div>
+            <div class="panel accentbar">
+              <h2>Evidence <span class="tag-new">new</span></h2>
+              <div style="border-bottom:1px solid var(--line)">
+                <div class="attach"><span class="kind">PDF</span><div>Vendor quote — Saudi Drywall Co<br /><small>2.4 MB · attached 04 Sep · stored in file</small></div></div>
+                <div class="attach"><span class="kind">DWG</span><div>Partition type P-04 detail<br /><small>1.1 MB · attached 02 Sep</small></div></div>
+              </div>
+              <div class="scroll">
+                <div class="thread">
+                  <span class="who">A. Rahman</span><span class="when">04 Sep, 16:12</span>
+                  <p>Acoustic infill at 48 kg/m³ — spec calls for 60. Rate needs a re-check before we seal.</p>
+                </div>
+                <div class="thread">
+                  <span class="who">H. Sejal</span><span class="when">04 Sep, 17:02</span>
+                  <p>Confirmed with the vendor, 60 kg/m³ is +SAR 4.10/m². Updated the resource line.</p>
+                </div>
+                <div class="thread" style="background:var(--new-soft)">
+                  <span class="who">Change log</span><span class="when">04 Sep, 17:04</span>
+                  <p>Rate 210.65 → 214.75 by H. Sejal · reason “acoustic spec correction” · r3</p>
+                </div>
+              </div>
+              <div class="pad" style="border-top:1px solid var(--line);display:flex;gap:8px">
+                <button class="btn" style="flex:1">Attach file</button>
+                <button class="btn primary" style="flex:1">Add comment</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="status">
+          <span class="ok">Saved</span><span>File 1.8 MB · 2 attachments</span><span>Undo 38</span><div class="sp"></div><span class="live">2.04.11 · Amount 1,894,095</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 5 : FILE / DOCUMENT PANEL ============ -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Screen 5 — The File menu: properties, recovery, backups, export</strong><span>1440 × 900 concept</span></div>
+    <div class="artboard screen" data-shot="screen-file">
+      <div class="desk">
+        <div class="titlebar">
+          <div class="mark">A</div>
+          <div class="job">Riyadh Tower — Fit-out <small>r4 working</small></div>
+          <div class="sp"></div>
+          <div class="gold">SAR 48,691,400</div>
+          <button class="btn primary">Save</button>
+          <div class="who">H. Sejal · Estimator</div>
+        </div>
+        <div class="modules">
+          <button class="mod on">File <span class="tag-new" style="margin-left:6px">new</span></button>
+          <button class="mod">Dashboard</button>
+          <button class="mod">Client BOQ</button>
+          <button class="mod">Take-off</button>
+          <button class="mod">Working BOQ</button>
+          <button class="mod">Rate Analysis</button>
+          <button class="mod">Margins</button>
+          <button class="mod">Submission</button>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar-row">
+            <h1>File</h1>
+            <span class="crumb">D:\Estimating\2026\Riyadh Tower\Riyadh Tower — Fit-out.aero</span>
+            <div class="sp"></div>
+            <button class="btn">Save as</button>
+            <button class="btn">Save a copy</button>
+            <button class="btn">Revert to last save</button>
+            <button class="btn">Close</button>
+          </div>
+        </div>
+        <div class="body">
+          <div class="banner">
+            <strong>Recovered work available</strong>
+            <span>Aerolith closed unexpectedly on 04 Sep at 18:22. Changes made after your last save were kept.</span>
+            <div class="sp"></div>
+            <button class="btn">Discard</button>
+            <button class="btn primary">Restore 14 changes</button>
+          </div>
+          <div class="grid2">
+            <div class="panel">
+              <h2>Document properties</h2>
+              <div class="scroll">
+                <table class="grid">
+                  <tbody>
+                    <tr><td style="color:var(--muted);width:200px">Job</td><td>Riyadh Tower — Fit-out</td></tr>
+                    <tr><td style="color:var(--muted)">Client / tender ref</td><td>Al Faisal Holding · TN-2026-0418</td></tr>
+                    <tr><td style="color:var(--muted)">Created</td><td>19 Aug 2026 by H. Sejal</td></tr>
+                    <tr><td style="color:var(--muted)">Last saved</td><td>05 Sep 2026, 09:41 by H. Sejal</td></tr>
+                    <tr><td style="color:var(--muted)">Revisions in file</td><td>4 (r1–r3 sealed, r4 working)</td></tr>
+                    <tr><td style="color:var(--muted)">Scenarios</td><td>3</td></tr>
+                    <tr><td style="color:var(--muted)">Attachments</td><td>11 files · 24.6 MB</td></tr>
+                    <tr><td style="color:var(--muted)">Catalog snapshot</td><td>v12 — current</td></tr>
+                    <tr><td style="color:var(--muted)">File format</td><td>.aero schema 4 · written by 1.4.0</td></tr>
+                    <tr><td style="color:var(--muted)">Size on disk</td><td>26.4 MB</td></tr>
+                    <tr><td style="color:var(--muted)">Integrity</td><td><span class="chip on">Checksum verified</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:16px;min-height:0">
+              <div class="panel accentbar">
+                <h2>Backups <span class="tag-new">new</span></h2>
+                <div class="scroll">
+                  <table class="grid">
+                    <thead><tr><th>Saved</th><th>By</th><th class="num">Total</th><th style="width:90px"></th></tr></thead>
+                    <tbody>
+                      <tr><td>05 Sep, 09:41</td><td>H. Sejal</td><td class="num">48,691,400</td><td>current</td></tr>
+                      <tr><td>05 Sep, 08:55</td><td>H. Sejal</td><td class="num">48,214,900</td><td><button class="btn ghost" style="height:24px">Open</button></td></tr>
+                      <tr><td>04 Sep, 17:40</td><td>H. Sejal</td><td class="num">48,214,900</td><td><button class="btn ghost" style="height:24px">Open</button></td></tr>
+                      <tr><td>04 Sep, 14:06</td><td>A. Rahman</td><td class="num">47,880,100</td><td><button class="btn ghost" style="height:24px">Open</button></td></tr>
+                      <tr><td>03 Sep, 19:20</td><td>A. Rahman</td><td class="num">47,102,600</td><td><button class="btn ghost" style="height:24px">Open</button></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="panel">
+                <h2>Send out</h2>
+                <div class="pad" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <button class="btn new">Excel workbook (.xlsx)</button>
+                  <button class="btn">PDF submission set</button>
+                  <button class="btn new">Read-only .aero copy</button>
+                  <button class="btn">CSV — priced BOQ</button>
+                  <button class="btn new">Save as job template</button>
+                  <button class="btn new">Sealed packet + checksum</button>
+                </div>
+                <div class="pad" style="border-top:1px solid var(--line);color:var(--muted)">
+                  The Excel workbook writes real sheets — Summary, BOQ, Rate analysis, Resources — not a flat CSV. It can be re-imported to bring priced rates back into this job.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="status">
+          <span style="color:var(--warn)">Unsaved changes</span><span>Autosave on · every 60 s</span><span>Undo 38 · Redo 2</span><div class="sp"></div><span class="live">.aero schema 4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DIAGRAM 3 : ROADMAP ============ -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Diagram 3 — Suggested build order</strong><span>each phase is independently shippable</span></div>
+    <div class="artboard diagram" data-shot="diagram-roadmap">
+      <h2>Build order</h2>
+      <p class="sub">Phase 1 is the one that changes how the app feels. Everything after it is leverage on top of a file people already trust.</p>
+      <div class="phaseboard">
+        <div class="phase p1">
+          <header><b>Phase 1 · Trust the file</b><span>Nobody relaxes in a tool that can lose work</span></header>
+          <ul>
+            <li>Undo / redo with named steps</li>
+            <li>Autosave journal and crash recovery</li>
+            <li>Unsaved-changes guard on close, open and switch</li>
+            <li>Save as, Save a copy, Revert to last save</li>
+            <li>Rolling backups, keep last 10</li>
+            <li>Document properties and integrity check</li>
+            <li>Schema version guard — refuse to silently damage a newer file</li>
+          </ul>
+        </div>
+        <div class="phase p2">
+          <header><b>Phase 2 · Spreadsheet muscle memory</b><span>Hands already know these moves</span></header>
+          <ul>
+            <li>Range selection and Excel-fidelity copy / paste</li>
+            <li>Paste special — values, rates only, qty only</li>
+            <li>Fill down and fill series</li>
+            <li>Find and replace across a module</li>
+            <li>Sort and multi-column filter as a saved view</li>
+            <li>Column chooser, reorder, freeze panes</li>
+            <li>Selection stats in the status bar</li>
+            <li>Bulk operations: uplift %, round, swap unit</li>
+            <li>Number formats and conditional highlighting</li>
+          </ul>
+        </div>
+        <div class="phase p3">
+          <header><b>Phase 3 · Estimating superpowers</b><span>The part no spreadsheet can do</span></header>
+          <ul>
+            <li>Formula cells with a formula bar</li>
+            <li>Dependency inspector — precedents and dependents</li>
+            <li>Revision history inside the file, plus revision diff</li>
+            <li>Scenarios / what-if branches with side-by-side compare</li>
+            <li>Comments, review flags and sign-off</li>
+            <li>Cell-level change log with reasons</li>
+            <li>Attachments stored in the file</li>
+            <li>Lock and protect ranges</li>
+          </ul>
+        </div>
+        <div class="phase p4">
+          <header><b>Phase 4 · Interchange and reuse</b><span>Only through the global layer</span></header>
+          <ul>
+            <li>True multi-sheet XLSX export</li>
+            <li>XLSX round-trip — bring priced rates back by item key</li>
+            <li>Job and BOQ templates (.aerot)</li>
+            <li>Global assembly library with promotion</li>
+            <li>Price book with effective dates and refresh diff</li>
+            <li>Read-only and password-protected copies</li>
+            <li>Sealed submission packet with checksum</li>
+            <li>Where-used registry across the tenant</li>
+          </ul>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:#ecfeff;border:1px solid #0891b2"></i>Foundation — blocks everything else</span>
+        <span><i style="background:#f5f3ff;border:1px solid #7c3aed"></i>Familiarity — cuts training to zero</span>
+        <span><i style="background:#f0fdf4;border:1px solid #16a34a"></i>Differentiation — the reason to leave Excel</span>
+        <span><i style="background:#fff7ed;border:1px solid #ea580c"></i>Reach — plays nicely with the rest of the industry</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

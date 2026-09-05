@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concept 09 · Accessible High Contrast — Rate Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:1440px; height:900px; overflow:hidden; background:#fff; color:#0F172A; font:16px/1.45 "IBM Plex Sans", system-ui, sans-serif; }
+    :focus-visible { outline:3px solid #1D4ED8; outline-offset:2px; }
+    .app { display:grid; grid-template-rows:72px 64px 1fr; height:900px; }
+    header { display:flex; align-items:center; gap:20px; padding:0 24px; border-bottom:2px solid #0F172A; }
+    .brand { font-weight:700; font-size:20px; }
+    nav { display:flex; gap:8px; padding:10px 24px; background:#F8FAFC; border-bottom:2px solid #0F172A; }
+    nav button { min-height:44px; padding:0 16px; border:2px solid #0F172A; background:#fff; font-weight:600; cursor:pointer; }
+    nav .on { background:#0F172A; color:#fff; }
+    main { padding:20px 24px; display:grid; grid-template-rows:auto auto 1fr auto; gap:16px; min-height:0; }
+    h1 { margin:0; font-size:26px; }
+    .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .kpi { border:2px solid #0F172A; padding:12px 14px; }
+    .kpi b { display:block; font-family:"IBM Plex Mono", monospace; font-size:22px; }
+    .kpi span { color:#334155; font-size:14px; }
+    .sheet { overflow:auto; border:2px solid #0F172A; }
+    table { width:100%; border-collapse:collapse; }
+    th { text-align:left; background:#0F172A; color:#fff; padding:12px; font-weight:600; }
+    td { padding:10px 12px; border-bottom:1px solid #CBD5E1; font-variant-numeric:tabular-nums; }
+    tr:nth-child(even) td { background:#F1F5F9; }
+    tr:focus-within td, tr.hi td { background:#DBEAFE; }
+    .num { text-align:right; font-family:"IBM Plex Mono", monospace; }
+    .actions { display:flex; gap:12px; }
+    .actions button { min-height:44px; min-width:44px; padding:0 18px; font-weight:700; cursor:pointer; border:2px solid #0F172A; }
+    .primary { background:#1D4ED8; color:#fff; border-color:#1D4ED8; }
+    .note { margin:0; color:#334155; }
+    .tag { border:2px solid #0F172A; padding:4px 10px; font-size:13px; font-weight:600; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">Aerolith Core</div>
+      <div>Al Wasl Tower, Package B, revision 12</div>
+      <span class="tag">Concept 09 · High contrast</span>
+      <div style="flex:1"></div>
+      <button type="button" style="min-height:44px;padding:0 18px;font-weight:700;background:#0F172A;color:#fff;border:0;cursor:pointer">Save .aero</button>
+    </header>
+    <nav aria-label="Primary">
+      <button type="button">Dashboard</button>
+      <button type="button">Source</button>
+      <button type="button">Take-off</button>
+      <button type="button">Estimate</button>
+      <button class="on" type="button" aria-current="page">Rate analysis</button>
+      <button type="button">Buy</button>
+      <button type="button">Submit</button>
+    </nav>
+    <main>
+      <div>
+        <p class="note" style="margin:0 0 4px">Item 3 of 48</p>
+        <h1>3.2.14  Cast in-situ RC walls 30 cm</h1>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><b>486.40 m²</b><span>Take-off quantity</span></div>
+        <div class="kpi"><b>218.40 AED</b><span>Unit cost</span></div>
+        <div class="kpi"><b>251.16 AED</b><span>Rate including 15% margin</span></div>
+        <div class="kpi"><b>122,164.22 AED</b><span>Amount</span></div>
+      </div>
+      <div class="sheet">
+        <table>
+          <caption class="visually-hidden" style="position:absolute;left:-9999px">Resource lines for item 3.2.14</caption>
+          <thead>
+            <tr><th>Resource</th><th class="num">Quantity</th><th class="num">Wastage</th><th>Unit</th><th class="num">Rate</th><th class="num">Amount</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cement OPC 42.5</td><td class="num">0.112</td><td class="num">2%</td><td>t</td><td class="num">285.00</td><td class="num">32.60</td></tr>
+            <tr class="hi"><td>10 mm aggregate</td><td class="num">0.840</td><td class="num">5%</td><td>m³</td><td class="num">48.00</td><td class="num">42.34</td></tr>
+            <tr><td>Wadi sand</td><td class="num">0.420</td><td class="num">5%</td><td>m³</td><td class="num">36.00</td><td class="num">15.88</td></tr>
+            <tr><td>TMT 12 mm</td><td class="num">8.40</td><td class="num">3%</td><td>kg</td><td class="num">3.15</td><td class="num">27.25</td></tr>
+            <tr><td>Formwork plywood</td><td class="num">2.10</td><td class="num">8%</td><td>m²</td><td class="num">22.50</td><td class="num">51.03</td></tr>
+            <tr><td>Mason</td><td class="num">0.18</td><td class="num">0%</td><td>hr</td><td class="num">28.00</td><td class="num">5.04</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <button class="primary" type="button">Add resource line</button>
+        <button type="button">Use direct cost</button>
+        <button type="button">Link analysis</button>
+        <button type="button">Clone analysis</button>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

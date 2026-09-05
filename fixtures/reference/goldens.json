@@ -1,0 +1,19 @@
+{
+  "project_name": "Project - Interior Refurbishment for Medical Institute, Location A",
+  "overhead_pct": 0.1,
+  "profit_pct": 0.3,
+  "logistics_pct": 0.025,
+  "contingency_pct": 0.05,
+  "total_margin_pct": 0.47500000000000003,
+  "working_cost_amount": 68356811.61458333,
+  "working_margin_amount": 32469485.51692708,
+  "working_grand_total": 100826297.13151044,
+  "submission_grand_total": 100826297.13151042,
+  "tender_adjustments_total": 12284222.500434028,
+  "priced_item_count": 70,
+  "analysis_block_count": 70,
+  "analysis_line_count": 197,
+  "project_resource_count": 64,
+  "adjustment_line_count": 7,
+  "money_decimals": 2
+}

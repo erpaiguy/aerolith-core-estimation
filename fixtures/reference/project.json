@@ -1,0 +1,14 @@
+{
+  "name": "Project - Interior Refurbishment for Medical Institute, Location A",
+  "title": "Working - Bill of Quantities",
+  "overhead_pct": 0.1,
+  "profit_pct": 0.3,
+  "logistics_pct": 0.025,
+  "contingency_pct": 0.05,
+  "total_margin_pct": 0.47500000000000003,
+  "qty_source_default": "client_plus_adjustments",
+  "currency": "QAR",
+  "cost_amount": 68356811.61458333,
+  "margin_amount": 32469485.51692708,
+  "grand_total": 100826297.13151044
+}
