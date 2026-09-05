@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Aerolith Core — Document Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="proposal.css" />
+<style>
+  svg .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+  svg .box.key { stroke: #0891b2; }
+  svg .box.new { fill: #f3e8ff; stroke: #7c3aed; }
+  svg .box.zone { fill: #f8fafc; stroke: #94a3b8; stroke-dasharray: 5 4; }
+  svg .box.core { fill: #ecfeff; stroke: #0891b2; }
+  svg .box.disk { fill: #f1f5f9; stroke: #94a3b8; }
+  svg .box.ro { fill: #f8fafc; stroke: #cbd5e1; stroke-dasharray: 4 3; }
+  svg .t { font-family: "Inter", sans-serif; font-size: 13px; fill: #0f172a; font-weight: 600; }
+  svg .t.sm { font-size: 11px; font-weight: 500; fill: #475569; }
+  svg .t.hd { font-size: 14px; font-weight: 700; }
+  svg .t.mono { font-family: "IBM Plex Mono", monospace; font-size: 11px; fill: #0e7490; font-weight: 600; }
+  svg .t.pur { fill: #7c3aed; }
+  svg .flow { stroke: #0891b2; stroke-width: 1.75; fill: none; marker-end: url(#a1); }
+  svg .flow.pur { stroke: #7c3aed; marker-end: url(#a2); }
+  svg .flow.dash { stroke-dasharray: 6 4; }
+  svg .hair { stroke: #cbd5e1; stroke-width: 1; fill: none; }
+
+  .cols3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+  .cols4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
+  .colsHier { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 20px; }
+  .bx { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .bx > header { padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--bg); }
+  .bx > header b { display: block; font-size: 13px; }
+  .bx > header span { font-size: 11px; color: var(--muted); }
+  .bx .in { padding: 12px 14px; }
+  .bx.hi > header { background: var(--soft); border-bottom-color: #a5f3fc; }
+  .bx.pur > header { background: var(--new-soft); border-bottom-color: #ddd6fe; }
+  .bx.pur { border-color: #ddd6fe; }
+
+  .tree { list-style: none; margin: 0; padding: 0; font-size: 12px; }
+  .tree li { padding: 7px 0 7px 0; border-bottom: 1px dashed var(--line); }
+  .tree li:last-child { border-bottom: 0; }
+  .tree .lvl { font-family: var(--mono); font-size: 10px; color: var(--accent-deep); margin-right: 8px; }
+  .tree .note { color: var(--muted); display: block; margin-top: 2px; }
+  .tree li.n0 { padding-left: 0; }
+  .tree li.n1 { padding-left: 16px; }
+  .tree li.n2 { padding-left: 32px; }
+  .tree li.n3 { padding-left: 48px; }
+  .tree li.n4 { padding-left: 64px; }
+  .tree li.n5 { padding-left: 80px; }
+
+  .stack { display: flex; flex-direction: column; gap: 6px; }
+  .lvlchip {
+    display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+    border: 1px solid var(--line); border-radius: 3px; font-size: 12px; background: #fff;
+  }
+  .lvlchip .k { font-family: var(--mono); font-size: 10px; color: var(--muted); min-width: 62px; }
+  .lvlchip.page { background: #fbfdff; }
+  .lvlchip.tot { border-color: #a5f3fc; background: var(--soft); font-weight: 600; }
+  .lvlchip.sum { border-color: #7c3aed; background: var(--new-soft); font-weight: 600; color: var(--new); }
+  .lvlchip.grand { border-color: #0891b2; background: #cffafe; font-weight: 700; }
+  .dots { text-align: center; color: var(--muted); font-size: 14px; letter-spacing: 3px; }
+
+  table.spec { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.spec th { text-align: left; font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--line); background: var(--bg); }
+  table.spec td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.spec td.m { font-family: var(--mono); color: var(--accent-deep); white-space: nowrap; }
+  table.spec tr.newrow td.m { color: var(--new); }
+
+  .stagegrid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 14px; }
+  .stage { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .stage header { padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--bg); }
+  .stage header b { display: block; font-size: 13px; }
+  .stage header span { font-size: 10px; color: var(--muted); }
+  .stage ul { margin: 0; padding: 10px 12px 12px 26px; font-size: 12px; }
+  .stage li { margin-bottom: 5px; }
+  .stage .dep { padding: 8px 12px; border-top: 1px dashed var(--line); font-size: 11px; color: var(--muted); }
+  .stage.done header { background: #ecfdf5; border-bottom-color: #bbf7d0; }
+  .stage.core header { background: #ecfeff; border-bottom-color: #a5f3fc; }
+  .stage.feat header { background: #f5f3ff; border-bottom-color: #ddd6fe; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-head">
+    <div class="kicker">Aerolith Core Estimation · Architecture for review · nothing built</div>
+    <h1>Document architecture: a job is a database you edit, not an object you hold</h1>
+    <p>Every decision below follows from two of your answers: 600,000 rows must stay usable, and a job file must behave like a document you open, edit, undo, save and reopen. Those two together mean the whole job can no longer live in the browser's memory.</p>
+  </div>
+
+  <!-- D1 RUNTIME -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Diagram 1 — Runtime architecture</strong><span>where the data actually lives</span></div>
+    <div class="artboard diagram" data-shot="arch-runtime">
+      <h2>One window per job. The job lives in SQLite, not in React state.</h2>
+      <p class="sub">Today the entire project sits in a single React state object that is cloned on every keystroke. That is the root cause of the scale ceiling, and it is also why undo has nowhere to attach.</p>
+      <svg width="1376" height="560" viewBox="0 0 1376 560">
+        <defs>
+          <marker id="a1" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#0891b2" /></marker>
+          <marker id="a2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#7c3aed" /></marker>
+        </defs>
+
+        <text class="t hd" x="0" y="14">Windows — one open job each</text>
+        <g>
+          <rect class="box key" x="0" y="26" width="424" height="118" rx="4" />
+          <text class="t" x="16" y="50">Window 1 — Riyadh Tower.aero</text>
+          <text class="t mono" x="16" y="68">editing · r4 working</text>
+          <rect class="box" x="16" y="78" width="124" height="50" rx="3" />
+          <text class="t sm" x="78" y="98" text-anchor="middle">Views render</text>
+          <text class="t sm" x="78" y="114" text-anchor="middle">visible rows only</text>
+          <rect class="box" x="150" y="78" width="124" height="50" rx="3" />
+          <text class="t sm" x="212" y="98" text-anchor="middle">Query API</text>
+          <text class="t sm" x="212" y="114" text-anchor="middle">rows, totals, counts</text>
+          <rect class="box new" x="284" y="78" width="124" height="50" rx="3" />
+          <text class="t sm" x="346" y="98" text-anchor="middle" fill="#7c3aed">Command bus</text>
+          <text class="t sm" x="346" y="114" text-anchor="middle">every edit, undoable</text>
+        </g>
+        <g>
+          <rect class="box key" x="476" y="26" width="424" height="118" rx="4" />
+          <text class="t" x="492" y="50">Window 2 — Jeddah Mall.aero</text>
+          <text class="t mono" x="492" y="68">editing · r1 working</text>
+          <rect class="box" x="492" y="78" width="124" height="50" rx="3" />
+          <text class="t sm" x="554" y="98" text-anchor="middle">Views render</text>
+          <text class="t sm" x="554" y="114" text-anchor="middle">visible rows only</text>
+          <rect class="box" x="626" y="78" width="124" height="50" rx="3" />
+          <text class="t sm" x="688" y="98" text-anchor="middle">Query API</text>
+          <text class="t sm" x="688" y="114" text-anchor="middle">rows, totals, counts</text>
+          <rect class="box new" x="760" y="78" width="124" height="50" rx="3" />
+          <text class="t sm" x="822" y="98" text-anchor="middle" fill="#7c3aed">Command bus</text>
+          <text class="t sm" x="822" y="114" text-anchor="middle">every edit, undoable</text>
+        </g>
+        <g>
+          <rect class="box ro" x="952" y="26" width="424" height="118" rx="4" />
+          <text class="t" x="968" y="50">Window 3 — Riyadh Tower.aero</text>
+          <text class="t mono" x="968" y="68" fill="#c2410c">read-only · already open in Window 1</text>
+          <rect class="box" x="968" y="78" width="392" height="50" rx="3" />
+          <text class="t sm" x="1164" y="98" text-anchor="middle">Can read, filter, print and Save a copy.</text>
+          <text class="t sm" x="1164" y="114" text-anchor="middle">Saving stays with the window that holds the job.</text>
+        </g>
+
+        <path class="flow" d="M212 144 L212 186" />
+        <path class="flow" d="M688 144 L688 186" />
+        <path class="flow dash" d="M1164 144 L1164 186" />
+        <text class="t sm" x="228" y="172">typed calls across the bridge — never the whole job, only what a view asks for</text>
+
+        <text class="t hd" x="0" y="208">Aerolith core (Rust, inside the desktop app)</text>
+        <rect class="box core" x="0" y="220" width="1376" height="132" rx="4" />
+        <g>
+          <rect class="box" x="16" y="240" width="322" height="96" rx="3" />
+          <text class="t" x="177" y="266" text-anchor="middle">Document sessions</text>
+          <text class="t sm" x="177" y="288" text-anchor="middle">Opens a job into a working copy.</text>
+          <text class="t sm" x="177" y="306" text-anchor="middle">Tracks dirty state, save, revert,</text>
+          <text class="t sm" x="177" y="324" text-anchor="middle">backups and who holds the file.</text>
+        </g>
+        <g>
+          <rect class="box new" x="354" y="240" width="322" height="96" rx="3" />
+          <text class="t pur" x="515" y="266" text-anchor="middle">Command log</text>
+          <text class="t sm" x="515" y="288" text-anchor="middle">Applies forward, stores the inverse.</text>
+          <text class="t sm" x="515" y="306" text-anchor="middle">One transaction per command.</text>
+          <text class="t sm" x="515" y="324" text-anchor="middle">Undo, redo and the change log.</text>
+        </g>
+        <g>
+          <rect class="box" x="692" y="240" width="322" height="96" rx="3" />
+          <text class="t" x="853" y="266" text-anchor="middle">Calc kernel — incremental</text>
+          <text class="t sm" x="853" y="288" text-anchor="middle">A command declares what it touched.</text>
+          <text class="t sm" x="853" y="306" text-anchor="middle">The dependency graph already in</text>
+          <text class="t sm" x="853" y="324" text-anchor="middle">packages/calc resolves the rest.</text>
+        </g>
+        <g>
+          <rect class="box" x="1030" y="240" width="330" height="96" rx="3" />
+          <text class="t" x="1195" y="266" text-anchor="middle">Tenant service</text>
+          <text class="t sm" x="1195" y="288" text-anchor="middle">Masters, price book, templates,</text>
+          <text class="t sm" x="1195" y="306" text-anchor="middle">users and roles. Moves out of</text>
+          <text class="t sm" x="1195" y="324" text-anchor="middle">localStorage so windows can share it.</text>
+        </g>
+
+        <path class="flow" d="M177 352 L177 402" />
+        <path class="flow" d="M515 352 L515 402" />
+        <path class="flow" d="M853 352 L853 402" />
+        <path class="flow" d="M1195 352 L1195 402" />
+
+        <text class="t hd" x="0" y="424">Disk</text>
+        <g>
+          <rect class="box new" x="0" y="436" width="322" height="96" rx="4" />
+          <text class="t pur" x="161" y="462" text-anchor="middle">Working copy</text>
+          <text class="t mono" x="161" y="482" text-anchor="middle">session.db</text>
+          <text class="t sm" x="161" y="502" text-anchor="middle">Every edit lands here immediately.</text>
+          <text class="t sm" x="161" y="520" text-anchor="middle">This is the autosave and the recovery.</text>
+        </g>
+        <g>
+          <rect class="box disk" x="354" y="436" width="322" height="96" rx="4" />
+          <text class="t" x="515" y="462" text-anchor="middle">The job file</text>
+          <text class="t mono" x="515" y="482" text-anchor="middle">Riyadh Tower.aero</text>
+          <text class="t sm" x="515" y="502" text-anchor="middle">Only written when the user saves.</text>
+          <text class="t sm" x="515" y="520" text-anchor="middle">Compacted, checksummed, atomic.</text>
+        </g>
+        <g>
+          <rect class="box new" x="692" y="436" width="322" height="96" rx="4" />
+          <text class="t pur" x="853" y="462" text-anchor="middle">Backups</text>
+          <text class="t mono" x="853" y="482" text-anchor="middle">.aerolith/backups/</text>
+          <text class="t sm" x="853" y="502" text-anchor="middle">Last 10 saves beside the job,</text>
+          <text class="t sm" x="853" y="520" text-anchor="middle">openable read-only.</text>
+        </g>
+        <g>
+          <rect class="box disk" x="1030" y="436" width="330" height="96" rx="4" />
+          <text class="t" x="1195" y="462" text-anchor="middle">Tenant store</text>
+          <text class="t mono" x="1195" y="482" text-anchor="middle">tenant.db</text>
+          <text class="t sm" x="1195" y="502" text-anchor="middle">Shared by every window,</text>
+          <text class="t sm" x="1195" y="520" text-anchor="middle">changes broadcast live.</text>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><i style="background:#f3e8ff;border:1px solid #7c3aed"></i>New in this architecture</span>
+        <span><i style="background:#ecfeff;border:1px solid #0891b2"></i>Rewritten from what exists</span>
+        <span><i style="background:#f1f5f9;border:1px solid #94a3b8"></i>Roughly as today</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- D2 COMMAND FLOW -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Diagram 2 — What happens when someone types a number</strong><span>the path every edit takes</span></div>
+    <div class="artboard diagram" data-shot="arch-command">
+      <h2>Every edit is a command. That single rule gives undo, autosave, the change log and incremental recompute at once.</h2>
+      <p class="sub">Nothing is allowed to modify the job except through this path — which is enforced by the data layer exposing no other way in.</p>
+      <svg width="1376" height="430" viewBox="0 0 1376 430">
+        <defs>
+          <marker id="a3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#0891b2" /></marker>
+          <marker id="a4" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#7c3aed" /></marker>
+        </defs>
+
+        <g>
+          <rect class="box key" x="0" y="60" width="196" height="84" rx="4" />
+          <text class="t" x="98" y="90" text-anchor="middle">Someone edits</text>
+          <text class="t sm" x="98" y="110" text-anchor="middle">a cell, a paste of 400 rates,</text>
+          <text class="t sm" x="98" y="126" text-anchor="middle">a margin change, a delete</text>
+        </g>
+        <path class="flow" style="marker-end:url(#a3)" d="M196 102 L228 102" />
+
+        <g>
+          <rect class="box new" x="234" y="60" width="216" height="84" rx="4" />
+          <text class="t pur" x="342" y="86" text-anchor="middle">Command is built</text>
+          <text class="t sm" x="342" y="106" text-anchor="middle">a name a human can read,</text>
+          <text class="t sm" x="342" y="122" text-anchor="middle">the new values, and the old</text>
+          <text class="t sm" x="342" y="138" text-anchor="middle">values captured to reverse it</text>
+        </g>
+        <path class="flow" style="marker-end:url(#a3)" d="M450 102 L482 102" />
+
+        <g>
+          <rect class="box key" x="488" y="60" width="216" height="84" rx="4" />
+          <text class="t" x="596" y="86" text-anchor="middle">One transaction</text>
+          <text class="t sm" x="596" y="106" text-anchor="middle">rows written to the working</text>
+          <text class="t sm" x="596" y="122" text-anchor="middle">copy — it either all lands</text>
+          <text class="t sm" x="596" y="138" text-anchor="middle">or none of it does</text>
+        </g>
+        <path class="flow" style="marker-end:url(#a3)" d="M704 102 L736 102" />
+
+        <g>
+          <rect class="box key" x="742" y="60" width="216" height="84" rx="4" />
+          <text class="t" x="850" y="86" text-anchor="middle">Only what changed</text>
+          <text class="t sm" x="850" y="106" text-anchor="middle">the command says which items</text>
+          <text class="t sm" x="850" y="122" text-anchor="middle">it touched; the graph works out</text>
+          <text class="t sm" x="850" y="138" text-anchor="middle">what else depends on them</text>
+        </g>
+        <path class="flow" style="marker-end:url(#a3)" d="M958 102 L990 102" />
+
+        <g>
+          <rect class="box key" x="996" y="60" width="196" height="84" rx="4" />
+          <text class="t" x="1094" y="86" text-anchor="middle">Recompute</text>
+          <text class="t sm" x="1094" y="106" text-anchor="middle">those items only,</text>
+          <text class="t sm" x="1094" y="122" text-anchor="middle">not all 600,000</text>
+        </g>
+        <path class="flow" style="marker-end:url(#a3)" d="M1192 102 L1224 102" />
+
+        <g>
+          <rect class="box key" x="1230" y="60" width="146" height="84" rx="4" />
+          <text class="t" x="1303" y="90" text-anchor="middle">Screen updates</text>
+          <text class="t sm" x="1303" y="110" text-anchor="middle">visible rows and</text>
+          <text class="t sm" x="1303" y="126" text-anchor="middle">totals refresh</text>
+        </g>
+
+        <!-- undo -->
+        <path class="flow pur" d="M342 144 L342 210" />
+        <g>
+          <rect class="box new" x="234" y="212" width="216" height="72" rx="4" />
+          <text class="t pur" x="342" y="238" text-anchor="middle">Undo stack</text>
+          <text class="t sm" x="342" y="258" text-anchor="middle">named steps, in order,</text>
+          <text class="t sm" x="342" y="274" text-anchor="middle">held in the working copy</text>
+        </g>
+        <path class="flow pur dash" d="M234 248 L120 248 L120 148" />
+        <text class="t sm pur" x="0" y="196">Ctrl+Z runs</text>
+        <text class="t sm pur" x="0" y="212">the reverse</text>
+
+        <!-- change log -->
+        <path class="flow" d="M596 144 L596 210" />
+        <g>
+          <rect class="box new" x="488" y="212" width="216" height="72" rx="4" />
+          <text class="t pur" x="596" y="238" text-anchor="middle">Change log row</text>
+          <text class="t sm" x="596" y="258" text-anchor="middle">who, when, from what to what,</text>
+          <text class="t sm" x="596" y="274" text-anchor="middle">and optionally why</text>
+        </g>
+
+        <!-- autosave -->
+        <path class="flow" d="M660 144 L660 320 L742 320" />
+        <g>
+          <rect class="box new" x="742" y="292" width="450" height="72" rx="4" />
+          <text class="t pur" x="967" y="318" text-anchor="middle">There is no separate autosave to build</text>
+          <text class="t sm" x="967" y="340" text-anchor="middle">The working copy is already on disk, so a crash loses nothing. Recovery is simply</text>
+          <text class="t sm" x="967" y="356" text-anchor="middle">noticing a working copy that was never saved back to its job file.</text>
+        </g>
+
+        <text class="t sm" x="0" y="404">The same path handles a one-cell edit and a 100,000-cell paste. Large commands store their reverse compactly rather than cell by cell.</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- D3 HIERARCHY + SUMMARY SHAPES -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Diagram 3 — Structure and the three BOQ shapes you described</strong><span>sheets and sub-categories become real levels</span></div>
+    <div class="artboard diagram" data-shot="arch-structure">
+      <h2>One hierarchy, three ways of totalling it</h2>
+      <p class="sub">Today a bill holds a flat list of items and “category” is just a text field, so sheet and sub-category totals are impossible. Making them real levels is what unlocks all three of the shapes you described — and the format stays the user's to configure.</p>
+      <div class="colsHier">
+        <div class="bx hi">
+          <header><b>The hierarchy</b><span>every level can carry a total</span></header>
+          <div class="in">
+            <ul class="tree">
+              <li class="n0"><span class="lvl">L0</span><strong>Project</strong><span class="note">one .aero file, one tender</span></li>
+              <li class="n1"><span class="lvl">L1</span><strong>BOQ</strong><span class="note">one per imported worksheet, or created by hand</span></li>
+              <li class="n2"><span class="lvl">L2</span><strong>Sheet</strong><span class="note">new — a division within a BOQ, often one per trade</span></li>
+              <li class="n3"><span class="lvl">L3</span><strong>Category</strong><span class="note">was a text field, becomes a real node</span></li>
+              <li class="n4"><span class="lvl">L4</span><strong>Sub-category</strong><span class="note">new — needed for the deepest tender shape</span></li>
+              <li class="n5"><span class="lvl">L5</span><strong>Item</strong><span class="note">the priced line</span></li>
+            </ul>
+            <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:12px">
+              A page is not a level. Pages come from pagination at print time, which is why a page total can appear inside any of the shapes without changing the data.
+            </div>
+          </div>
+        </div>
+        <div class="cols3">
+          <div class="bx">
+            <header><b>Shape 1 — Continuous BOQ</b><span>one long run of pages with categories</span></header>
+            <div class="in">
+              <div class="stack">
+                <div class="lvlchip page"><span class="k">page 1</span>items</div>
+                <div class="lvlchip tot"><span class="k">total</span>Page total</div>
+                <div class="lvlchip page"><span class="k">page 2</span>items</div>
+                <div class="lvlchip tot"><span class="k">total</span>Page total</div>
+                <div class="dots">· · ·</div>
+                <div class="lvlchip tot"><span class="k">total</span>Category total (optional)</div>
+                <div class="lvlchip grand"><span class="k">summary</span>Grand summary, categories listed</div>
+              </div>
+            </div>
+          </div>
+          <div class="bx pur">
+            <header><b>Shape 2 — Sheet per category</b><span>your default for high-value projects</span></header>
+            <div class="in">
+              <div class="stack">
+                <div class="lvlchip page"><span class="k">sheet A</span>items across pages</div>
+                <div class="lvlchip tot"><span class="k">total</span>Page totals</div>
+                <div class="lvlchip sum"><span class="k">summary</span>Category summary ends the sheet</div>
+                <div class="lvlchip page"><span class="k">sheet B</span>items across pages</div>
+                <div class="lvlchip tot"><span class="k">total</span>Page totals</div>
+                <div class="lvlchip sum"><span class="k">summary</span>Category summary ends the sheet</div>
+                <div class="lvlchip grand"><span class="k">sheet</span>Grand summary sheet of all category summaries</div>
+              </div>
+            </div>
+          </div>
+          <div class="bx">
+            <header><b>Shape 3 — Multi-BOQ, sub-categorised</b><span>town-planning scale</span></header>
+            <div class="in">
+              <div class="stack">
+                <div class="lvlchip page"><span class="k">pages</span>items</div>
+                <div class="lvlchip tot"><span class="k">total</span>Page total</div>
+                <div class="lvlchip tot"><span class="k">total</span>Sub-category total</div>
+                <div class="lvlchip tot"><span class="k">total</span>Category total</div>
+                <div class="lvlchip sum"><span class="k">summary</span>Sheet summary</div>
+                <div class="lvlchip sum"><span class="k">summary</span>BOQ total</div>
+                <div class="lvlchip grand"><span class="k">summary</span>Grand summary of every BOQ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="legend">
+        <span>Default out of the box: page totals, category totals, sheet totals, BOQ summary, grand summary.</span>
+        <span>Carried forward / brought forward stays off until switched on.</span>
+        <span>Every level can be turned on or off per job, and saved as a template.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- D4 REVISIONS + SCENARIOS -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Diagram 4 — Revisions and scenarios</strong><span>history is sequential, scenarios are parallel</span></div>
+    <div class="artboard diagram" data-shot="arch-revisions">
+      <h2>Base and every scenario live in the file, at every revision</h2>
+      <p class="sub">A scenario stores only what it changes. Promoting one does not destroy the other — the outgoing base becomes a scenario, so nothing you priced is ever thrown away by a decision.</p>
+      <svg width="1376" height="486" viewBox="0 0 1376 486">
+        <defs>
+          <marker id="a5" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#0891b2" /></marker>
+          <marker id="a6" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#7c3aed" /></marker>
+        </defs>
+
+        <text class="t hd" x="0" y="16">Revisions — sequential, each sealed one stores a full compressed snapshot</text>
+        <g>
+          <rect class="box" x="0" y="30" width="236" height="66" rx="4" />
+          <text class="t" x="118" y="56" text-anchor="middle">r1 — sealed</text>
+          <text class="t sm" x="118" y="76" text-anchor="middle">first submission · 19 Aug</text>
+        </g>
+        <path class="flow" style="marker-end:url(#a5)" d="M236 63 L272 63" />
+        <g>
+          <rect class="box" x="278" y="30" width="236" height="66" rx="4" />
+          <text class="t" x="396" y="56" text-anchor="middle">r2 — sealed</text>
+          <text class="t sm" x="396" y="76" text-anchor="middle">addendum 2 · 28 Aug</text>
+        </g>
+        <path class="flow" style="marker-end:url(#a5)" d="M514 63 L550 63" />
+        <g>
+          <rect class="box" x="556" y="30" width="236" height="66" rx="4" />
+          <text class="t" x="674" y="56" text-anchor="middle">r3 — sealed</text>
+          <text class="t sm" x="674" y="76" text-anchor="middle">post-query · 04 Sep</text>
+        </g>
+        <path class="flow" style="marker-end:url(#a5)" d="M792 63 L828 63" />
+        <g>
+          <rect class="box key" x="834" y="30" width="236" height="66" rx="4" />
+          <text class="t" x="952" y="56" text-anchor="middle">r4 — working</text>
+          <text class="t sm" x="952" y="76" text-anchor="middle">editable, not yet sealed</text>
+        </g>
+        <text class="t sm" x="1096" y="52">Any two revisions can be</text>
+        <text class="t sm" x="1096" y="70">compared line by line, with</text>
+        <text class="t sm" x="1096" y="88">a total bridge between them.</text>
+
+        <path class="flow pur dash" d="M674 96 L674 130 L952 130 L952 152" />
+        <text class="t sm pur" x="690" y="122">scenarios carry forward from the previous revision</text>
+
+        <text class="t hd" x="0" y="180">Inside r4 — one base, any number of overlays</text>
+        <rect class="box zone" x="0" y="192" width="1376" height="212" rx="4" />
+
+        <g>
+          <rect class="box key" x="20" y="212" width="300" height="172" rx="4" />
+          <text class="t hd" x="170" y="240" text-anchor="middle">Base</text>
+          <text class="t sm" x="170" y="262" text-anchor="middle">The complete priced job.</text>
+          <text class="t sm" x="170" y="280" text-anchor="middle">Every quantity, rate, analysis</text>
+          <text class="t sm" x="170" y="298" text-anchor="middle">and margin lives here.</text>
+          <rect class="box" x="40" y="312" width="260" height="54" rx="3" />
+          <text class="t sm" x="170" y="334" text-anchor="middle">This is what is sealed and</text>
+          <text class="t sm" x="170" y="352" text-anchor="middle">submitted. Nothing else is.</text>
+        </g>
+
+        <path class="flow pur" d="M320 298 L364 298" />
+        <text class="t sm pur" x="326" y="286">overlaid on</text>
+
+        <g>
+          <rect class="box new" x="370" y="212" width="300" height="172" rx="4" />
+          <text class="t hd pur" x="520" y="240" text-anchor="middle">Value engineered</text>
+          <text class="t sm" x="520" y="262" text-anchor="middle">Stores only what differs:</text>
+          <text class="t sm" x="520" y="284" text-anchor="middle">42 rates, 1 margin, 3 analyses</text>
+          <text class="t sm" x="520" y="302" text-anchor="middle">switched to subcontract</text>
+          <rect class="box" x="390" y="314" width="260" height="52" rx="3" />
+          <text class="t mono" x="520" y="336" text-anchor="middle">46 overrides · 8 KB</text>
+          <text class="t sm" x="520" y="354" text-anchor="middle">not a copy of the job</text>
+        </g>
+
+        <g>
+          <rect class="box new" x="686" y="212" width="300" height="172" rx="4" />
+          <text class="t hd pur" x="836" y="240" text-anchor="middle">Alternate MEP vendor</text>
+          <text class="t sm" x="836" y="262" text-anchor="middle">Stores only what differs:</text>
+          <text class="t sm" x="836" y="284" text-anchor="middle">one vendor swapped, 180 rates,</text>
+          <text class="t sm" x="836" y="302" text-anchor="middle">wastage raised to 7%</text>
+          <rect class="box" x="706" y="314" width="260" height="52" rx="3" />
+          <text class="t mono" x="836" y="336" text-anchor="middle">183 overrides · 22 KB</text>
+          <text class="t sm" x="836" y="354" text-anchor="middle">compare side by side any time</text>
+        </g>
+
+        <g>
+          <rect class="box new" x="1002" y="212" width="354" height="172" rx="4" />
+          <text class="t hd pur" x="1179" y="240" text-anchor="middle">Promoting swaps, never deletes</text>
+          <text class="t sm" x="1179" y="266" text-anchor="middle">Promote “Value engineered” to base and the</text>
+          <text class="t sm" x="1179" y="284" text-anchor="middle">old base becomes a scenario in its place.</text>
+          <text class="t sm" x="1179" y="302" text-anchor="middle">Both remain in the file, at this revision.</text>
+          <rect class="box" x="1022" y="314" width="314" height="52" rx="3" />
+          <text class="t sm" x="1179" y="336" text-anchor="middle">Deleting a scenario removes it from this</text>
+          <text class="t sm" x="1179" y="354" text-anchor="middle">revision only — earlier revisions still hold theirs.</text>
+        </g>
+
+        <text class="t sm" x="0" y="432">Only base can be sealed. That keeps one submitted truth per revision while every alternative you priced stays available for the next one.</text>
+        <text class="t sm" x="0" y="456">A scenario override can also carry a formula, so “raise wastage to 7% across this trade” is one entry rather than 180 typed numbers.</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- D5 STAGES -->
+  <div class="art-wrap">
+    <div class="art-label"><strong>Diagram 5 — Build sequence</strong><span>each stage ships and is tagged before the next begins</span></div>
+    <div class="artboard diagram" data-shot="arch-stages">
+      <h2>Nine stages, each one shippable and reversible</h2>
+      <p class="sub">The foundation stages are unglamorous but everything else depends on them. Until an old module is migrated, it keeps working through a compatibility layer that hands it the shape it expects.</p>
+      <div class="stagegrid">
+        <div class="stage done">
+          <header><b>0 · Safety net</b><span>done today</span></header>
+          <ul>
+            <li>Git repository created</li>
+            <li>Current app committed and tagged as the return point</li>
+            <li>Design tokens extracted so new screens are built restyle-ready</li>
+          </ul>
+          <div class="dep">Blocks: everything</div>
+        </div>
+        <div class="stage core">
+          <header><b>1 · Document core</b><span>the foundation</span></header>
+          <ul>
+            <li>SQLite moves into the desktop core</li>
+            <li>Open makes a working copy; save writes it back</li>
+            <li>Dirty state, Save as, Save a copy, Revert</li>
+            <li>Crash recovery, rolling backups, properties, integrity</li>
+            <li>Tenant data out of browser storage</li>
+          </ul>
+          <div class="dep">Needs: stage 0</div>
+        </div>
+        <div class="stage core">
+          <header><b>2 · Command bus</b><span>makes undo possible</span></header>
+          <ul>
+            <li>Every mutation becomes a named command</li>
+            <li>Undo and redo with the step name shown</li>
+            <li>Change log written as a side effect</li>
+            <li>Compatibility layer for modules not yet migrated</li>
+          </ul>
+          <div class="dep">Needs: stage 1</div>
+        </div>
+        <div class="stage core">
+          <header><b>3 · Grid and queries</b><span>where scale is won</span></header>
+          <ul>
+            <li>One shared data grid for every module</li>
+            <li>Views request only the rows they show</li>
+            <li>Totals become database aggregates</li>
+            <li>Incremental recompute switched on</li>
+            <li>Modules migrated one at a time</li>
+          </ul>
+          <div class="dep">Needs: stages 1–2</div>
+        </div>
+        <div class="stage feat">
+          <header><b>4 · Structure</b><span>sheets and summaries</span></header>
+          <ul>
+            <li>Sheet and sub-category become real levels</li>
+            <li>Import maps worksheets to BOQs</li>
+            <li>All BOQs view alongside per-BOQ</li>
+            <li>Summary engine with your three shapes as presets</li>
+          </ul>
+          <div class="dep">Needs: stage 3</div>
+        </div>
+        <div class="stage feat">
+          <header><b>5 · Spreadsheet operations</b><span>the familiar hands</span></header>
+          <ul>
+            <li>Range selection and Excel-fidelity clipboard</li>
+            <li>Paste special, fill down, fill series</li>
+            <li>Find and replace, saved views</li>
+            <li>Bulk uplift, round, unit swap</li>
+            <li>Selection statistics, conditional highlighting</li>
+          </ul>
+          <div class="dep">Needs: stages 2–3</div>
+        </div>
+        <div class="stage feat">
+          <header><b>6 · Revisions and scenarios</b><span>the client-facing win</span></header>
+          <ul>
+            <li>Snapshot on seal, compressed</li>
+            <li>Revision list and line-level diff</li>
+            <li>Scenario overlays, compare, promote</li>
+            <li>Comments, review flags, optional seal gate</li>
+          </ul>
+          <div class="dep">Needs: stages 1–4</div>
+        </div>
+        <div class="stage feat">
+          <header><b>7 · Formulas</b><span>isolated so it can be removed</span></header>
+          <ul>
+            <li>Formula bar and a fixed function set</li>
+            <li>Applies to any numeric cell</li>
+            <li>Dependency inspector</li>
+            <li>Kept in its own tables and screens</li>
+          </ul>
+          <div class="dep">Needs: stages 2–3 · removable without touching anything else</div>
+        </div>
+        <div class="stage feat">
+          <header><b>8 · Windows and interchange</b><span>reach</span></header>
+          <ul>
+            <li>Several jobs open in several windows</li>
+            <li>Second window on the same job is read-only</li>
+            <li>Live tenant updates across windows</li>
+            <li>Real Excel export and round-trip</li>
+            <li>Templates, assembly library, price book dates</li>
+          </ul>
+          <div class="dep">Needs: stages 1–4</div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:#ecfdf5;border:1px solid #16a34a"></i>Complete</span>
+        <span><i style="background:#ecfeff;border:1px solid #0891b2"></i>Foundation — no visible feature, everything depends on it</span>
+        <span><i style="background:#f5f3ff;border:1px solid #7c3aed"></i>Features you will see and use</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
