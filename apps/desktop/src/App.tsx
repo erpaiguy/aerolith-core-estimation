@@ -4,7 +4,9 @@ import { emptyProject, loadCampusSampleProject, loadReferenceProject } from "./l
 import type { Activity, LoadedProject, QtoLine, WorkingItem } from "./model";
 import { GOLDEN_TOTAL, hasAnalysisBackup, inferParents, newId, stampItem } from "./model";
 import { ACTIVITY_LABELS, RIBBON_ORDER, activityLabel } from "./activityLabels";
-import { licenseStatus } from "./platform/crypto";
+import { useAerolithLicense } from "./auth/useAerolithLicense";
+import { allowsData, describeLicense, licenseBanner, resolveAccess } from "./auth/licenseState";
+import { planDisplayName } from "./auth/subscriptionPlans";
 import {
   can,
   ensurePlatform,
@@ -51,6 +53,7 @@ import { DashboardView } from "./views/DashboardView";
 import { MarginsView } from "./views/MarginsView";
 import { HomeView } from "./views/HomeView";
 import { ImportWizard } from "./views/ImportWizard";
+import { LicensePanel } from "./views/LicensePanel";
 import { LoginView } from "./views/LoginView";
 import { SplashShell } from "./views/SplashShell";
 import { BrandLockup } from "./views/Brand";
@@ -82,6 +85,7 @@ export function App() {
   const [billFocus, setBillFocus] = useState<string | null>(DEFAULT_BILL_ID);
   const [importMode, setImportMode] = useState<"create" | "append" | "amend">("create");
   const inspectorW = usePersistedNumber("aerolith-split:inspector", 300, 220, 560);
+  const license = useAerolithLicense();
 
   useEffect(() => {
     void ensurePlatform()
@@ -91,13 +95,19 @@ export function App() {
       });
   }, []);
 
+  useEffect(() => {
+    if (!platform || !license.ready || !license.session.isAuthenticated) return;
+    setSession((current) => current ?? workspaceSession(platform));
+  }, [platform, license.ready, license.session.isAuthenticated]);
+
   const tenant = session?.kind === "tenant" ? session.tenant : null;
   const liveTenant = tenant && platform ? (platform.tenants.find((t) => t.id === tenant.id) ?? tenant) : tenant;
   const workspaceId = liveTenant?.id ?? (session?.kind === "owner" ? "owner" : null);
   const reportFormat = mergeReportFormat(liveTenant?.reportFormat);
   const displayFormat = mergeDisplayFormat(liveTenant?.displayFormat);
-  const lic = liveTenant ? licenseStatus(liveTenant.trialStartedAt, liveTenant.licenseExpiresAt) : null;
-  const licenseReadOnly = Boolean(lic?.readOnly);
+  const access = resolveAccess(license.session);
+  const licenseReadOnly = license.session.isAuthenticated && !allowsData(access);
+  const licenseLine = license.session.isAuthenticated ? describeLicense(license.session) : "";
   const roleEdit = (mod: string) => can(session, mod, "edit");
   const permModule =
     activity === "analysis" || activity === "queries" || activity === "margins" ? "estimate" : activity;
@@ -187,6 +197,15 @@ export function App() {
     } catch (err) {
       window.alert(err instanceof Error ? err.message : "Could not open the reference project.");
     }
+  }
+
+  function signOut() {
+    void license.logout().then(() => {
+      setSession(null);
+      setProject(null);
+      setFilePath(null);
+      setScreen("login");
+    });
   }
 
   function openCampusSample() {
@@ -528,24 +547,30 @@ export function App() {
     liveTenant && project && (project.catalogVersion ?? 1) < liveTenant.catalogVersion,
   );
 
-  if (!platform) {
-    return <SplashShell status="Starting workspace…" />;
+  if (!platform || !license.ready) {
+    return <SplashShell status={!platform ? "Starting workspace…" : "Checking licence…"} />;
   }
 
-  if (!session || screen === "login") {
+  if (!license.session.isAuthenticated) {
     return (
       <LoginView
-        platform={platform}
-        onTenant={(s) => {
-          setSession(s);
-          setScreen("home");
+        busy={license.busy}
+        error={license.error}
+        onSubmit={(email, password) => {
+          void license.login(email, password).then((ok) => {
+            if (!ok) return;
+            setSession(workspaceSession(platform));
+            setScreen("home");
+          });
         }}
-        onOwner={() => {
-          setSession({ kind: "owner" });
-          setScreen("owner");
-        }}
+        onSignup={license.openSignup}
+        onPricing={license.openPricing}
       />
     );
+  }
+
+  if (!session) {
+    return <SplashShell status="Opening workspace…" />;
   }
 
   if (screen === "owner" && session.kind === "owner") {
@@ -604,10 +629,9 @@ export function App() {
           setScreen("import");
         }}
         onOpenPath={(path) => void openAeroFile(path)}
-        onSignOut={() => {
-          setSession(null);
-          setScreen("login");
-        }}
+        accountName={license.session.displayName || license.session.email}
+        licenseLine={licenseLine}
+        onSignOut={signOut}
         onOwnerPortal={session.kind === "owner" ? () => setScreen("owner") : undefined}
       />
     );
@@ -640,9 +664,11 @@ export function App() {
     activity === "settings";
   const bills = sortedBills(project);
   const whoLabel =
-    session.kind === "owner"
+    license.session.displayName ||
+    license.session.email ||
+    (session.kind === "owner"
       ? "Owner"
-      : (session.tenant.users.find((u) => u.id === session.userId)?.name ?? session.role.name);
+      : (session.tenant.users.find((u) => u.id === session.userId)?.name ?? session.role.name));
   const initials = whoLabel
     .split(/\s+/)
     .map((p) => p[0] ?? "")
@@ -699,7 +725,9 @@ export function App() {
           <span className="job">{project.name}</span>
           <span className="rev">
             {project.sealedAt ? `sealed r${project.revision}` : `r${project.revision}`}
-            {lic ? ` · ${lic.readOnly ? "read-only" : lic.paid ? `License ${lic.daysLeft}d` : `Trial ${lic.daysLeft}d`}` : ""}
+            {license.session.isAuthenticated
+              ? ` · ${licenseReadOnly ? "read-only · " : ""}${planDisplayName(license.session.planCode)}`
+              : ""}
           </span>
         </div>
         <span className="sp" />
@@ -749,6 +777,11 @@ export function App() {
         )}
       </nav>
       <div className="shell-banners">
+        {licenseBanner(license.session) ? (
+          <div className="banner" role="status">
+            {licenseBanner(license.session)}
+          </div>
+        ) : null}
         {catalogStale ? (
           <div className="banner">
             Global catalog is at v{liveTenant?.catalogVersion}. This project is v{project.catalogVersion ?? 1}.
@@ -770,7 +803,20 @@ export function App() {
       <main className={`stage ${fillStage ? "stage-fill" : ""}`}>
         {activity === "dashboard" ? (
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus}>
-            <DashboardView project={project} billId={billFocus} />
+            <DashboardView
+              project={project}
+              billId={billFocus}
+              license={
+                <LicensePanel
+                  session={license.session}
+                  busy={license.busy}
+                  onRefresh={() => void license.refresh()}
+                  onAccount={license.openAccount}
+                  onPricing={license.openPricing}
+                  onSignOut={signOut}
+                />
+              }
+            />
           </BoqSplit>
         ) : null}
         {activity === "estimate" ? (
@@ -962,6 +1008,12 @@ export function App() {
             onCompareReplica={() => void compareReplica()}
             project={project}
             onProject={(next) => setProject(withResults(next))}
+            license={license.session}
+            licenseBusy={license.busy}
+            onRefreshLicense={() => void license.refresh()}
+            onAccount={license.openAccount}
+            onPricing={license.openPricing}
+            onSignOut={signOut}
           />
         ) : null}
       </main>
@@ -1093,4 +1145,14 @@ export function App() {
       </footer>
     </div>
   );
+}
+
+function workspaceSession(platform: PlatformState): Session {
+  const tenant = platform.tenants.find((t) => t.edition === "solo") ?? platform.tenants[0];
+  const user = tenant?.users[0];
+  const role = tenant?.roles.find((item) => item.id === user?.roleId) ?? tenant?.roles[0];
+  if (!tenant || !user || !role) {
+    throw new Error("No individual workspace is available.");
+  }
+  return { kind: "tenant", tenant, userId: user.id, role };
 }
