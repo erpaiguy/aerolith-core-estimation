@@ -1,5 +1,7 @@
-import { hashPin, licenseStatus, newSalt } from "../platform/crypto";
-import { applyLicenseKey, logAudit, savePlatform, saveTenantCatalog, type Session } from "../platform/store";
+import { hashPin, newSalt } from "../platform/crypto";
+import { logAudit, savePlatform, saveTenantCatalog, type Session } from "../platform/store";
+import type { LicenseSession } from "../auth/licenseState";
+import { LicensePanel } from "./LicensePanel";
 import {
   ALL_ACTIONS,
   MODULES,
@@ -53,6 +55,12 @@ export function SettingsView({
   onCompareReplica,
   project,
   onProject,
+  license = null,
+  licenseBusy = false,
+  onRefreshLicense,
+  onAccount,
+  onPricing,
+  onSignOut,
 }: {
   session: Session;
   platform: PlatformState;
@@ -61,13 +69,18 @@ export function SettingsView({
   onCompareReplica?: () => void;
   project?: LoadedProject | null;
   onProject?: (next: LoadedProject) => void;
+  license?: LicenseSession | null;
+  licenseBusy?: boolean;
+  onRefreshLicense?: () => void;
+  onAccount?: () => void;
+  onPricing?: () => void;
+  onSignOut?: () => void;
 }) {
   const [tab, setTab] = useState<SettingsTab>("license");
   if (session.kind !== "tenant") {
     return <p className="hint">Settings belong to a tenant workspace.</p>;
   }
   const tenant = platform.tenants.find((t) => t.id === session.tenant.id) ?? session.tenant;
-  const lic = licenseStatus(tenant.trialStartedAt, tenant.licenseExpiresAt);
   const actor = tenant.users.find((u) => u.id === session.userId)?.login ?? "user";
   const admin = session.role.id === "admin" || Boolean(session.impersonatedBy);
   const solo = isSoloTenant(tenant);
@@ -134,22 +147,6 @@ export function SettingsView({
       { actor, action: "user_added", detail: login },
     );
     onPlatform(nextState);
-  }
-
-  function applyKey() {
-    const key = window.prompt("License key");
-    if (!key) return;
-    const next = applyLicenseKey(platform, tenant.id, key);
-    if (!next) {
-      window.alert("That key is not issued for this workspace.");
-      return;
-    }
-    const applied = logAudit(next, tenant.id, {
-      actor,
-      action: "license_applied",
-      detail: key.trim(),
-    });
-    onPlatform(applied);
   }
 
   function addRole() {
@@ -221,39 +218,22 @@ export function SettingsView({
       <div className="settings-section">
       <h1 className="view">License</h1>
       <p className="hint">
-        Workspace · {solo ? "solo" : "company"} · {numbers.currency} · qty {numbers.qtyDecimals} dp · rate{" "}
-        {numbers.rateDecimals} dp · amount {numbers.amountDecimals} dp. All users share {tenantProjectsHint(tenant.id)}.
+        Aerolith account · {solo ? "individual" : "company"} workspace · {numbers.currency}. Jobs stay in{" "}
+        {tenantProjectsHint(tenant.id)}.
         {session.impersonatedBy ? ` Vendor access by ${session.impersonatedBy} is recorded in Audit.` : ""}
       </p>
-      <div className="kpis">
-        <div className="kpi">
-          <b>{lic.readOnly ? "Read-only" : lic.paid ? "Licensed" : "Trial"}</b>
-          <span>{lic.readOnly ? "Grace ended" : `${lic.daysLeft} days left`}</span>
-        </div>
-        <div className="kpi">
-          <b>{solo ? "Solo" : "Company"}</b>
-          <span>
-            {tenant.users.length}/{tenant.seatLimit} seats
-          </span>
-        </div>
-        {solo ? null : (
-          <div className="kpi">
-            <b>{tenant.roles.length}</b>
-            <span>Roles</span>
-          </div>
-        )}
-        <div className="kpi">
-          <b>v{tenant.catalogVersion}</b>
-          <span>Global catalog</span>
-        </div>
-      </div>
-      {admin ? (
-        <div className="actions">
-          <button type="button" onClick={applyKey}>
-            Apply license key
-          </button>
-        </div>
-      ) : null}
+      {license && onAccount && onPricing ? (
+        <LicensePanel
+          session={license}
+          busy={licenseBusy}
+          onRefresh={onRefreshLicense}
+          onAccount={onAccount}
+          onPricing={onPricing}
+          onSignOut={onSignOut}
+        />
+      ) : (
+        <p className="hint">Sign in with an Aerolith account to see the trial.</p>
+      )}
       </div>
       ) : null}
       {active === "numbers" ? (

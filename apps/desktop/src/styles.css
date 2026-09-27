@@ -597,6 +597,51 @@ a:focus-visible {
   text-wrap: pretty;
   text-align: left;
 }
+.login-error {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #E7B6B1;
+  border-radius: var(--radius);
+  background: #FDF2F1;
+  color: var(--danger);
+}
+.login-error h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.login-error p { margin: 0; }
+.login-links {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.login-links button { flex: 1; }
+.license-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.license-kicker {
+  margin: 0 0 4px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.license-panel h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+.license-panel p { margin: 0 0 8px; }
+.license-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
 .home-hero { margin-bottom: 4px; }
 .home-role {
   margin: 0 0 8px;
@@ -3426,6 +3471,7 @@ button.buy-settle:hover {
     justify-content: flex-start;
   }
   .login-form { max-width: none; }
+  .license-panel { grid-template-columns: 1fr; }
   .module-body.report-split { grid-template-columns: 1fr; }
   .report-designer-pane { border-left: 0; border-top: 1px solid var(--line); }
   .inspector {

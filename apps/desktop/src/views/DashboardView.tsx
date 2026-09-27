@@ -5,15 +5,18 @@ import { costCategoryTree, type CostCatNode } from "../projectCompute";
 import { effectiveMargin } from "../marginRules";
 import { hasAnalysisBackup } from "../model";
 import { billTotal, quoteMatchesItem, sortedBills } from "../bills";
+import type { ReactNode } from "react";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
 
 export function DashboardView({
   project,
   billId = null,
+  license = null,
 }: {
   project: LoadedProject;
   billId?: string | null;
+  license?: ReactNode;
 }) {
   const bills = sortedBills(project);
   const scoped = useMemo(
@@ -60,6 +63,7 @@ export function DashboardView({
 
   return (
     <div className="dashboard-view">
+      {license}
       <div className="kpis">
         <div className="kpi">
           <span>Cost</span>

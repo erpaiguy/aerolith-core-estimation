@@ -1,10 +1,11 @@
-import { licenseStatus } from "../platform/crypto";
 import { recents, sessionScope, type Session } from "../platform/store";
 import { isSoloTenant, tenantProjectsHint } from "../platform/tenant";
 
 export function HomeView({
   session,
   canImport = true,
+  accountName = null,
+  licenseLine = null,
   onNew,
   onOpen,
   onSampleSingle,
@@ -16,6 +17,8 @@ export function HomeView({
 }: {
   session: Session;
   canImport?: boolean;
+  accountName?: string | null;
+  licenseLine?: string | null;
   onNew: () => void;
   onOpen: () => void;
   onOpenPath?: (path: string) => void;
@@ -26,7 +29,6 @@ export function HomeView({
   onOwnerPortal?: () => void;
 }) {
   const tenant = session.kind === "tenant" ? session.tenant : null;
-  const lic = tenant ? licenseStatus(tenant.trialStartedAt, tenant.licenseExpiresAt) : null;
   const scope = sessionScope(session);
   const recent = scope ? recents(scope) : [];
   const user =
@@ -34,7 +36,7 @@ export function HomeView({
   const who =
     session.kind === "owner"
       ? "Owner session"
-      : (user?.name ?? "Workspace");
+      : (accountName || user?.name || "Workspace");
   const solo = tenant ? isSoloTenant(tenant) : false;
   const roleLine =
     session.kind === "owner"
@@ -47,12 +49,8 @@ export function HomeView({
         ]
           .filter(Boolean)
           .join(" · ");
-  const trialLine = lic
-    ? lic.readOnly
-      ? "License grace ended — projects open read-only until a key is applied."
-      : lic.paid
-        ? `License · ${lic.daysLeft} days remaining · jobs stay in this workspace.`
-        : `Trial · ${lic.daysLeft} days remaining · jobs stay in this workspace.`
+  const trialLine = licenseLine
+    ? `${licenseLine} Jobs stay in this workspace.`
     : "Jobs stay in this workspace.";
 
   return (
