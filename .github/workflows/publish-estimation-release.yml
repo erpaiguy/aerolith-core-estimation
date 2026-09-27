@@ -1,0 +1,64 @@
+# Publish Estimation-Setup.exe to erpaiguy/aerolith-core-releases.
+#
+# Same pipeline as Cutlist (aerolith-core-cutlist-app):
+# Cursor GitHub App cannot upload release assets (Contents push:false on the
+# releases repo). This workflow will build the installer in Actions, then
+# upload with fine-grained PAT repository secret AEROLITH_RELEASES_TOKEN
+# (Contents: Read and write on erpaiguy/aerolith-core-releases only).
+#
+# One-time setup (person; never commit the token):
+# 1. Reuse the same fine-grained PAT already used for Cutlist (or mint one
+#    with Contents R/W on aerolith-core-releases only).
+# 2. In this repo: Settings → Secrets and variables → Actions →
+#    New repository secret. Name: AEROLITH_RELEASES_TOKEN
+# 3. Grant the Cursor GitHub App access to this repository.
+# 4. After a real build script exists and this workflow is on the default
+#    branch, Actions → "Publish Estimation release" → Run workflow.
+#
+# STUB: build/packaging scripts are not wired yet. The job fails until you
+# replace the "Build installer (stub)" step with the real Build-Installer
+# path (see Cutlist scripts/Build-Installer.ps1 pattern).
+
+name: Publish Estimation release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish-setup:
+    runs-on: windows-latest
+    steps:
+      - name: Require AEROLITH_RELEASES_TOKEN
+        env:
+          AEROLITH_RELEASES_TOKEN: ${{ secrets.AEROLITH_RELEASES_TOKEN }}
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:AEROLITH_RELEASES_TOKEN)) {
+            throw "Repository secret AEROLITH_RELEASES_TOKEN is empty. Add a fine-grained PAT with Contents: Read and write on erpaiguy/aerolith-core-releases only, then re-run. Do not commit the token."
+          }
+
+      - uses: actions/checkout@v4
+
+      - name: Build installer (stub)
+        shell: pwsh
+        run: |
+          throw @"
+          Publish pipeline wiring is in place, but the Aerolith Core Estimation installer
+          build is not implemented yet. Add a Build-Installer script (Cutlist
+          pattern), stage dist/Estimation-Setup.exe, then replace this stub step and
+          enable the upload step below.
+          "@
+
+      # Uncomment when dist/Estimation-Setup.exe is produced by the real build:
+      # - name: Upload Estimation-Setup.exe to aerolith-core-releases
+      #   uses: softprops/action-gh-release@v3
+      #   with:
+      #     repository: erpaiguy/aerolith-core-releases
+      #     tag_name: v1.0.0
+      #     token: ${{ secrets.AEROLITH_RELEASES_TOKEN }}
+      #     files: dist/Estimation-Setup.exe
+      #     fail_on_unmatched_files: true
+      #     overwrite_files: true
