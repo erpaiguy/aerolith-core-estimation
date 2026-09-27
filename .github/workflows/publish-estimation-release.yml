@@ -1,23 +1,14 @@
 # Publish Estimation-Setup.exe to erpaiguy/aerolith-core-releases.
 #
-# Same pipeline as Cutlist (aerolith-core-cutlist-app):
-# Cursor GitHub App cannot upload release assets (Contents push:false on the
-# releases repo). This workflow will build the installer in Actions, then
-# upload with fine-grained PAT repository secret AEROLITH_RELEASES_TOKEN
+# Same pipeline as Cutlist: Actions builds the installer, then uploads with
+# the fine-grained PAT repository secret AEROLITH_RELEASES_TOKEN
 # (Contents: Read and write on erpaiguy/aerolith-core-releases only).
 #
-# One-time setup (person; never commit the token):
-# 1. Reuse the same fine-grained PAT already used for Cutlist (or mint one
-#    with Contents R/W on aerolith-core-releases only).
-# 2. In this repo: Settings → Secrets and variables → Actions →
-#    New repository secret. Name: AEROLITH_RELEASES_TOKEN
-# 3. Grant the Cursor GitHub App access to this repository.
-# 4. After a real build script exists and this workflow is on the default
-#    branch, Actions → "Publish Estimation release" → Run workflow.
-#
-# STUB: build/packaging scripts are not wired yet. The job fails until you
-# replace the "Build installer (stub)" step with the real Build-Installer
-# path (see Cutlist scripts/Build-Installer.ps1 pattern).
+# After this workflow is on the default branch, run it once:
+# Actions → "Publish Estimation release" → Run workflow.
+# That adds Estimation-Setup.exe to the existing v1.0.0 release
+# (next to Cutlist-Setup.exe). overwrite_files replaces only an asset
+# with the same name. Do not commit the token.
 
 name: Publish Estimation release
 
@@ -42,23 +33,63 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Build installer (stub)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Cache Rust build
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build Tauri NSIS installer
+        working-directory: apps/desktop
+        run: npm run tauri -- build --bundles nsis
+
+      - name: Stage Estimation-Setup.exe
         shell: pwsh
         run: |
-          throw @"
-          Publish pipeline wiring is in place, but the Aerolith Core Estimation installer
-          build is not implemented yet. Add a Build-Installer script (Cutlist
-          pattern), stage dist/Estimation-Setup.exe, then replace this stub step and
-          enable the upload step below.
-          "@
+          $conf = Get-Content -Raw "apps/desktop/src-tauri/tauri.conf.json" | ConvertFrom-Json
+          $product = [string]$conf.productName
+          $version = [string]$conf.version
+          if ([string]::IsNullOrWhiteSpace($product) -or [string]::IsNullOrWhiteSpace($version)) {
+            throw "tauri.conf.json is missing productName or version."
+          }
+          # tauri-bundler (CLI 2.11): {productName}_{version}_{arch}-setup.exe
+          # under <projectOut>/bundle/nsis/. windows-latest is x86_64, so arch is x64.
+          $installer = Join-Path "apps/desktop/src-tauri/target/release/bundle/nsis" "${product}_${version}_x64-setup.exe"
+          if (-not (Test-Path -LiteralPath $installer)) {
+            Write-Host "Expected NSIS installer: $installer"
+            $bundle = "apps/desktop/src-tauri/target/release/bundle"
+            if (Test-Path $bundle) {
+              Get-ChildItem -Recurse -File $bundle | ForEach-Object { Write-Host $_.FullName }
+            }
+            throw "NSIS installer was not produced at the Tauri output path."
+          }
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item -LiteralPath $installer -Destination "dist/Estimation-Setup.exe" -Force
+          $item = Get-Item -LiteralPath "dist/Estimation-Setup.exe"
+          if ($item.Length -lt 1) {
+            throw "dist/Estimation-Setup.exe is empty."
+          }
+          Write-Host "Staged $($item.FullName) ($($item.Length) bytes) from $installer"
 
-      # Uncomment when dist/Estimation-Setup.exe is produced by the real build:
-      # - name: Upload Estimation-Setup.exe to aerolith-core-releases
-      #   uses: softprops/action-gh-release@v3
-      #   with:
-      #     repository: erpaiguy/aerolith-core-releases
-      #     tag_name: v1.0.0
-      #     token: ${{ secrets.AEROLITH_RELEASES_TOKEN }}
-      #     files: dist/Estimation-Setup.exe
-      #     fail_on_unmatched_files: true
-      #     overwrite_files: true
+      - name: Upload Estimation-Setup.exe to aerolith-core-releases
+        uses: softprops/action-gh-release@v3
+        with:
+          repository: erpaiguy/aerolith-core-releases
+          tag_name: v1.0.0
+          token: ${{ secrets.AEROLITH_RELEASES_TOKEN }}
+          files: dist/Estimation-Setup.exe
+          fail_on_unmatched_files: true
+          overwrite_files: true
