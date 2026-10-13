@@ -170,7 +170,7 @@ export function printSubmission(
   const paper = fmt.paper === "a3" ? "A3" : fmt.paper === "letter" ? "letter" : "A4";
   const size = `${paper} ${fmt.orientation}`;
   const fs = fmt.fontSize === "sm" ? "11px" : fmt.fontSize === "lg" ? "14px" : "12px";
-  const company = fmt.companyName.trim() || "Aerolith Core";
+  const company = fmt.companyName.trim() || "Bid Craft";
   const dateLine = fmt.showDate ? new Date().toLocaleDateString() : "";
   const rev = fmt.showRevision ? `Revision ${project.revision}${project.sealedAt ? " · sealed" : ""}` : "";
   const itemLines = submissionItemLines(project, fmt, scope);

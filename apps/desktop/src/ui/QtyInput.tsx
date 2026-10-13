@@ -1,5 +1,5 @@
 import { useEffect, useState, type MouseEvent } from "react";
-import { formatRate, isNumericDraft, parseSignedNumber, roundTo, roundUpTo } from "@aerolith/shared";
+import { formatGrouped, formatRate, isNumericDraft, parseSignedNumber, roundTo, roundUpTo } from "@aerolith/shared";
 
 function committedText(
   value: number | null | undefined,
@@ -11,10 +11,7 @@ function committedText(
   if (moneyCurrency) return formatRate(value, moneyCurrency, decimals);
   if (decimals == null) return String(value);
   const n = round === "up" ? roundUpTo(value, decimals) : roundTo(value, decimals);
-  return n.toLocaleString("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+  return formatGrouped(n, decimals);
 }
 
 export function QtyInput({

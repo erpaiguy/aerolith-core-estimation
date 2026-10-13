@@ -1,5 +1,6 @@
 import type { DisplayFormat } from "@aerolith/shared";
 import type { CategoryRow, UnitRow, VendorRow } from "../model";
+import type { ResourceMasterRow } from "../resourceMaster";
 
 export type ModuleId =
   | "source"
@@ -74,6 +75,8 @@ export interface TenantRecord {
   reportTemplates?: Array<{ id: string; name: string; format: Record<string, unknown> }>;
   activeReportTemplateId?: string | null;
   displayFormat?: Partial<DisplayFormat>;
+  resourceMaster?: ResourceMasterRow[];
+  resourceMasterSeedVersion?: number;
 }
 
 export interface AuditEvent {

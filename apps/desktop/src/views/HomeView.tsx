@@ -1,4 +1,5 @@
 import { recents, sessionScope, type Session } from "../platform/store";
+import { BrandLockup, PublisherMark } from "./Brand";
 import { isSoloTenant, tenantProjectsHint } from "../platform/tenant";
 
 export function HomeView({
@@ -56,6 +57,7 @@ export function HomeView({
   return (
     <div className="app backstage">
       <aside className="back-nav">
+        <BrandLockup size="sm" tone="dark" />
         <div className="who">
           {who}
           <small>{roleLine}</small>
@@ -83,6 +85,7 @@ export function HomeView({
         <button type="button" onClick={onSignOut}>
           Sign out
         </button>
+        <PublisherMark tone="dark" compact />
       </aside>
       <div className="home">
         <h1>Open</h1>

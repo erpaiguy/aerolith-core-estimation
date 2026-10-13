@@ -10,6 +10,7 @@ import {
 import type { AuditEvent, LicenseKey, PlatformState, Role, TenantRecord } from "./types";
 import { generateLicenseKey, licenseExpiresAt, normalizeLicenseKey, type LicenseTerm } from "./licenseTerm";
 import type { TenantCatalog } from "../tenantCatalog";
+import { bundledResourceSeed, mergeResourceSeed, RESOURCE_SEED_VERSION } from "../resourceMaster";
 
 const KEY = "aerolith.platform.v1";
 const RECENTS_LEGACY = "aerolith.recents";
@@ -157,6 +158,14 @@ function migrateLegacyRecents(tenants: TenantRecord[]): void {
   storageSet(RECENTS_MIGRATED, "1");
 }
 
+async function withResourceSeed(tenants: TenantRecord[]): Promise<TenantRecord[]> {
+  const seed = await bundledResourceSeed();
+  return tenants.map((tenant) => {
+    const merged = mergeResourceSeed(tenant.resourceMaster, seed, tenant.resourceMasterSeedVersion, RESOURCE_SEED_VERSION);
+    return { ...tenant, resourceMaster: merged.rows, resourceMasterSeedVersion: merged.version };
+  });
+}
+
 export async function ensurePlatform(): Promise<PlatformState> {
   const existing = readPlatform();
   if (existing?.tenants?.length) {
@@ -166,13 +175,14 @@ export async function ensurePlatform(): Promise<PlatformState> {
       tenants = [...tenants, { ...extra, id: "t-solo" }];
     }
     tenants = await hydrateCatalogs(tenants);
+    tenants = await withResourceSeed(tenants);
     migrateLegacyRecents(tenants);
     const patched: PlatformState = { ...existing, tenants };
     savePlatform(patched);
     return patched;
   }
   const state = await seed();
-  const tenants = await hydrateCatalogs(state.tenants);
+  const tenants = await withResourceSeed(await hydrateCatalogs(state.tenants));
   const patched = { ...state, tenants };
   savePlatform(patched);
   return patched;

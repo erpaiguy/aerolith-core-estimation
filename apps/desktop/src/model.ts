@@ -8,6 +8,7 @@ import type {
   ResourceLineInput,
 } from "@aerolith/calc";
 import type { MarginStack, QtySource, RateSource } from "@aerolith/shared";
+import type { ResourceMasterRow } from "./resourceMaster";
 
 export type Activity =
   | "source"
@@ -326,6 +327,8 @@ export interface LoadedProject {
   clientColumns: BoqColumnDef[];
   workingColumns: BoqColumnDef[];
   resources: ProjectResource[];
+  /** Project copy of the global resource master. Missing on older jobs until copied. */
+  resourceMaster?: ResourceMasterRow[];
   units: UnitRow[];
   categories: CategoryRow[];
   vendors: VendorRow[];

@@ -3,7 +3,6 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { emptyProject, loadCampusSampleProject, loadReferenceProject } from "./loadReference";
 import type { Activity, LoadedProject, QtoLine, WorkingItem } from "./model";
 import { GOLDEN_TOTAL, hasAnalysisBackup, inferParents, newId, stampItem } from "./model";
-import { ACTIVITY_LABELS, RIBBON_ORDER, activityLabel } from "./activityLabels";
 import { useAerolithLicense } from "./auth/useAerolithLicense";
 import { allowsData, describeLicense, licenseBanner, resolveAccess } from "./auth/licenseState";
 import { planDisplayName } from "./auth/subscriptionPlans";
@@ -57,6 +56,11 @@ import { LicensePanel } from "./views/LicensePanel";
 import { LoginView } from "./views/LoginView";
 import { SplashShell } from "./views/SplashShell";
 import { BrandLockup } from "./views/Brand";
+import { Sidebar, type SidebarTarget } from "./views/Sidebar";
+import { applyTheme, readTheme, type ThemeName } from "./theme";
+import { checkForUpdate, updatesAutoEnabled, type UpdateOffer } from "./updates";
+import { cloneResourceMaster, pushRateToMaster } from "./resourceMaster";
+import { copyGlobalMaster, projectWithMaster } from "./projectResourceMaster";
 import { MastersView } from "./views/MastersView";
 import { OwnerView } from "./views/OwnerView";
 import { SettingsView } from "./views/SettingsView";
@@ -86,6 +90,22 @@ export function App() {
   const [importMode, setImportMode] = useState<"create" | "append" | "amend">("create");
   const inspectorW = usePersistedNumber("aerolith-split:inspector", 300, 220, 560);
   const license = useAerolithLicense();
+  const [theme, setTheme] = useState<ThemeName>(readTheme);
+  const [navCollapsed, setNavCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem("bidcraft.navCollapsed") === "1";
+    } catch {
+      return false;
+    }
+  });
+  const [masterTab, setMasterTab] = useState<"units" | "categories" | "vendors" | "resources">("units");
+  const [updateOffer, setUpdateOffer] = useState<UpdateOffer | null>(null);
+  const [updateBusy, setUpdateBusy] = useState(false);
+
+  useEffect(() => {
+    if (!updatesAutoEnabled()) return;
+    void checkForUpdate().then(setUpdateOffer).catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     void ensurePlatform()
@@ -185,7 +205,14 @@ export function App() {
   }
 
   function openNew() {
-    openProject(emptyProject("New project", displayFormat.currency, effectiveCatalog(liveTenant)));
+    openProject(
+      emptyProject(
+        "New project",
+        displayFormat.currency,
+        effectiveCatalog(liveTenant),
+        cloneResourceMaster(liveTenant?.resourceMaster ?? []),
+      ),
+    );
     setActivity("estimate");
     setSelected(`${DEFAULT_BILL_ID}::1a`);
   }
@@ -649,7 +676,6 @@ export function App() {
   const shownItems = visibleItems(project, billFocus);
   const shownTotal = billFocus ? billTotal(project.items, billFocus) : total;
 
-  const ribbon: Array<[Activity, string]> = RIBBON_ORDER.map((id) => [id, ACTIVITY_LABELS[id]]);
   const showInspector = activity === "estimate" || activity === "analysis" || activity === "takeoff";
   const fillStage =
     activity === "buy" ||
@@ -661,8 +687,8 @@ export function App() {
     activity === "source" ||
     activity === "dashboard" ||
     activity === "margins" ||
+    activity === "masters" ||
     activity === "settings";
-  const bills = sortedBills(project);
   const whoLabel =
     license.session.displayName ||
     license.session.email ||
@@ -716,9 +742,40 @@ export function App() {
 
   return (
     <div
-      className={`app shell ${editLocked ? "readonly" : ""} ${inspectorVisible ? "inspector-open" : "no-inspector"}`}
+      className={`app shell ${navCollapsed ? "nav-collapsed" : ""} ${editLocked ? "readonly" : ""} ${inspectorVisible ? "inspector-open" : "no-inspector"}`}
       style={inspectorVisible ? ({ ["--inspector-w"]: `${inspectorW.value}px` } as CSSProperties) : undefined}
     >
+      <Sidebar
+        activity={activity}
+        masterOpen={masterTab === "resources"}
+        collapsed={navCollapsed}
+        theme={theme}
+        canView={canView}
+        onNavigate={(id: SidebarTarget) => {
+          if (id === "resources") {
+            setMasterTab("resources");
+            goTo("masters");
+            return;
+          }
+          if (id === "masters") setMasterTab("units");
+          goTo(id);
+        }}
+        onToggle={() => {
+          setNavCollapsed((value) => {
+            const next = !value;
+            try {
+              localStorage.setItem("bidcraft.navCollapsed", next ? "1" : "0");
+            } catch {
+              /* ignore */
+            }
+            return next;
+          });
+        }}
+        onTheme={(next) => {
+          setTheme(next);
+          applyTheme(next);
+        }}
+      />
       <header className="titlebar">
         <BrandLockup size="sm" tone="dark" />
         <div className="id">
@@ -762,21 +819,26 @@ export function App() {
           {initials} · {session.kind === "owner" ? "owner" : session.role.name}
         </span>
       </header>
-      <nav className="rtabs" aria-label="Modules">
-        {ribbon.map(([id, label]) =>
-          canView(id) ? (
-            <button
-              key={id}
-              type="button"
-              className={`rtab ${activity === id ? "on" : ""}`}
-              onClick={() => goTo(id)}
-            >
-              {label}
-            </button>
-          ) : null,
-        )}
-      </nav>
       <div className="shell-banners">
+        {updateOffer ? (
+          <div className="banner" role="status">
+            Bid Craft {updateOffer.version} is available. {updateOffer.notes}
+            <button
+              type="button"
+              className="primary"
+              disabled={updateBusy}
+              onClick={() => {
+                setUpdateBusy(true);
+                void updateOffer.install().catch((err) => {
+                  setUpdateBusy(false);
+                  window.alert(err instanceof Error ? err.message : "Could not install the update.");
+                });
+              }}
+            >
+              {updateBusy ? "Installing…" : "Download, install, and relaunch"}
+            </button>
+          </div>
+        ) : null}
         {licenseBanner(license.session) ? (
           <div className="banner" role="status">
             {licenseBanner(license.session)}
@@ -997,6 +1059,40 @@ export function App() {
             onChangeCatalog={saveCatalogEdits}
             onPromote={requestPromote}
             locked={editLocked}
+            masterTab={masterTab}
+            onMasterTab={setMasterTab}
+            currency={project.currency}
+            globalResourceRows={liveTenant?.resourceMaster ?? []}
+            projectResourceRows={project.resourceMaster ?? []}
+            onGlobalResourceRows={(rows) => {
+              if (!platform || !liveTenant) return;
+              const next = {
+                ...platform,
+                tenants: platform.tenants.map((tenant) =>
+                  tenant.id === liveTenant.id ? { ...tenant, resourceMaster: rows } : tenant,
+                ),
+              };
+              savePlatform(next);
+              applyPlatform(next);
+            }}
+            onProjectResourceRows={(rows) => commit(projectWithMaster(project, rows))}
+            onPushRate={(row) => {
+              if (!platform || !liveTenant) return;
+              const next = {
+                ...platform,
+                tenants: platform.tenants.map((tenant) =>
+                  tenant.id === liveTenant.id
+                    ? { ...tenant, resourceMaster: pushRateToMaster(tenant.resourceMaster ?? [], row) }
+                    : tenant,
+                ),
+              };
+              savePlatform(next);
+              applyPlatform(next);
+            }}
+            onCopyGlobal={() => {
+              if (!liveTenant) return;
+              commit(copyGlobalMaster(project, liveTenant.resourceMaster ?? []));
+            }}
           />
         ) : null}
         {activity === "settings" && session ? (
@@ -1014,6 +1110,11 @@ export function App() {
             onAccount={license.openAccount}
             onPricing={license.openPricing}
             onSignOut={signOut}
+            theme={theme}
+            onTheme={(next) => {
+              setTheme(next);
+              applyTheme(next);
+            }}
           />
         ) : null}
       </main>
@@ -1077,56 +1178,6 @@ export function App() {
         </div>
       </aside>
       ) : null}
-      <nav className="sheets" aria-label="Sheets">
-        {canView("dashboard") ? (
-          <button type="button" className={`stab ${activity === "dashboard" ? "on" : ""}`} onClick={() => goTo("dashboard")}>
-            {activityLabel("dashboard")}
-          </button>
-        ) : null}
-        {canView("source") ? (
-          <button type="button" className={`stab ${activity === "source" ? "on" : ""}`} onClick={() => goTo("source")}>
-            {activityLabel("source")}
-          </button>
-        ) : null}
-        {canView("takeoff") ? (
-          <button type="button" className={`stab ${activity === "takeoff" ? "on" : ""}`} onClick={() => goTo("takeoff")}>
-            {activityLabel("takeoff")}
-          </button>
-        ) : null}
-        {canView("margins") ? (
-          <button type="button" className={`stab ${activity === "margins" ? "on" : ""}`} onClick={() => goTo("margins")}>
-            {activityLabel("margins")}
-          </button>
-        ) : null}
-        {bills.map((b) => (
-          <button
-            key={b.id}
-            type="button"
-            className={`stab ${activity === "estimate" && billFocus === b.id ? "on" : ""}`}
-            onClick={() => {
-              setBillFocus(b.id);
-              goTo("estimate");
-            }}
-          >
-            {b.code}
-          </button>
-        ))}
-        {canView("buy") ? (
-          <button type="button" className={`stab ${activity === "buy" ? "on" : ""}`} onClick={() => goTo("buy")}>
-            {activityLabel("buy")}
-          </button>
-        ) : null}
-        {canView("queries") ? (
-          <button type="button" className={`stab ${activity === "queries" ? "on" : ""}`} onClick={() => goTo("queries")}>
-            {activityLabel("queries")}
-          </button>
-        ) : null}
-        {canView("submit") ? (
-          <button type="button" className={`stab ${activity === "submit" ? "on" : ""}`} onClick={() => goTo("submit")}>
-            {activityLabel("submit")}
-          </button>
-        ) : null}
-      </nav>
       <footer className="status" role="status">
         <span>
           Ready

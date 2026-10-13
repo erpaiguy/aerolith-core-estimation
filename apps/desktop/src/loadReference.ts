@@ -1,3 +1,4 @@
+import { DEFAULT_DISPLAY_FORMAT } from "@aerolith/shared";
 import projectMeta from "@fixtures/project.json";
 import workingJson from "@fixtures/working_boq.json";
 import analysesJson from "@fixtures/rate_analyses.json";
@@ -13,6 +14,7 @@ import type {
 } from "./model";
 import { BUILTIN_QUOTE_FIELDS, inferParents, stampItem } from "./model";
 import { billById, defaultBill, DEFAULT_BILL_ID, itemKeyOf, nextBill } from "./bills";
+import { cloneResourceMaster, masterToProjectResource, type ResourceMasterRow } from "./resourceMaster";
 import { defaultClientColumns } from "./boqColumns";
 import { SAMPLE_LOCKED_AT, seedReferenceWorkflow } from "./sampleSeed";
 import { appGlobalCatalog, snapshotFromCatalog, type TenantCatalog } from "./tenantCatalog";
@@ -149,8 +151,14 @@ export function loadReferenceProject(): LoadedProject {
   });
 }
 
-export function emptyProject(name = "New project", currency = "QAR", catalog?: TenantCatalog): LoadedProject {
+export function emptyProject(
+  name = "New project",
+  currency = DEFAULT_DISPLAY_FORMAT.currency,
+  catalog?: TenantCatalog,
+  resourceMaster?: ResourceMasterRow[],
+): LoadedProject {
   const masters = snapshotFromCatalog(catalog ?? appGlobalCatalog());
+  const master = cloneResourceMaster(resourceMaster ?? []);
   return {
     name,
     locationNote: "",
@@ -210,7 +218,8 @@ export function emptyProject(name = "New project", currency = "QAR", catalog?: T
     ],
     clientColumns: defaultClientColumns(),
     workingColumns: [],
-    resources: [],
+    resources: master.map(masterToProjectResource),
+    resourceMaster: master,
     units: masters.units,
     categories: masters.categories,
     vendors: masters.vendors,
@@ -355,7 +364,7 @@ export function projectFromClientRows(
   name: string,
   rows: Array<{ sl: string; description: string; qty: number | null; unit: string; extra?: Record<string, string> }>,
   clientColumns = defaultClientColumns(),
-  currency = "QAR",
+  currency = DEFAULT_DISPLAY_FORMAT.currency,
   catalog?: TenantCatalog,
 ): LoadedProject {
   const lockedAt = new Date().toISOString();

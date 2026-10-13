@@ -12,7 +12,11 @@ import "@fontsource/ibm-plex-mono/600.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import { bootTheme } from "./theme";
 import "./styles.css";
+
+bootTheme();
+document.title = "Bid Craft";
 
 function isBenignResizeObserver(err: unknown): boolean {
   const text = err instanceof Error ? `${err.name} ${err.message}` : String(err ?? "");
@@ -25,7 +29,7 @@ function showCrash(err: unknown): void {
   if (!root) return;
   const message = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
   root.innerHTML = `<div style="font-family:Outfit,'Segoe UI',system-ui,sans-serif;padding:48px;max-width:40em;color:#B42318">
-    <h1 style="font-size:20px;font-weight:600;letter-spacing:-0.03em">Aerolith Core could not start</h1>
+    <h1 style="font-size:20px;font-weight:600;letter-spacing:-0.03em">Bid Craft could not start</h1>
     <p style="color:#0F172A">Leave this window open and tell me the text below.</p>
     <pre style="white-space:pre-wrap;background:#F8FAFC;border:1px solid #E2E8F0;padding:12px">${message.replace(/</g, "&lt;")}</pre>
   </div>`;

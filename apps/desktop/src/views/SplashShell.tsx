@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { BrandLockup } from "./Brand";
+import { BrandLockup, PublisherMark } from "./Brand";
 
 export function SplashShell({
   status,
@@ -16,7 +16,9 @@ export function SplashShell({
           <h1>Several bills. One job.</h1>
           <p>Estimating for issued BOQs. One resource catalogue. Totals you can seal.</p>
         </div>
-        <div className="login-side-foot">Core Estimation · QAR</div>
+        <div className="login-side-foot">
+          <PublisherMark tone="dark" compact />
+        </div>
       </div>
       <div className="login-panel">
         {status ? <p className="login-status">{status}</p> : <div className="login-card">{children}</div>}
