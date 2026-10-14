@@ -176,7 +176,7 @@ fn write_temp_pdf(name: String, data: Vec<u8>) -> Result<String, String> {
 #[tauri::command]
 fn open_user_file(path: String) -> Result<(), String> {
     let path = user_path(&path)?;
-    spawn_detached(open_command(path.to_string_lossy().as_ref()))
+    spawn_detached(&mut open_command(path.to_string_lossy().as_ref()))
 }
 
 #[tauri::command]
@@ -222,7 +222,7 @@ fn open_command(path: &str) -> std::process::Command {
     }
 }
 
-fn spawn_detached(mut cmd: std::process::Command) -> Result<(), String> {
+fn spawn_detached(cmd: &mut std::process::Command) -> Result<(), String> {
     cmd.spawn().map(|_| ()).map_err(|e| e.to_string())
 }
 
