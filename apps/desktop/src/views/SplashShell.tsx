@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { BrandLockup, PublisherMark } from "./Brand";
+import { BrandLockup, PublisherMark, useSurfaceTone } from "./Brand";
 
 export function SplashShell({
   status,
@@ -8,16 +8,17 @@ export function SplashShell({
   status?: string;
   children?: ReactNode;
 }) {
+  const tone = useSurfaceTone();
   return (
     <div className="app login">
       <div className="login-hero">
-        <BrandLockup size="lg" tone="dark" />
+        <BrandLockup size="lg" tone={tone} />
         <div className="login-side-copy">
           <h1>Several bills. One job.</h1>
           <p>Estimating for issued BOQs. One resource catalogue. Totals you can seal.</p>
         </div>
         <div className="login-side-foot">
-          <PublisherMark tone="dark" compact />
+          <PublisherMark tone={tone} compact />
         </div>
       </div>
       <div className="login-panel">
