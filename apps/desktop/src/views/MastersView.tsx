@@ -27,7 +27,7 @@ export function MastersView({
   onProjectResourceRows,
   onPushRate,
   onCopyGlobal,
-  currency = "INR",
+  currency = "QAR",
 }: {
   project: LoadedProject;
   catalog: { units: UnitRow[]; categories: CategoryRow[]; vendors: VendorRow[] };

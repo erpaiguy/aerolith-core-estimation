@@ -38,7 +38,7 @@ npm run dev:desktop
 
 That script loads Visual Studio 2022 Build Tools before compiling. A plain `tauri dev` from this machine can pick Visual Studio 2026’s linker, which is missing `msvcrt.lib` and fails to link.
 
-That opens **Bid Craft** as a Windows window (the installed app identifier stays `com.aerolith.core`). **Save .aero** and **Open .aero** use native dialogs and write under `Documents\Aerolith\Projects` unless you pick another folder. Browser preview (`npm run dev`) still downloads `.aero`. Settings includes currency (default INR), decimal precision, and in-app updates.
+That opens **Bid Craft** as a Windows window (the installed app identifier stays `com.aerolith.core`). **Save .aero** and **Open .aero** use native dialogs and write under `Documents\Aerolith\Projects` unless you pick another folder. Browser preview (`npm run dev`) still downloads `.aero`. Settings includes currency (default QAR), decimal precision, and in-app updates.
 
 ## What this slice includes
 
@@ -51,7 +51,7 @@ That opens **Bid Craft** as a Windows window (the installed app identifier stays
 
 - Qty policy: client bill + tender adjustments
 - Margin: OH 10% + profit 30% + logistics 2.5% + contingency 5%
-- Currency: INR (samples that were priced in QAR stay in QAR)
+- Currency: QAR
 - License grace (later): 14 days
 - Default folder: Documents/Aerolith/Projects
 

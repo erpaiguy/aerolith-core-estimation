@@ -925,7 +925,7 @@ export async function aeroToProject(bytes: Uint8Array): Promise<LoadedProject> {
     },
     marginPresets: parseMarginPresets(parseJsonValue(meta.margin_presets)),
     marginRules: parseMarginRules(parseJsonValue(meta.margin_rules)),
-    currency: meta.currency || "INR",
+    currency: meta.currency || "QAR",
     qtySource: "client_plus_adjustments",
     bills: loadedBills,
     items,
@@ -1027,7 +1027,7 @@ export async function aeroToProject(bytes: Uint8Array): Promise<LoadedProject> {
       validUntil: nullable(r.valid_until),
       paymentTerms: str(r.payment_terms),
       duration: str(r.duration),
-      currency: str(r.currency) || meta.currency || "INR",
+      currency: str(r.currency) || meta.currency || "QAR",
       headerFields: parseJsonMap(r.header_json) ?? {},
     })),
     quoteFieldDefs: tryRows(db, "SELECT * FROM quote_field_defs").map((r) => ({

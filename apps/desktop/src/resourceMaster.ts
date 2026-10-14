@@ -2,7 +2,7 @@ import { unzipSync, zipSync, strToU8 } from "fflate";
 import { roundRate } from "@aerolith/shared";
 
 /** Bump when the bundled workbook should refresh rows the user has not edited. */
-export const RESOURCE_SEED_VERSION = 1;
+export const RESOURCE_SEED_VERSION = 2;
 
 export type ResourceMasterRow = {
   code: string;
@@ -31,7 +31,7 @@ export type ProjectResourceSeed = {
   total_amount: number | null;
 };
 
-const HEADERS = ["code", "name", "category", "sub-category", "unit", "rate (inr)", "notes"] as const;
+const HEADERS = ["code", "name", "category", "sub-category", "unit", "rate", "notes"] as const;
 
 function xmlTags(xml: string, tag: string): string[] {
   const re = new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`, "gi");
@@ -102,7 +102,11 @@ function headerIndex(header: string[]): Record<(typeof HEADERS)[number], number>
   const normalized = header.map((h) => h.trim().toLowerCase());
   const idx = {} as Record<(typeof HEADERS)[number], number>;
   for (const name of HEADERS) {
-    const at = normalized.findIndex((h) => h === name || (name.startsWith("rate") && h.startsWith("rate")));
+    const at = normalized.findIndex((h) => {
+      if (name === "rate") return h === "rate" || h.startsWith("rate ") || h.startsWith("rate(");
+      if (name === "sub-category") return h === "sub-category" || h === "subcategory" || h === "sub category";
+      return h === name;
+    });
     if (at < 0) throw new Error(`Resource workbook is missing the ${name} column.`);
     idx[name] = at;
   }
@@ -143,7 +147,7 @@ export function parseResourceWorkbook(bytes: Uint8Array): ResourceMasterRow[] {
       category: line[cols.category] ?? "",
       subCategory: line[cols["sub-category"]] ?? "",
       unit: line[cols.unit] ?? "",
-      rate: num(line[cols["rate (inr)"]] ?? ""),
+      rate: num(line[cols.rate] ?? ""),
       notes: line[cols.notes] ?? "",
       userEdited: false,
     });
@@ -173,7 +177,7 @@ function cellNumber(ref: string, value: number): string {
 }
 
 export function resourceMasterToXlsx(rows: ResourceMasterRow[]): Uint8Array {
-  const header = ["Code", "Name", "Category", "Sub-category", "Unit", "Rate (INR)", "Notes"];
+  const header = ["Code", "Name", "Category", "Sub-category", "Unit", "Rate (QAR)", "Notes"];
   const body = [
     `<row r="1">${header.map((h, i) => cellInline(`${String.fromCharCode(65 + i)}1`, h)).join("")}</row>`,
     ...rows.map((row, index) => {
@@ -311,7 +315,7 @@ let seedCache: ResourceMasterRow[] | null = null;
 
 export async function bundledResourceSeed(): Promise<ResourceMasterRow[]> {
   if (seedCache) return seedCache;
-  const url = new URL("./resources/BidCraft-Default-Resources-INR.xlsx", import.meta.url);
+  const url = new URL("./resources/BidCraft-Default-Resources-QAR.xlsx", import.meta.url);
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Could not load the bundled resource master (${response.status}).`);
   const rows = parseResourceWorkbook(new Uint8Array(await response.arrayBuffer()));

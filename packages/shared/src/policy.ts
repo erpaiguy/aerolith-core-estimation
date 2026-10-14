@@ -27,7 +27,7 @@ export const DEFAULT_MARGIN: MarginStack = {
 
 export const DECISIONS = {
   qtySourceDefault: "client_plus_adjustments" as QtySource,
-  currency: "INR",
+  currency: "QAR",
   licenseGraceDays: 14,
   defaultProjectFolder: "Documents/Aerolith/Projects",
   starterPack: true,

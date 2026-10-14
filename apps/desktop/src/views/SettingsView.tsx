@@ -306,7 +306,7 @@ export function SettingsView({
         <p className="hint">
           New jobs start in {numbers.currency}. Dimensions round up. Quantity, rate, and amount round half-up.
           Those places are used for what you type, what you see, the calculation, the totals, and exports.
-          Indian rupees use ₹ and en-IN grouping. Changing currency asks for a factor and converts resource master rates.
+          QAR uses en-US grouping. Indian rupees, when selected, use ₹ and en-IN grouping. Changing currency asks for a factor and converts resource master rates.
         </p>
         <div className="settings-numbers">
           <label className="field">

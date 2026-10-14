@@ -111,7 +111,7 @@ export function ResourceMasterPanel({
       </div>
       <p className="hint">
         {scope === "global"
-          ? "Global resource master. The bundled INR workbook fills missing codes on first run and on a seed upgrade, and never replaces a row you have edited."
+          ? "Global resource master. The bundled QAR workbook fills missing codes on first run and on a seed upgrade, and never replaces a row you have edited."
           : "This job’s copy of the resource master. Edits stay in the job until you choose Update master rate."}
       </p>
       {message ? <p className="hint">{message}</p> : null}

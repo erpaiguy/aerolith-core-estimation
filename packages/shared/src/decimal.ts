@@ -18,7 +18,7 @@ export type DisplayFormat = {
 };
 
 export const DEFAULT_DISPLAY_FORMAT: DisplayFormat = {
-  currency: "INR",
+  currency: "QAR",
   qtyDecimals: QTY_SCALE,
   rateDecimals: MONEY_SCALE,
   amountDecimals: MONEY_SCALE,

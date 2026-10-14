@@ -52,7 +52,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM0RUY5MTE1N0M5MTRGRDgKUldUWVQ1RjhGWkh2TkRuaHo5WW5vVXJMVXZ5aC9NYVVrd0pUTmtFSXBpdEwySDRzRFB3UWN1NHUK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDBEMkEwN0YwOUVCRjEwNDQKUldSRUVMK2U4QWNxRFhlR01SMUZQSlUvS2luTGd6TmZ0RHI4QnNCckRKMHFseElia0RwenRhRHQK",
       "endpoints": [
         "https://github.com/erpaiguy/aerolith-core-releases/releases/download/v1.0.0/estimation-latest.json"
       ],
