@@ -35,7 +35,9 @@ import {
   type SubmissionLayoutId,
 } from "../reportFormat";
 import { billById, billIdsFromFocus, billSourceLocked, billTotal, projectGrand, sortedBills } from "../bills";
-import { BrandMark } from "./Brand";
+import { BrandLockup, BrandMark, useSurfaceTone } from "./Brand";
+import { packetPrintDocument } from "../print/packet";
+import { PrintActions } from "../ui/PrintActions";
 import { MenuSelect } from "../ui/MenuSelect";
 import { ResetLayoutButton } from "../ui/ResetLayout";
 import { Split } from "../ui/Split";
@@ -69,11 +71,12 @@ function Letterhead({
 }) {
   const company = fmt.companyName.trim();
   const address = fmt.companyAddress.trim();
+  const tone = useSurfaceTone();
   return (
     <div className="doc-letterhead letterhead-bar" data-mode={mode}>
-      {fmt.showLogo ? <BrandMark size={28} /> : null}
+      {fmt.showLogo ? (company ? <BrandMark size={28} tone={tone} /> : <BrandLockup size="sm" tone={tone} />) : null}
       <div className="letterhead-copy">
-        <div className="title">{company || "Bid Craft"}</div>
+        {company ? <div className="title">{company}</div> : null}
         <div className="title job">{project.name}</div>
       </div>
       {address ? <div className="addr">{address}</div> : null}
@@ -765,6 +768,11 @@ export function SourceView({
           </button>
         ) : null}
         <span className="source-badge">{locked ? "Client BOQ locked" : "Client BOQ unlocked"}</span>
+        <PrintActions
+          build={() =>
+            packetPrintDocument(project, format, total, scope, { title: "Client BOQ", showRates: false, client: true })
+          }
+        />
       </div>
       <div className="module-body">
         <DocPreview
@@ -869,10 +877,6 @@ export function SubmitView({
       scope={scope}
     />
   );
-
-  function print() {
-    void import("../reportExport").then((m) => m.printSubmission(project, fmt, previewTotal, adj, scope, { qtyByBoq: pivotQty }));
-  }
 
   function csv() {
     void import("../reportExport").then((m) => m.downloadSubmissionCsv(project, fmt, previewTotal, scope, { qtyByBoq: pivotQty }));
@@ -1003,9 +1007,11 @@ export function SubmitView({
         />
         {canExport ? (
           <>
-            <button type="button" onClick={print}>
-              Print / PDF
-            </button>
+            <PrintActions
+              build={() =>
+                packetPrintDocument(project, fmt, previewTotal, scope, { title: "Submission BOQ", showRates: true })
+              }
+            />
             <button type="button" onClick={csv}>
               Export Excel
             </button>

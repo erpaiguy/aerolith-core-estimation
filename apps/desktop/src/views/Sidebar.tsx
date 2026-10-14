@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Activity } from "../model";
 import { ACTIVITY_LABELS } from "../activityLabels";
-import { BrandMark } from "./Brand";
+import { BrandLockup, BrandMark } from "./Brand";
 import type { ThemeName } from "../theme";
 
 export type SidebarTarget = Activity | "resources";
@@ -58,8 +58,7 @@ export function Sidebar({
   return (
     <aside className={`sidebar ${collapsed ? "is-collapsed" : ""}`} aria-label="Modules">
       <div className="sidebar-brand">
-        <BrandMark size={collapsed ? 22 : 26} tone="dark" />
-        {collapsed ? null : <strong>Bid Craft</strong>}
+        {collapsed ? <BrandMark size={22} tone="dark" /> : <BrandLockup size="sm" tone="dark" />}
       </div>
       <button
         type="button"

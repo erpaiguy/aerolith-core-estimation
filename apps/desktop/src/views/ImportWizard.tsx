@@ -3,7 +3,7 @@ import { extractBill, canCommitImport, type ExtractKind } from "../import/extrac
 import { appendBillFromClientRows, amendBillFromClientRows, projectFromClientRows } from "../loadReference";
 import type { BoqColumnDef, LoadedProject } from "../model";
 import type { TenantCatalog } from "../tenantCatalog";
-import { BrandLockup } from "./Brand";
+import { BrandLockup, useSurfaceTone } from "./Brand";
 import { defaultClientColumns, slugColumnId } from "../boqColumns";
 import { parseSignedNumber } from "@aerolith/shared";
 import { sortedBills } from "../bills";
@@ -38,6 +38,7 @@ export function ImportWizard({
   onAppend?: (project: LoadedProject) => void;
 }) {
   const bills = appendTo ? sortedBills(appendTo) : [];
+  const tone = useSurfaceTone();
   const [intent, setIntent] = useState<"new-bill" | "amend">(amendBillId ? "amend" : "new-bill");
   const [targetBillId, setTargetBillId] = useState(amendBillId || bills[0]?.id || "");
   const [name, setName] = useState(() => {
@@ -157,7 +158,7 @@ export function ImportWizard({
 
   return (
     <div className="app home">
-      <BrandLockup size="md" />
+      <BrandLockup size="md" tone={tone} />
       <p className="kicker">{appendTo ? "Existing job" : "New job"}</p>
       <h1>{appendTo ? (intent === "amend" ? "Amend BOQ" : "Add BOQ") : "Import client bill"}</h1>
       <p className="lede">

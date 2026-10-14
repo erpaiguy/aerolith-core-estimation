@@ -4,6 +4,9 @@ import { uid } from "../projectCompute";
 import type { ResourceMasterRow } from "../resourceMaster";
 import type { CatalogSource } from "../tenantCatalog";
 import { DataTable } from "../ui/tableLayout";
+import { PrintActions } from "../ui/PrintActions";
+import { usePrintHeader } from "../print/context";
+import { jobDocument } from "../print/types";
 import { ResourceMasterPanel } from "./ResourceMasterPanel";
 
 type Tab = "units" | "categories" | "vendors" | "resources";
@@ -48,6 +51,7 @@ export function MastersView({
   onCopyGlobal?: () => void;
   currency?: string;
 }) {
+  const header = usePrintHeader();
   const [tabState, setTabState] = useState<Tab>("units");
   const tab = masterTab ?? tabState;
   function setTab(next: Tab) {
@@ -120,6 +124,44 @@ export function MastersView({
           <button type="button" className="primary" disabled={!dirty} onClick={() => onChangeCatalog(draft)}>
             Save as tenant catalog
           </button>
+        ) : null}
+        {tab !== "resources" ? (
+          <PrintActions
+            build={() => {
+              if (tab === "units") {
+                return jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Units", [
+                  {
+                    title: "Units",
+                    columns: [
+                      { label: "Code", width: 24 },
+                      { label: "Description", width: 52 },
+                      { label: "Symbol", width: 24 },
+                    ],
+                    rows: units.map((row) => ({ cells: [row.code, row.description, row.symbol] })),
+                  },
+                ]);
+              }
+              if (tab === "categories") {
+                return jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Categories", [
+                  {
+                    title: "Categories",
+                    columns: [
+                      { label: "Code", width: 30 },
+                      { label: "Description", width: 70 },
+                    ],
+                    rows: categories.map((row) => ({ cells: [row.code, row.description] })),
+                  },
+                ]);
+              }
+              return jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Vendors", [
+                {
+                  title: "Vendors",
+                  columns: [{ label: "Name", width: 100 }],
+                  rows: vendors.map((row) => ({ cells: [row.name] })),
+                },
+              ]);
+            }}
+          />
         ) : null}
       </div>
       <div className="doc-scroll">

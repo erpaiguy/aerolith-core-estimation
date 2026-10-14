@@ -1,4 +1,6 @@
 import { formatQty, parseSignedNumber } from "@aerolith/shared";
+import { mergeReportFormat, type ReportFormat } from "./reportFormat";
+import { jobDocument } from "./print/types";
 import { contributesResources, rollupResourceTotals } from "@aerolith/calc";
 import type {
   EnquiryLine,
@@ -369,33 +371,41 @@ export function downloadText(filename: string, body: string, mime = "text/csv;ch
   URL.revokeObjectURL(url);
 }
 
-export function printEnquiry(project: LoadedProject, pack: EnquiryPack): void {
-  const rows = pack.lines
-    .filter((l) => l.included)
-    .map((l) => {
-      const desc = targetDescription(project, l.targetKind, l.targetCode, l.spec);
-      return `<tr><td>${esc(l.targetCode)}</td><td>${esc(desc)}</td><td>${esc(l.spec)}</td><td>${esc(l.unit ?? "")}</td><td>${esc(formatQty(l.qty))}</td><td></td></tr>`;
-    })
-    .join("");
-  const html = `<!doctype html><html><head><title>Enquiry ${esc(pack.vendorName)}</title>
-    <style>body{font-family:Segoe UI,sans-serif;padding:24px;color:#1b242c}table{border-collapse:collapse;width:100%}
-    th,td{border:1px solid #d9d3c4;padding:6px 8px;text-align:left}th{background:#f3f0e8}</style></head><body>
-    <h1>${esc(project.name)}</h1>
-    <p>Enquiry to ${esc(pack.vendorName)} · ${esc(pack.category ?? "")}${pack.dueAt ? ` · quote due ${esc(pack.dueAt.slice(0, 10))}` : ""}</p>
-    ${pack.notes ? `<p>${esc(pack.notes)}</p>` : ""}
-    <p>Please return rate, quoted qty, specification, payment terms, and duration for each line.</p>
-    <table><thead><tr><th>Code</th><th>Description</th><th>Specification</th><th>Unit</th><th>Qty</th><th>Rate</th></tr></thead>
-    <tbody>${rows}</tbody></table></body></html>`;
-  const w = window.open("", "_blank");
-  if (!w) return;
-  w.document.write(html);
-  w.document.close();
-  w.focus();
-  w.print();
-}
-
-function esc(s: string): string {
-  return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
+export function printEnquiry(project: LoadedProject, pack: EnquiryPack, format?: Partial<ReportFormat> | null): void {
+  const fmt = mergeReportFormat(format);
+  const due = pack.dueAt ? `Quote due ${pack.dueAt.slice(0, 10)}` : "";
+  const doc = jobDocument(
+    project.name,
+    project.sealedAt ? `r${project.revision} sealed` : `r${project.revision}`,
+    fmt,
+    `Enquiry ${pack.vendorName}`,
+    [
+      {
+        title: [pack.vendorName, pack.category ?? "", due].filter(Boolean).join(" · "),
+        columns: [
+          { label: "Code", width: 14 },
+          { label: "Description", width: 28 },
+          { label: "Specification", width: 24 },
+          { label: "Unit", width: 10 },
+          { label: "Qty", width: 12, align: "right" },
+          { label: "Rate", width: 12, align: "right" },
+        ],
+        rows: pack.lines
+          .filter((l) => l.included)
+          .map((l) => ({
+            cells: [
+              l.targetCode,
+              targetDescription(project, l.targetKind, l.targetCode, l.spec),
+              l.spec,
+              l.unit ?? "",
+              formatQty(l.qty),
+              "",
+            ],
+          })),
+      },
+    ],
+  );
+  void import("./print/actions").then((m) => m.printDocument(doc));
 }
 
 export function blankReply(project: LoadedProject, vendorName: string, enquiryId: string | null): QuoteReply {

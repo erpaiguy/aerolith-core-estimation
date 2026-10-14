@@ -296,7 +296,7 @@ export function SettingsView({
       ) : (
         <p className="hint">Sign in with an Aerolith account to see the trial.</p>
       )}
-      <PublisherMark />
+      <PublisherMark tone={theme === "dark" ? "dark" : "light"} />
       <p className="hint">Bid Craft {APP_VERSION}</p>
       </div>
       ) : null}

@@ -2,6 +2,9 @@ import { useMemo, useRef, useState } from "react";
 import { currencyMarker } from "@aerolith/shared";
 import { DataTable } from "../ui/tableLayout";
 import { ResetLayoutButton } from "../ui/ResetLayout";
+import { PrintActions } from "../ui/PrintActions";
+import { usePrintHeader } from "../print/context";
+import { jobDocument } from "../print/types";
 import {
   importResourceRows,
   parseResourceWorkbook,
@@ -45,6 +48,7 @@ export function ResourceMasterPanel({
   const fileRef = useRef<HTMLInputElement>(null);
   const shown = useMemo(() => searchResourceMaster(rows, query), [rows, query]);
   const marker = currencyMarker(currency);
+  const header = usePrintHeader();
 
   function patch(code: string, next: Partial<ResourceMasterRow>) {
     onChange(rows.map((row) => (row.code === code ? { ...row, ...next, userEdited: true } : row)));
@@ -100,6 +104,27 @@ export function ResourceMasterPanel({
           Export Excel
         </button>
         <ResetLayoutButton ids={[`resource-master-${scope}`]} />
+        <PrintActions
+          build={() =>
+            jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Resource master", [
+              {
+                title: scope === "global" ? "Global resource master" : "Project resource master",
+                columns: [
+                  { label: "Code", width: 12 },
+                  { label: "Name", width: 28 },
+                  { label: "Category", width: 14 },
+                  { label: "Sub-category", width: 14 },
+                  { label: "Unit", width: 8 },
+                  { label: `Rate (${marker})`, width: 12, align: "right" },
+                  { label: "Notes", width: 12 },
+                ],
+                rows: shown.map((row) => ({
+                  cells: [row.code, row.name, row.category, row.subCategory, row.unit, String(row.rate), row.notes],
+                })),
+              },
+            ])
+          }
+        />
         <input
           ref={fileRef}
           type="file"

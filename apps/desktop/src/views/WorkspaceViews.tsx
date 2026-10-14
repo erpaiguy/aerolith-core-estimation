@@ -19,6 +19,9 @@ import { itemKeyOf, pivotWorkingByBoq, primaryWorkingTwin, type WorkingQtyRow } 
 import { billQtyHeader, formatCompareQty } from "../submissionCompare";
 import { QtyInput } from "../ui/QtyInput";
 import { ResetLayoutButton } from "../ui/ResetLayout";
+import { PrintActions } from "../ui/PrintActions";
+import { usePrintHeader } from "../print/context";
+import { jobDocument } from "../print/types";
 import { VirtualTable } from "../ui/VirtualTable";
 
 function CostField({
@@ -289,6 +292,7 @@ export function EstimateView({
   const freezeClient = Boolean(sourceLocked || locked);
   const clientExtras = clientColumns.filter((c) => c.role === "extra");
   const extras = [...clientExtras, ...workingColumns];
+  const printHeader = usePrintHeader();
   const pivot = bills.length > 1;
   const extraCount = extras.length;
   const qtyCols = pivot ? bills.length + 1 : 2;
@@ -796,6 +800,54 @@ export function EstimateView({
           ))}
         </div>
         {freezeClient ? <span className="source-badge">Client BOQ locked</span> : null}
+        <PrintActions
+          build={() =>
+            jobDocument(printHeader.project.name, `r${printHeader.project.revision}`, printHeader.format, "Working BOQ", [
+              {
+                title: "Working BOQ",
+                columns: [
+                  { label: "No.", width: 10 },
+                  { label: "Description", width: 36 },
+                  { label: "Client qty", width: 12, align: "right" },
+                  { label: "Our qty", width: 12, align: "right" },
+                  { label: "Unit", width: 8 },
+                  { label: `Rate (${currency})`, width: 11, align: "right" },
+                  { label: `Amount (${currency})`, width: 11, align: "right" },
+                ],
+                rows: display.map((row) => {
+                  if (row.type === "bill") return { kind: "section" as const, cells: [row.label, "", "", "", "", "", ""] };
+                  if (row.type === "pivot") {
+                    const sample = row.row.twins.find((twin) => twin) ?? null;
+                    return {
+                      kind: row.row.kind === "section" ? ("section" as const) : ("item" as const),
+                      cells: [
+                        row.row.code,
+                        row.row.description,
+                        formatQty(row.row.totalQty),
+                        formatQty(sample?.ourQty ?? row.row.totalQty),
+                        row.row.unit,
+                        formatMoney(sample?.result?.rate ?? 0, currency),
+                        formatMoney(sample?.result?.amount ?? 0, currency),
+                      ],
+                    };
+                  }
+                  return {
+                    kind: row.item.kind === "section" ? ("section" as const) : ("item" as const),
+                    cells: [
+                      row.item.slNo || row.item.boqCode,
+                      row.item.description,
+                      formatQty(row.item.clientQty),
+                      formatQty(row.item.ourQty),
+                      row.item.unit ?? "",
+                      formatMoney(row.item.result?.rate ?? 0, currency),
+                      formatMoney(row.item.result?.amount ?? 0, currency),
+                    ],
+                  };
+                }),
+              },
+            ])
+          }
+        />
       </div>
       <div className="module-body">
         <VirtualTable fill layoutKey={pivot ? `working-qty-${bills.length}` : "working-qty"} rowHeight={28} rowCount={display.length} header={header} renderRow={renderRow} />

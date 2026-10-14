@@ -1,4 +1,4 @@
-import { formatRate } from "@aerolith/shared";
+import { formatMoney, formatQty, formatRate } from "@aerolith/shared";
 import { resolveAnalysisUnitCost } from "@aerolith/calc";
 import { useEffect, useMemo, useState } from "react";
 import { filterableColumns, itemMatchesColumnFilters, itemMatchesQuery } from "../boqColumns";
@@ -16,6 +16,9 @@ import {
 import { RateAnalysisEditor } from "../RateAnalysisEditor";
 import { MenuSelect } from "../ui/MenuSelect";
 import { Split } from "../ui/Split";
+import { PrintActions } from "../ui/PrintActions";
+import { usePrintHeader } from "../print/context";
+import { jobDocument } from "../print/types";
 
 export function RateAnalysisView({
   project,
@@ -51,6 +54,7 @@ export function RateAnalysisView({
   }, [project.items, query, filters, rateCode, billId]);
   const index = Math.max(0, items.findIndex((i) => itemKeyOf(i) === rateCode));
   const item = items[index] ?? null;
+  const header = usePrintHeader();
   const prev = index > 0 ? items[index - 1] : null;
   const next = index < items.length - 1 ? items[index + 1] : null;
   const quoted = item
@@ -159,6 +163,23 @@ export function RateAnalysisView({
               Back to Working BOQ
             </button>
             <span className="hint">Choose an item, then build its rate.</span>
+            <PrintActions
+              build={() =>
+                jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Rate Analysis", [
+                  {
+                    title: "Items",
+                    columns: [
+                      { label: "Code", width: 16 },
+                      { label: "Description", width: 54 },
+                      { label: `Rate (${project.currency})`, width: 30, align: "right" },
+                    ],
+                    rows: items.map((row) => ({
+                      cells: [row.boqCode, row.description, formatRate(row.result?.rate ?? 0, project.currency)],
+                    })),
+                  },
+                ])
+              }
+            />
           </div>
         </div>
         </Split>
@@ -192,6 +213,29 @@ export function RateAnalysisView({
               Next
             </button>
           </div>
+          <PrintActions
+            build={() =>
+              jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Rate Analysis", [
+                {
+                  title: `${item.boqCode} · ${item.description}`,
+                  columns: [
+                    { label: "Resource", width: 46 },
+                    { label: "Unit", width: 14 },
+                    { label: `Rate (${project.currency})`, width: 20, align: "right" },
+                    { label: "Wastage %", width: 20, align: "right" },
+                  ],
+                  rows: item.lines.map((line) => ({
+                    cells: [
+                      line.description || line.projectResourceCode || "Resource",
+                      line.unit ?? "",
+                      formatMoney(line.resourceRate, project.currency),
+                      formatQty(line.wastagePct),
+                    ],
+                  })),
+                },
+              ])
+            }
+          />
         </div>
         <div className="rate-actions">
           <button type="button" disabled={locked} onClick={() => onProject(newBlankAnalysis(project, itemKeyOf(item)))}>

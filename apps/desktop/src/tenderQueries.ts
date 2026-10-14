@@ -9,6 +9,8 @@ import type {
 } from "./model";
 import { slugColumnId } from "./boqColumns";
 import { uid } from "./projectCompute";
+import { mergeReportFormat, type ReportFormat } from "./reportFormat";
+import { jobDocument } from "./print/types";
 
 export type QueryStage = "log" | "tracker" | "send" | "receive" | "pending";
 
@@ -587,35 +589,38 @@ export function downloadText(filename: string, body: string, mime = "text/csv;ch
   URL.revokeObjectURL(url);
 }
 
-function esc(s: string): string {
-  return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
-}
-
-export function printQueryList(project: LoadedProject, pack: TenderQueryList): void {
+export function printQueryList(project: LoadedProject, pack: TenderQueryList, format?: Partial<ReportFormat> | null): void {
+  const fmt = mergeReportFormat(format);
   const qCols = pack.queryColumns ?? [];
-  const extraHeads = qCols.map((c) => `<th>${esc(c.label)}</th>`).join("");
-  const rows = pack.lines
-    .filter((l) => l.included)
-    .map((l) => {
-      const item = queryItem(project, l.itemId);
-      if (!item) return "";
-      const extra = qCols.map((c) => `<td>${esc(l.fields?.[c.id] ?? "")}</td>`).join("");
-      return `<tr><td>${esc(item.number)}</td><td>${esc(item.documentRef)}</td><td>${esc(item.subject)}</td><td>${esc(item.question)}</td><td>${esc(l.roundNote)}</td>${extra}</tr>`;
-    })
-    .join("");
-  const html = `<!doctype html><html><head><title>${esc(pack.title)}</title>
-    <style>body{font-family:Segoe UI,sans-serif;padding:24px;color:#1b242c}table{border-collapse:collapse;width:100%}
-    th,td{border:1px solid #d9d3c4;padding:6px 8px;text-align:left;vertical-align:top}th{background:#f3f0e8}</style></head><body>
-    <h1>${esc(project.name)}</h1>
-    <p>${esc(pack.title)}${pack.dueAt ? ` · reply due ${esc(pack.dueAt.slice(0, 10))}` : ""}</p>
-    ${pack.notes ? `<p>${esc(pack.notes)}</p>` : ""}
-    <p>Please reply against each query number. Mark any item that still needs information.</p>
-    <table><thead><tr><th>No</th><th>Document ref</th><th>Subject</th><th>Query</th><th>This round</th>${extraHeads}</tr></thead>
-    <tbody>${rows}</tbody></table></body></html>`;
-  const w = window.open("", "_blank");
-  if (!w) return;
-  w.document.write(html);
-  w.document.close();
-  w.focus();
-  w.print();
+  const due = pack.dueAt ? `Reply due ${pack.dueAt.slice(0, 10)}` : "";
+  const doc = jobDocument(
+    project.name,
+    project.sealedAt ? `r${project.revision} sealed` : `r${project.revision}`,
+    fmt,
+    pack.title || "Client Queries",
+    [
+      {
+        title: [pack.title, due].filter(Boolean).join(" · "),
+        columns: [
+          { label: "No", width: 8 },
+          { label: "Document ref", width: 16 },
+          { label: "Subject", width: 20 },
+          { label: "Query", width: 28 },
+          { label: "This round", width: 14 },
+          ...qCols.map((c) => ({ label: c.label, width: 12 })),
+        ],
+        rows: pack.lines
+          .filter((l) => l.included)
+          .map((l) => {
+            const item = queryItem(project, l.itemId);
+            if (!item) return null;
+            return {
+              cells: [item.number, item.documentRef, item.subject, item.question, l.roundNote, ...qCols.map((c) => l.fields?.[c.id] ?? "")],
+            };
+          })
+          .filter((row): row is { cells: string[] } => row != null),
+      },
+    ],
+  );
+  void import("./print/actions").then((m) => m.printDocument(doc));
 }

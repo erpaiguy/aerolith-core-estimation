@@ -24,6 +24,11 @@ declare module "sql.js/dist/sql-wasm.js" {
   }): Promise<SqlJsStatic>;
 }
 
+declare module "*.svg?raw" {
+  const content: string;
+  export default content;
+}
+
 declare module "*.sql?raw" {
   const content: string;
   export default content;

@@ -9,6 +9,9 @@ import { askConfirm } from "../ui/askConfirm";
 import { QtyInput } from "../ui/QtyInput";
 import { VirtualTable } from "../ui/VirtualTable";
 import { Split } from "../ui/Split";
+import { PrintActions } from "../ui/PrintActions";
+import { usePrintHeader } from "../print/context";
+import { jobDocument } from "../print/types";
 
 type DimKey = keyof QtoDims;
 
@@ -227,6 +230,7 @@ export function TakeoffView({
   }, [items, visibleItems]);
 
   const item = priced.find((i) => itemKeyOf(i) === selected) ?? null;
+  const printHead = usePrintHeader();
   const itemLines = useMemo(
     () => lines.filter((l) => l.workingBoqCode === selected || (item && l.workingBoqCode === item.boqCode)),
     [lines, selected, item],
@@ -536,6 +540,33 @@ export function TakeoffView({
                   Set as quantity
                 </button>
               </div>
+              <PrintActions
+                build={() =>
+                  jobDocument(printHead.project.name, `r${printHead.project.revision}`, printHead.format, "Take-off", [
+                    {
+                      title: item ? `${item.boqCode} · ${item.description}` : "Take-off",
+                      columns: [
+                        { label: "Item", width: 16 },
+                        { label: "Location", width: 34 },
+                        { label: "Formula", width: 16 },
+                        { label: "Qty", width: 16, align: "right" },
+                        { label: "Unit", width: 18 },
+                      ],
+                      rows: lines
+                        .filter((line) => !item || line.workingBoqCode === itemKeyOf(item) || line.workingBoqCode === item.boqCode)
+                        .map((line) => ({
+                          cells: [
+                            line.workingBoqCode ?? "",
+                            line.locationDesc || line.itemLabel || "",
+                            FORMULA_SHORT[line.formulaKey] ?? line.formulaKey,
+                            formatQty(qtoQty(line.formulaKey, line.dims)),
+                            item?.unit ?? "",
+                          ],
+                        })),
+                    },
+                  ])
+                }
+              />
             </div>
             {itemLines.length === 0 ? (
               <div className="takeoff-empty">

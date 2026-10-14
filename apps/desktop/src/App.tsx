@@ -55,6 +55,7 @@ import { ImportWizard } from "./views/ImportWizard";
 import { LicensePanel } from "./views/LicensePanel";
 import { LoginView } from "./views/LoginView";
 import { SplashShell } from "./views/SplashShell";
+import { PrintProvider } from "./print/context";
 import { BrandLockup } from "./views/Brand";
 import { Sidebar, type SidebarTarget } from "./views/Sidebar";
 import { applyTheme, readTheme, type ThemeName } from "./theme";
@@ -863,6 +864,7 @@ export function App() {
         ) : null}
       </div>
       <main className={`stage ${fillStage ? "stage-fill" : ""}`}>
+        <PrintProvider project={project} format={reportFormat}>
         {activity === "dashboard" ? (
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-dashboard">
             <DashboardView
@@ -1117,6 +1119,7 @@ export function App() {
             }}
           />
         ) : null}
+        </PrintProvider>
       </main>
       {inspectorVisible ? (
       <aside className="inspector">
