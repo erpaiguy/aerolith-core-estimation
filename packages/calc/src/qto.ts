@@ -1,3 +1,4 @@
+import { roundDimValue, roundQty } from "../../shared/src/decimal.ts";
 import { product } from "./analysis.ts";
 
 export type FormulaKey = "qty" | "product" | "area" | "volume" | "perimeter_x_h";
@@ -23,20 +24,33 @@ function n(v: number | null | undefined, fallback = 0): number {
   return v == null || !Number.isFinite(v) ? fallback : v;
 }
 
+function dim(v: number | null | undefined, fallback = 0): number {
+  return roundDimValue(n(v, fallback));
+}
+
 export function qtoQty(key: FormulaKey, dims: QtoDims): number {
-  const nos1 = n(dims.nos1, 1);
-  const nos2 = n(dims.nos2, 1);
+  const nos1 = roundQty(n(dims.nos1, 1));
+  const nos2 = roundQty(n(dims.nos2, 1));
   switch (key) {
     case "qty":
-      return n(dims.l);
+      return roundQty(n(dims.l));
     case "product":
-      return product([dims.nos1, dims.nos2, dims.l, dims.b, dims.h, dims.t]);
+      return roundQty(
+        product([
+          dims.nos1 == null ? null : roundQty(dims.nos1),
+          dims.nos2 == null ? null : roundQty(dims.nos2),
+          dims.l == null ? null : roundDimValue(dims.l),
+          dims.b == null ? null : roundDimValue(dims.b),
+          dims.h == null ? null : roundDimValue(dims.h),
+          dims.t == null ? null : roundDimValue(dims.t),
+        ]),
+      );
     case "area":
-      return nos1 * nos2 * n(dims.l) * n(dims.b);
+      return roundQty(nos1 * nos2 * dim(dims.l) * dim(dims.b));
     case "volume":
-      return nos1 * nos2 * n(dims.l) * n(dims.b) * n(dims.h);
+      return roundQty(nos1 * nos2 * dim(dims.l) * dim(dims.b) * dim(dims.h));
     case "perimeter_x_h":
-      return nos1 * nos2 * 2 * (n(dims.l) + n(dims.b)) * n(dims.h);
+      return roundQty(nos1 * nos2 * 2 * (dim(dims.l) + dim(dims.b)) * dim(dims.h));
   }
 }
 

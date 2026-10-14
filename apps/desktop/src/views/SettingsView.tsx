@@ -1,3 +1,4 @@
+import { APP_VERSION } from "../auth/releaseConfig";
 import { hashPin, newSalt } from "../platform/crypto";
 import { logAudit, savePlatform, saveTenantCatalog, type Session } from "../platform/store";
 import type { LicenseSession } from "../auth/licenseState";
@@ -24,6 +25,11 @@ import { ReportFormatFields } from "./DocumentRenderer";
 import { applyCatalogToProject, applyPromotion, effectiveCatalog } from "../tenantCatalog";
 import type { LoadedProject } from "../model";
 import { useState } from "react";
+import { PublisherMark } from "./Brand";
+import { convertMasterRates } from "../resourceMaster";
+import { convertProjectCurrency } from "../projectResourceMaster";
+import { applyTheme, type ThemeName } from "../theme";
+import { checkForUpdate, setUpdatesAutoEnabled, updatesAutoEnabled, type UpdateOffer } from "../updates";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
 import {
@@ -41,6 +47,7 @@ import {
 type SettingsTab =
   | "license"
   | "numbers"
+  | "updates"
   | "replica"
   | "report"
   | "users"
@@ -61,6 +68,8 @@ export function SettingsView({
   onAccount,
   onPricing,
   onSignOut,
+  theme = "light",
+  onTheme,
 }: {
   session: Session;
   platform: PlatformState;
@@ -75,8 +84,17 @@ export function SettingsView({
   onAccount?: () => void;
   onPricing?: () => void;
   onSignOut?: () => void;
+  theme?: ThemeName;
+  onTheme?: (theme: ThemeName) => void;
 }) {
   const [tab, setTab] = useState<SettingsTab>("license");
+  const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
+  const [factorText, setFactorText] = useState("1");
+  const [factorError, setFactorError] = useState("");
+  const [autoUpdate, setAutoUpdate] = useState(updatesAutoEnabled);
+  const [updateOffer, setUpdateOffer] = useState<UpdateOffer | null>(null);
+  const [updateMsg, setUpdateMsg] = useState("");
+  const [updateBusy, setUpdateBusy] = useState(false);
   if (session.kind !== "tenant") {
     return <p className="hint">Settings belong to a tenant workspace.</p>;
   }
@@ -87,6 +105,7 @@ export function SettingsView({
   const tabs: Array<[SettingsTab, string]> = [
     ["license", "License"],
     ["numbers", "Numbers"],
+    ["updates", "Updates"],
     ...(onCompareReplica ? ([["replica", "Replica compare"]] as Array<[SettingsTab, string]>) : []),
     ["report", "Report layouts"],
     ...(solo
@@ -116,10 +135,53 @@ export function SettingsView({
   const placeOptions = [0, 1, 2, 3, 4, 5, 6];
 
   function patchNumbers(patch: Partial<DisplayFormat>) {
-    const nextFmt = mergeDisplayFormat({ ...numbers, ...patch });
+    const aligned = patch.qtyDecimals != null ? { ...patch, nosDecimals: patch.qtyDecimals } : patch;
+    const nextFmt = mergeDisplayFormat({ ...numbers, ...aligned });
     patchTenant({ displayFormat: nextFmt });
-    if (patch.currency != null && project && onProject && nextFmt.currency !== project.currency) {
+    if (aligned.currency != null && project && onProject && nextFmt.currency !== project.currency) {
       onProject({ ...project, currency: nextFmt.currency });
+    }
+  }
+
+  function requestCurrency(code: string) {
+    if (code === numbers.currency) return;
+    setFactorText("1");
+    setFactorError("");
+    setPendingCurrency(code);
+  }
+
+  function applyCurrency() {
+    if (!pendingCurrency) return;
+    const factor = Number(factorText);
+    if (!Number.isFinite(factor) || factor <= 0) {
+      setFactorError("Enter a conversion factor greater than zero. Use 1 to keep the same numbers.");
+      return;
+    }
+    const nextFmt = mergeDisplayFormat({ ...numbers, currency: pendingCurrency });
+    patchTenant({
+      displayFormat: nextFmt,
+      resourceMaster: convertMasterRates(tenant.resourceMaster ?? [], factor),
+    });
+    if (project && onProject) onProject(convertProjectCurrency(project, pendingCurrency, factor));
+    setPendingCurrency(null);
+  }
+
+  async function checkNow() {
+    setUpdateBusy(true);
+    setUpdateMsg("");
+    setUpdateOffer(null);
+    try {
+      const offer = await checkForUpdate();
+      if (!offer) {
+        setUpdateMsg("You’re on the latest version, or updates are available only in the installed desktop app.");
+      } else {
+        setUpdateOffer(offer);
+        setUpdateMsg(`Version ${offer.version} is ready.`);
+      }
+    } catch (err) {
+      setUpdateMsg(err instanceof Error ? err.message : "Could not check for updates.");
+    } finally {
+      setUpdateBusy(false);
     }
   }
 
@@ -234,21 +296,22 @@ export function SettingsView({
       ) : (
         <p className="hint">Sign in with an Aerolith account to see the trial.</p>
       )}
+      <PublisherMark />
+      <p className="hint">Bid Craft {APP_VERSION}</p>
       </div>
       ) : null}
       {active === "numbers" ? (
       <div className="settings-section">
         <h2 className="view">Numbers</h2>
         <p className="hint">
-          Currency is a label on this job and the default for new jobs. Figures are not converted.
-          Nos (take-off and rate) and dimensions (L, B, H, Qty 1–4, Qty, Item qty) round up to the
-          decimal places here. Rate and amount round half-up. Rate/Amount cells show the number only;
-          the heading carries the currency marker, e.g. Rate (QAR) or Rate ($).
+          New jobs start in {numbers.currency}. Dimensions round up. Quantity, rate, and amount round half-up.
+          Those places are used for what you type, what you see, the calculation, the totals, and exports.
+          QAR uses en-US grouping. Indian rupees, when selected, use ₹ and en-IN grouping. Changing currency asks for a factor and converts resource master rates.
         </p>
         <div className="settings-numbers">
           <label className="field">
             Currency
-            <select value={numbers.currency} onChange={(e) => patchNumbers({ currency: e.target.value })}>
+            <select value={numbers.currency} onChange={(e) => requestCurrency(e.target.value)}>
               {CURRENCIES.map((c) => (
                 <option key={c.code} value={c.code}>
                   {c.code} · {c.name}
@@ -257,19 +320,6 @@ export function SettingsView({
               {CURRENCIES.some((c) => c.code === numbers.currency) ? null : (
                 <option value={numbers.currency}>{numbers.currency}</option>
               )}
-            </select>
-          </label>
-          <label className="field">
-            Nos decimals
-            <select
-              value={numbers.nosDecimals}
-              onChange={(e) => patchNumbers({ nosDecimals: Number(e.target.value) })}
-            >
-              {placeOptions.map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
             </select>
           </label>
           <label className="field">
@@ -326,18 +376,70 @@ export function SettingsView({
           </label>
         </div>
         <p className="settings-preview">
-          Nos {formatNos(12.341, numbers.nosDecimals)}
-          {" · L "}
-          {formatDim(12.341999, numbers.dimDecimals)}
+          L {formatDim(12.341999, numbers.dimDecimals)}
           {" · qty "}
           {formatQty(12.345678, numbers.qtyDecimals)}
+          {" · Nos "}
+          {formatNos(12.341, numbers.qtyDecimals)}
           {" · "}
-          Rate ({currencyMarker(numbers.currency)}) {formatMoneyPlain(1475.5, numbers.rateDecimals)}
+          Rate ({currencyMarker(numbers.currency)}) {formatMoneyPlain(1475.5, numbers.rateDecimals, numbers.currency)}
           {" · "}
-          Amount ({currencyMarker(numbers.currency)}) {formatMoneyPlain(100826297.13, numbers.amountDecimals)}
+          Amount ({currencyMarker(numbers.currency)}) {formatMoneyPlain(100826297.13, numbers.amountDecimals, numbers.currency)}
           {" · "}
           {formatMoney(100826297.13, numbers.currency, numbers.amountDecimals)}
         </p>
+      </div>
+      ) : null}
+      {active === "updates" ? (
+      <div className="settings-section">
+        <h2 className="view">Updates</h2>
+        <p className="hint">
+          Bid Craft checks the published installer when this desktop app starts. Download, install, and relaunch stay inside the app.
+        </p>
+        <label className="check-row">
+          <input
+            type="checkbox"
+            checked={autoUpdate}
+            onChange={(e) => {
+              setAutoUpdate(e.target.checked);
+              setUpdatesAutoEnabled(e.target.checked);
+            }}
+          />
+          Check for updates automatically
+        </label>
+        <div className="tb-group">
+          <button type="button" className="primary" disabled={updateBusy} onClick={() => void checkNow()}>
+            {updateBusy ? "Checking…" : "Check now"}
+          </button>
+          <button
+            type="button"
+            onClick={() => (onTheme ?? applyTheme)(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? "Use light theme" : "Use dark theme"}
+          </button>
+        </div>
+        {updateMsg ? <p className="hint">{updateMsg}</p> : null}
+        {updateOffer ? (
+          <div className="note">
+            <h2>Version {updateOffer.version}</h2>
+            <p>{updateOffer.notes}</p>
+            <button
+              type="button"
+              className="primary"
+              disabled={updateBusy}
+              onClick={() => {
+                setUpdateBusy(true);
+                setUpdateMsg("Downloading and installing. Bid Craft will reopen when the installer finishes.");
+                void updateOffer.install().catch((err) => {
+                  setUpdateBusy(false);
+                  setUpdateMsg(err instanceof Error ? err.message : "Could not install the update.");
+                });
+              }}
+            >
+              Download, install, and relaunch
+            </button>
+          </div>
+        ) : null}
       </div>
       ) : null}
       {active === "replica" && onCompareReplica ? (
@@ -546,6 +648,34 @@ export function SettingsView({
       ) : null}
       </div>
       </Split>
+      {pendingCurrency ? (
+        <div className="modal-back" role="presentation">
+          <form
+            className="modal"
+            role="dialog"
+            aria-labelledby="currency-convert-title"
+            onSubmit={(e) => {
+              e.preventDefault();
+              applyCurrency();
+            }}
+          >
+            <h2 id="currency-convert-title">Convert resource master rates</h2>
+            <p className="hint">
+              Change {numbers.currency} to {pendingCurrency}. Multiply every global and project master rate by this factor.
+              Use 1 to keep the same numbers and only change the currency label.
+            </p>
+            <label className="field">
+              Conversion factor
+              <input value={factorText} inputMode="decimal" onChange={(e) => setFactorText(e.target.value)} autoFocus />
+            </label>
+            {factorError ? <p className="login-error">{factorError}</p> : null}
+            <div className="tb-group">
+              <button type="submit" className="primary">Convert rates</button>
+              <button type="button" onClick={() => setPendingCurrency(null)}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      ) : null}
     </div>
   );
 }

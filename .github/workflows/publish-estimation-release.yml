@@ -4,11 +4,18 @@
 # the fine-grained PAT repository secret AEROLITH_RELEASES_TOKEN
 # (Contents: Read and write on erpaiguy/aerolith-core-releases only).
 #
+# Updater signing uses two more repository secrets, which are never committed:
+#   TAURI_SIGNING_PRIVATE_KEY          contents of the minisign .key file
+#   TAURI_SIGNING_PRIVATE_KEY_PASSWORD password for that key
+# The matching public key lives in apps/desktop/src-tauri/tauri.conf.json.
+#
 # After this workflow is on the default branch, run it once:
 # Actions → "Publish Estimation release" → Run workflow.
-# That adds Estimation-Setup.exe to the existing v1.0.0 release
-# (next to Cutlist-Setup.exe). overwrite_files replaces only an asset
-# with the same name. Do not commit the token.
+# That replaces Estimation-Setup.exe on the existing v1.0.0 release
+# (next to Cutlist-Setup.exe) and adds Estimation-Setup.exe.sig plus
+# estimation-latest.json. overwrite_files replaces only an asset with the
+# same name. The tag URL stays stable so the in-app updater endpoint does
+# not move. Do not commit the token or the private key.
 
 name: Publish Estimation release
 
@@ -22,13 +29,21 @@ jobs:
   publish-setup:
     runs-on: windows-latest
     steps:
-      - name: Require AEROLITH_RELEASES_TOKEN
+      - name: Require release and signing secrets
         env:
           AEROLITH_RELEASES_TOKEN: ${{ secrets.AEROLITH_RELEASES_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         shell: pwsh
         run: |
           if ([string]::IsNullOrWhiteSpace($env:AEROLITH_RELEASES_TOKEN)) {
             throw "Repository secret AEROLITH_RELEASES_TOKEN is empty. Add a fine-grained PAT with Contents: Read and write on erpaiguy/aerolith-core-releases only, then re-run. Do not commit the token."
+          }
+          if ([string]::IsNullOrWhiteSpace($env:TAURI_SIGNING_PRIVATE_KEY)) {
+            throw "Repository secret TAURI_SIGNING_PRIVATE_KEY is empty. Generate a minisign key with 'npm run tauri signer generate' in apps/desktop, store the .key file contents in this secret, and put only the public key in tauri.conf.json. Do not commit the private key."
+          }
+          if ([string]::IsNullOrWhiteSpace($env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD)) {
+            throw "Repository secret TAURI_SIGNING_PRIVATE_KEY_PASSWORD is empty. Set it to the password chosen when the updater key was generated. Do not commit the password."
           }
 
       - uses: actions/checkout@v4
@@ -52,11 +67,14 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Build Tauri NSIS installer
+      - name: Build signed Tauri NSIS installer
         working-directory: apps/desktop
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: npm run tauri -- build --bundles nsis
 
-      - name: Stage Estimation-Setup.exe
+      - name: Stage installer, signature, and updater manifest
         shell: pwsh
         run: |
           $conf = Get-Content -Raw "apps/desktop/src-tauri/tauri.conf.json" | ConvertFrom-Json
@@ -65,31 +83,56 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($product) -or [string]::IsNullOrWhiteSpace($version)) {
             throw "tauri.conf.json is missing productName or version."
           }
-          # tauri-bundler (CLI 2.11): {productName}_{version}_{arch}-setup.exe
+          # tauri-bundler: {productName}_{version}_{arch}-setup.exe
           # under <projectOut>/bundle/nsis/. windows-latest is x86_64, so arch is x64.
+          # createUpdaterArtifacts writes the minisign signature beside that installer.
           $installer = Join-Path "apps/desktop/src-tauri/target/release/bundle/nsis" "${product}_${version}_x64-setup.exe"
-          if (-not (Test-Path -LiteralPath $installer)) {
+          $signature = "$installer.sig"
+          if (-not (Test-Path -LiteralPath $installer) -or -not (Test-Path -LiteralPath $signature)) {
             Write-Host "Expected NSIS installer: $installer"
+            Write-Host "Expected signature: $signature"
             $bundle = "apps/desktop/src-tauri/target/release/bundle"
             if (Test-Path $bundle) {
               Get-ChildItem -Recurse -File $bundle | ForEach-Object { Write-Host $_.FullName }
             }
-            throw "NSIS installer was not produced at the Tauri output path."
+            throw "Signed NSIS installer was not produced. Check TAURI_SIGNING_PRIVATE_KEY and createUpdaterArtifacts."
           }
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           Copy-Item -LiteralPath $installer -Destination "dist/Estimation-Setup.exe" -Force
+          Copy-Item -LiteralPath $signature -Destination "dist/Estimation-Setup.exe.sig" -Force
+          $sig = (Get-Content -Raw -LiteralPath "dist/Estimation-Setup.exe.sig").Trim()
+          if ([string]::IsNullOrWhiteSpace($sig)) {
+            throw "dist/Estimation-Setup.exe.sig is empty."
+          }
+          $download = "https://github.com/erpaiguy/aerolith-core-releases/releases/download/v1.0.0/Estimation-Setup.exe"
+          $manifest = [ordered]@{
+            version = $version
+            notes = "Bid Craft $version"
+            pub_date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+            platforms = [ordered]@{
+              "windows-x86_64" = [ordered]@{
+                signature = $sig
+                url = $download
+              }
+            }
+          }
+          $json = $manifest | ConvertTo-Json -Depth 6
+          [System.IO.File]::WriteAllText((Join-Path (Get-Location) "dist/estimation-latest.json"), $json)
           $item = Get-Item -LiteralPath "dist/Estimation-Setup.exe"
           if ($item.Length -lt 1) {
             throw "dist/Estimation-Setup.exe is empty."
           }
-          Write-Host "Staged $($item.FullName) ($($item.Length) bytes) from $installer"
+          Write-Host "Staged $($item.FullName) ($($item.Length) bytes), signature, and estimation-latest.json for app version $version"
 
-      - name: Upload Estimation-Setup.exe to aerolith-core-releases
+      - name: Upload release assets to aerolith-core-releases
         uses: softprops/action-gh-release@v3
         with:
           repository: erpaiguy/aerolith-core-releases
           tag_name: v1.0.0
           token: ${{ secrets.AEROLITH_RELEASES_TOKEN }}
-          files: dist/Estimation-Setup.exe
+          files: |
+            dist/Estimation-Setup.exe
+            dist/Estimation-Setup.exe.sig
+            dist/estimation-latest.json
           fail_on_unmatched_files: true
           overwrite_files: true

@@ -1,27 +1,29 @@
+import logoDark from "../brand/bidcraft-logo-dark.png";
+import logoLight from "../brand/bidcraft-logo-light.png";
+import markDark from "../brand/bidcraft-mark-dark.png";
+import markLight from "../brand/bidcraft-mark-light.png";
+import aeroDark from "../brand/aerolith-logo-dark.png";
+import aeroLight from "../brand/aerolith-logo-light.png";
+
 type BrandSize = "sm" | "md" | "lg";
 
-const MARK = { sm: 22, md: 32, lg: 44 } as const;
+const HEIGHT = { sm: 26, md: 34, lg: 52 } as const;
 
 export function BrandMark({ size = 28, tone = "light" }: { size?: number; tone?: "light" | "dark" }) {
   return (
-    <svg
+    <img
       className="brand-mark"
+      src={tone === "dark" ? markDark : markLight}
       width={size}
       height={size}
-      viewBox="0 0 32 32"
-      aria-hidden="true"
-    >
-      {tone === "light" ? <rect width="32" height="32" rx="4" fill="#12355B" /> : null}
-      <rect x="7" y="8" width="18" height="4" fill="#C9A227" />
-      <rect x="7" y="14" width="13" height="4" fill="#C9A227" />
-      <rect x="7" y="20" width="8" height="4" fill="#C9A227" />
-    </svg>
+      alt=""
+    />
   );
 }
 
 export function BrandLockup({
   size = "md",
-  title = "Aerolith Core",
+  title = "Bid Craft",
   tone = "light",
 }: {
   size?: BrandSize;
@@ -30,11 +32,21 @@ export function BrandLockup({
 }) {
   return (
     <div className={`brand-lockup brand-lockup-${size} brand-lockup-${tone}`} title={title}>
-      <BrandMark size={MARK[size]} tone={tone} />
-      <div className="brand-lockup-text">
-        <strong>Aerolith</strong>
-        <span>Core</span>
-      </div>
+      <img className="brand-logo" src={tone === "dark" ? logoDark : logoLight} alt="Bid Craft" height={HEIGHT[size]} />
     </div>
+  );
+}
+
+export function PublisherMark({ tone = "light", compact = false }: { tone?: "light" | "dark"; compact?: boolean }) {
+  return (
+    <p className={`publisher ${tone === "dark" ? "publisher-dark" : ""}`}>
+      <span>Published by</span>
+      <img
+        className="publisher-logo"
+        src={tone === "dark" ? aeroDark : aeroLight}
+        alt="The Aerolith Core"
+        height={compact ? 18 : 28}
+      />
+    </p>
   );
 }

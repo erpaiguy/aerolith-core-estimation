@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import type { CategoryRow, LoadedProject, UnitRow, VendorRow } from "../model";
 import { uid } from "../projectCompute";
+import type { ResourceMasterRow } from "../resourceMaster";
 import type { CatalogSource } from "../tenantCatalog";
 import { DataTable } from "../ui/tableLayout";
+import { ResourceMasterPanel } from "./ResourceMasterPanel";
 
-type Tab = "units" | "categories" | "vendors";
+type Tab = "units" | "categories" | "vendors" | "resources";
 type Scope = "tenant" | "project";
 
 export function MastersView({
@@ -17,6 +19,15 @@ export function MastersView({
   onChangeCatalog,
   onPromote,
   locked,
+  masterTab,
+  onMasterTab,
+  globalResourceRows = [],
+  projectResourceRows = [],
+  onGlobalResourceRows,
+  onProjectResourceRows,
+  onPushRate,
+  onCopyGlobal,
+  currency = "QAR",
 }: {
   project: LoadedProject;
   catalog: { units: UnitRow[]; categories: CategoryRow[]; vendors: VendorRow[] };
@@ -27,8 +38,22 @@ export function MastersView({
   onChangeCatalog: (next: { units: UnitRow[]; categories: CategoryRow[]; vendors: VendorRow[] }) => void;
   onPromote?: (kind: "unit" | "category" | "vendor", code: string, label: string) => void;
   locked?: boolean;
+  masterTab?: Tab;
+  onMasterTab?: (tab: Tab) => void;
+  globalResourceRows?: ResourceMasterRow[];
+  projectResourceRows?: ResourceMasterRow[];
+  onGlobalResourceRows?: (rows: ResourceMasterRow[]) => void;
+  onProjectResourceRows?: (rows: ResourceMasterRow[]) => void;
+  onPushRate?: (row: ResourceMasterRow) => void;
+  onCopyGlobal?: () => void;
+  currency?: string;
 }) {
-  const [tab, setTab] = useState<Tab>("units");
+  const [tabState, setTabState] = useState<Tab>("units");
+  const tab = masterTab ?? tabState;
+  function setTab(next: Tab) {
+    setTabState(next);
+    onMasterTab?.(next);
+  }
   const [scope, setScope] = useState<Scope>("tenant");
   const [draft, setDraft] = useState(catalog);
   useEffect(() => {
@@ -55,6 +80,7 @@ export function MastersView({
               ["units", "Units"],
               ["categories", "Categories"],
               ["vendors", "Vendors"],
+              ["resources", "Resource master"],
             ] as const
           ).map(([id, label]) => (
             <button key={id} className={tab === id ? "primary" : ""} type="button" onClick={() => setTab(id)}>
@@ -115,6 +141,17 @@ export function MastersView({
               tenantScope ? setDraft({ units, categories: next, vendors }) : onChangeProject({ categories: next })
             }
             onPromote={showPromote ? (code, label) => onPromote?.("category", code, label) : undefined}
+          />
+        ) : null}
+        {tab === "resources" ? (
+          <ResourceMasterPanel
+            rows={tenantScope ? globalResourceRows : projectResourceRows}
+            scope={tenantScope ? "global" : "project"}
+            currency={currency}
+            locked={rowsLocked}
+            onChange={(next) => (tenantScope ? onGlobalResourceRows?.(next) : onProjectResourceRows?.(next))}
+            onPushRate={tenantScope ? undefined : onPushRate}
+            onCopyGlobal={tenantScope ? undefined : onCopyGlobal}
           />
         ) : null}
         <fieldset className="plain" disabled={rowsLocked}>

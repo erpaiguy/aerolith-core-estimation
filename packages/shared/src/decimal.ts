@@ -1,4 +1,4 @@
-/** Display defaults: quantities 4 dp, money 2 dp. Calc rounding is unchanged. */
+/** Display and calculation precision. Defaults: dimensions 5 dp, quantity 4 dp, rate 2 dp, amount 2 dp. */
 
 export const QTY_SCALE = 4;
 export const MONEY_SCALE = 2;
@@ -7,12 +7,13 @@ export const DIM_SCALE = 5;
 
 export type DisplayFormat = {
   currency: string;
+  /** Quantity, Nos, and posted take-off totals. */
   qtyDecimals: number;
   rateDecimals: number;
   amountDecimals: number;
-  /** Take-off / rate “Nos” columns. */
+  /** Kept in sync with quantity precision. Older saves may still store it. */
   nosDecimals: number;
-  /** L, B, H, Qty 1–4, Qty, Item qty, This line. */
+  /** L, B, H and other measured dimensions. */
   dimDecimals: number;
 };
 
@@ -26,6 +27,7 @@ export const DEFAULT_DISPLAY_FORMAT: DisplayFormat = {
 };
 
 export const CURRENCIES: Array<{ code: string; name: string }> = [
+  { code: "INR", name: "Indian rupee" },
   { code: "QAR", name: "Qatari riyal" },
   { code: "AED", name: "UAE dirham" },
   { code: "SAR", name: "Saudi riyal" },
@@ -35,7 +37,6 @@ export const CURRENCIES: Array<{ code: string; name: string }> = [
   { code: "USD", name: "US dollar" },
   { code: "EUR", name: "Euro" },
   { code: "GBP", name: "Pound sterling" },
-  { code: "INR", name: "Indian rupee" },
 ];
 
 function clampPlaces(value: number | undefined, fallback: number): number {
@@ -45,12 +46,13 @@ function clampPlaces(value: number | undefined, fallback: number): number {
 
 export function mergeDisplayFormat(partial?: Partial<DisplayFormat> | null): DisplayFormat {
   const currency = (partial?.currency ?? DEFAULT_DISPLAY_FORMAT.currency).trim().toUpperCase() || DEFAULT_DISPLAY_FORMAT.currency;
+  const qtyDecimals = clampPlaces(partial?.qtyDecimals, DEFAULT_DISPLAY_FORMAT.qtyDecimals);
   return {
     currency,
-    qtyDecimals: clampPlaces(partial?.qtyDecimals, DEFAULT_DISPLAY_FORMAT.qtyDecimals),
+    qtyDecimals,
     rateDecimals: clampPlaces(partial?.rateDecimals, DEFAULT_DISPLAY_FORMAT.rateDecimals),
     amountDecimals: clampPlaces(partial?.amountDecimals, DEFAULT_DISPLAY_FORMAT.amountDecimals),
-    nosDecimals: clampPlaces(partial?.nosDecimals, DEFAULT_DISPLAY_FORMAT.nosDecimals),
+    nosDecimals: clampPlaces(partial?.nosDecimals ?? partial?.qtyDecimals, qtyDecimals),
     dimDecimals: clampPlaces(partial?.dimDecimals, DEFAULT_DISPLAY_FORMAT.dimDecimals),
   };
 }
@@ -63,6 +65,11 @@ export function configureDisplayFormat(next: Partial<DisplayFormat>): DisplayFor
 }
 
 export function getDisplayFormat(): DisplayFormat {
+  return active;
+}
+
+export function resetDisplayFormat(): DisplayFormat {
+  active = { ...DEFAULT_DISPLAY_FORMAT };
   return active;
 }
 
@@ -83,33 +90,60 @@ export function roundUpTo(value: number, places: number): number {
   return (value > 0 ? Math.ceil(scaled - 1e-10) : Math.floor(scaled + 1e-10)) / f;
 }
 
-export function roundQty(value: number): number {
-  return roundTo(value, QTY_SCALE);
+export function roundQty(value: number, places = getDisplayFormat().qtyDecimals): number {
+  return roundTo(value, places);
+}
+
+export function roundRate(value: number, places = getDisplayFormat().rateDecimals): number {
+  return roundTo(value, places);
+}
+
+export function roundAmount(value: number, places = getDisplayFormat().amountDecimals): number {
+  return roundTo(value, places);
+}
+
+export function roundDimValue(value: number, places = getDisplayFormat().dimDecimals): number {
+  return roundUpTo(value, places);
 }
 
 export function roundMoney(value: number): number {
-  return roundTo(value, MONEY_SCALE);
+  return roundAmount(value);
 }
 
-/** True if two money amounts match within 1 cent (workbook fixture policy). */
+/** True if two money amounts match within 1 cent at the default amount precision. */
 export function moneyClose(a: number, b: number, tolerance = 0.01): boolean {
   return Math.abs(roundMoney(a) - roundMoney(b)) <= tolerance;
 }
 
-function formatFixed(value: number, decimals: number): string {
+export function numberLocale(currency = active.currency): string {
+  return currency.trim().toUpperCase() === "INR" ? "en-IN" : "en-US";
+}
+
+export function formatGrouped(value: number, decimals: number, currency = active.currency): string {
   const n = roundTo(value, decimals);
-  return n.toLocaleString("en-US", {
+  return n.toLocaleString(numberLocale(currency), {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });
 }
 
+function formatFixed(value: number, decimals: number, currency = active.currency): string {
+  return formatGrouped(value, decimals, currency);
+}
+
 export function currencyMarker(currency = active.currency): string {
   const code = currency.trim().toUpperCase();
+  if (code === "INR") return "₹";
   if (code === "USD") return "$";
   if (code === "EUR") return "€";
   if (code === "GBP") return "£";
   return code || DEFAULT_DISPLAY_FORMAT.currency;
+}
+
+function moneyPrefix(currency: string): { marker: string; spaced: boolean } {
+  const marker = currencyMarker(currency);
+  const spaced = marker === currency.trim().toUpperCase();
+  return { marker, spaced };
 }
 
 export function formatMoney(
@@ -117,7 +151,9 @@ export function formatMoney(
   currency = active.currency,
   decimals = active.amountDecimals,
 ): string {
-  return `${currency} ${formatFixed(value, decimals)}`;
+  const { marker, spaced } = moneyPrefix(currency);
+  const body = formatFixed(value, decimals, currency);
+  return spaced ? `${marker} ${body}` : `${marker}${body}`;
 }
 
 export function formatRate(
@@ -125,24 +161,30 @@ export function formatRate(
   currency = active.currency,
   decimals = active.rateDecimals,
 ): string {
-  return `${currency} ${formatFixed(value, decimals)}`;
+  const { marker, spaced } = moneyPrefix(currency);
+  const body = formatFixed(value, decimals, currency);
+  return spaced ? `${marker} ${body}` : `${marker}${body}`;
 }
 
-/** Currency figures without the code — use with Rate (QAR) / Amount (QAR) headers. */
+/** Currency figures without the marker — use with Rate (₹) / Amount (₹) headers. */
 export function formatMoneyPlain(
   value: number,
   decimals = active.amountDecimals,
+  currency = active.currency,
 ): string {
-  return formatFixed(value, decimals);
+  return formatFixed(value, decimals, currency);
 }
 
 export function formatQty(value: number | null | undefined, decimals = active.qtyDecimals): string {
   if (value == null) return "";
   const n = roundTo(value, decimals);
-  return n.toLocaleString("en-US", { maximumFractionDigits: decimals });
+  return n.toLocaleString(numberLocale(), {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: decimals,
+  });
 }
 
-export function formatNos(value: number | null | undefined, decimals = active.nosDecimals): string {
+export function formatNos(value: number | null | undefined, decimals = active.qtyDecimals): string {
   if (value == null) return "";
   return formatFixed(roundUpTo(value, decimals), decimals);
 }

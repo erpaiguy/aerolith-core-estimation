@@ -14,6 +14,7 @@ import { stampItem } from "./model";
 import { DEFAULT_BILL_ID, ensureProjectBills, itemKeyOf } from "./bills";
 import { defaultClientColumns, parseColumnDefs } from "./boqColumns";
 import { parseMarginPresets, parseMarginRules } from "./marginRules";
+import { parseStoredResourceMaster } from "./resourceMaster";
 
 type SqlJsStatic = {
   Database: new (data?: ArrayLike<number>) => {
@@ -276,6 +277,7 @@ export async function projectToAero(project: LoadedProject): Promise<Uint8Array>
   put("sealed_at", live.sealedAt ?? "");
   put("revision", String(live.revision ?? 1));
   put("catalog_version", String(live.catalogVersion ?? 1));
+  put("resource_master", JSON.stringify(live.resourceMaster ?? null));
   put("import_needs_review", live.importNeedsReview ? "1" : "0");
   put("client_columns", JSON.stringify(live.clientColumns ?? []));
   put("working_columns", JSON.stringify(live.workingColumns ?? []));
@@ -929,6 +931,7 @@ export async function aeroToProject(bytes: Uint8Array): Promise<LoadedProject> {
     items,
     clientColumns: parseColumnDefs(meta.client_columns) ?? defaultClientColumns(),
     workingColumns: parseColumnDefs(meta.working_columns) ?? [],
+    resourceMaster: parseStoredResourceMaster(meta.resource_master),
     resources: rows(db, "SELECT * FROM project_resources").map((r) => ({
       project_code: str(r.project_code),
       global_code: nullable(r.global_code),

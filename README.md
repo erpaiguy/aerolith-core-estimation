@@ -19,7 +19,7 @@ Desktop-first estimating product. New UI, new calc kernel. Not a port of Aerolit
    ```
 5. Wait until you see `Local: http://localhost:5173/`. Chrome or Edge should open by itself. If not, open **Microsoft Edge** or **Google Chrome** (not Cursor’s chat) and type:
    `http://localhost:5173`
-6. You should see **Aerolith Core**. Click **New project** to start estimating, or open one of the two sample jobs: **single BOQ** (bottom bar **GREEN** at QAR 100,826,297.13) or **multi-BOQ** campus (three buildings).
+6. You should see **Bid Craft**. The left sidebar opens each module. Click **New project** to start estimating, or open one of the two sample jobs: **single BOQ** (working total stays **GREEN** at QAR 100,826,297.13) or **multi-BOQ** campus (three buildings).
 
 To stop the server later, click in that same Terminal and press `Ctrl+C`.
 
@@ -38,7 +38,7 @@ npm run dev:desktop
 
 That script loads Visual Studio 2022 Build Tools before compiling. A plain `tauri dev` from this machine can pick Visual Studio 2026’s linker, which is missing `msvcrt.lib` and fails to link.
 
-That opens **Aerolith Core** as a Windows window. **Save .aero** and **Open .aero** use native dialogs and write under `Documents\Aerolith\Projects` unless you pick another folder. Browser preview (`npm run dev`) still downloads `.aero`.
+That opens **Bid Craft** as a Windows window (the installed app identifier stays `com.aerolith.core`). **Save .aero** and **Open .aero** use native dialogs and write under `Documents\Aerolith\Projects` unless you pick another folder. Browser preview (`npm run dev`) still downloads `.aero`. Settings includes currency (default QAR), decimal precision, and in-app updates.
 
 ## What this slice includes
 

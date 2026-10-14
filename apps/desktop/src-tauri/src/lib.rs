@@ -138,6 +138,8 @@ fn display_path(path: &Path) -> String {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             write_aero,
             read_aero,
@@ -146,7 +148,7 @@ pub fn run() {
             read_tenant_catalog
         ])
         .run(tauri::generate_context!())
-        .expect("error while running Aerolith Core");
+        .expect("error while running Bid Craft");
 }
 
 #[cfg(test)]

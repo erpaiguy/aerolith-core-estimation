@@ -33,7 +33,7 @@ export function LoginView({
       <form className="login-form" onSubmit={submit}>
         <h2>Sign in</h2>
         <p className="lede">
-          Sign in with your Aerolith account. Estimation is one seat on this device. A new account
+          Sign in with your Aerolith account. Bid Craft is one seat on this device. A new account
           starts a 30-day trial for this app.
         </p>
         {error ? (
@@ -72,7 +72,7 @@ export function LoginView({
         </button>
         <p className="login-hint">
           No account yet? Start a trial on the Aerolith website, then return here to sign in. Trial
-          length is 30 days for Estimation. Paid plans open from the website later.
+          length is 30 days for Bid Craft. Paid plans open from the website later.
         </p>
         <div className="login-links">
           <button type="button" onClick={onSignup}>
