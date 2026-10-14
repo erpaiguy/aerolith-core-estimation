@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
-import { attachPointerDrag, clamp, usePersistedNumber } from "./useLayoutSize";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { attachPointerDrag, clamp, GRID, LAYOUT_RESET_EVENT, layoutKeyMatches, usePersistedNumber } from "./useLayoutSize";
 
 export function useColWidths(key: string, defaults: Record<string, number> = {}, min = 48) {
   const [widths, setWidths] = useState<Record<string, number>>(() => {
@@ -13,6 +13,9 @@ export function useColWidths(key: string, defaults: Record<string, number> = {},
     }
   });
 
+  const defaultsRef = useRef(defaults);
+  defaultsRef.current = defaults;
+
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(widths));
@@ -20,6 +23,16 @@ export function useColWidths(key: string, defaults: Record<string, number> = {},
       /* ignore quota */
     }
   }, [key, widths]);
+
+  useEffect(() => {
+    function onReset(ev: Event) {
+      const ids = (ev as CustomEvent<{ ids?: string[] }>).detail?.ids;
+      if (!ids?.length || !layoutKeyMatches(key, ids)) return;
+      setWidths({ ...defaultsRef.current });
+    }
+    window.addEventListener(LAYOUT_RESET_EVENT, onReset);
+    return () => window.removeEventListener(LAYOUT_RESET_EVENT, onReset);
+  }, [key]);
 
   const startResize = useCallback(
     (id: string, ev: ReactPointerEvent<HTMLElement>) => {
@@ -40,7 +53,7 @@ export function useColWidths(key: string, defaults: Record<string, number> = {},
   return { widths, startResize };
 }
 
-export function useTableLayout(key: string, defaults: Record<string, number> = {}, colMin = 48, rowDefault = 28) {
+export function useTableLayout(key: string, defaults: Record<string, number> = {}, colMin = GRID.colMin, rowDefault = GRID.rowHeight) {
   const cols = useColWidths(`${key}-cols`, defaults, colMin);
   const row = usePersistedNumber(`${key}-row`, rowDefault, 20, 160);
   const startRowResize = row.beginDrag("y", 1);

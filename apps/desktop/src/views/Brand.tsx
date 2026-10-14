@@ -1,13 +1,9 @@
-import logoDark from "../brand/bidcraft-logo-dark.png";
-import logoLight from "../brand/bidcraft-logo-light.png";
 import markDark from "../brand/bidcraft-mark-dark.png";
 import markLight from "../brand/bidcraft-mark-light.png";
 import aeroDark from "../brand/aerolith-logo-dark.png";
 import aeroLight from "../brand/aerolith-logo-light.png";
 
 type BrandSize = "sm" | "md" | "lg";
-
-const HEIGHT = { sm: 26, md: 34, lg: 52 } as const;
 
 export function BrandMark({ size = 28, tone = "light" }: { size?: number; tone?: "light" | "dark" }) {
   return (
@@ -30,9 +26,13 @@ export function BrandLockup({
   title?: string;
   tone?: "light" | "dark";
 }) {
+  const mark = size === "lg" ? 32 : size === "md" ? 26 : 22;
   return (
     <div className={`brand-lockup brand-lockup-${size} brand-lockup-${tone}`} title={title}>
-      <img className="brand-logo" src={tone === "dark" ? logoDark : logoLight} alt="Bid Craft" height={HEIGHT[size]} />
+      <BrandMark size={mark} tone={tone} />
+      <span className="brand-lockup-text">
+        <strong>{title}</strong>
+      </span>
     </div>
   );
 }

@@ -864,7 +864,7 @@ export function App() {
       </div>
       <main className={`stage ${fillStage ? "stage-fill" : ""}`}>
         {activity === "dashboard" ? (
-          <BoqSplit project={project} value={billFocus} onChange={setBillFocus}>
+          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-dashboard">
             <DashboardView
               project={project}
               billId={billFocus}
@@ -882,7 +882,7 @@ export function App() {
           </BoqSplit>
         ) : null}
         {activity === "estimate" ? (
-          <BoqSplit project={project} value={billFocus} onChange={setBillFocus}>
+          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-estimate">
           <EstimateView
             items={shownItems}
             selected={selected}
@@ -944,7 +944,7 @@ export function App() {
           </BoqSplit>
         ) : null}
         {activity === "analysis" ? (
-          <BoqSplit project={project} value={billFocus} onChange={setBillFocus}>
+          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-analysis">
           <RateAnalysisView
             project={project}
             rateCode={rateCode}
@@ -959,7 +959,7 @@ export function App() {
           </BoqSplit>
         ) : null}
         {activity === "margins" ? (
-          <BoqSplit project={project} value={billFocus} onChange={setBillFocus}>
+          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-margins">
             <MarginsView
               project={project}
               billId={billFocus}
@@ -969,7 +969,7 @@ export function App() {
           </BoqSplit>
         ) : null}
         {activity === "source" ? (
-          <BoqSplit project={project} value={billFocus} onChange={setBillFocus}>
+          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-source">
           <SourceView
             project={project}
             total={shownTotal}
@@ -988,7 +988,7 @@ export function App() {
           </BoqSplit>
         ) : null}
         {activity === "takeoff" ? (
-          <BoqSplit project={project} value={billFocus} onChange={setBillFocus}>
+          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-takeoff">
           <TakeoffView
             items={shownItems}
             lines={project.qtoLines}
@@ -1017,13 +1017,13 @@ export function App() {
                 }}
               />
             ) : null}
-            <BoqSplit project={project} value={billFocus} onChange={setBillFocus}>
+            <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-buy">
             <BuyView project={project} locked={editLocked} onProject={(next) => commit(next)} billId={billFocus} />
             </BoqSplit>
           </>
         ) : null}
         {activity === "submit" ? (
-          <BoqSplit project={project} value={billFocus} onChange={setBillFocus}>
+          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-submit">
           <SubmitView
             project={project}
             total={total}

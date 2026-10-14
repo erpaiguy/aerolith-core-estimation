@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { LoadedProject } from "../model";
 import { sortedBills } from "../bills";
 import { Split } from "./Split";
+import { GRID } from "./useLayoutSize";
 
 export function BillSwitcher({
   project,
@@ -53,18 +54,20 @@ export function BoqSplit({
   value,
   onChange,
   allowAll = true,
+  layoutId = "boq-rail",
   children,
 }: {
   project: LoadedProject;
   value: string | null;
   onChange?: (billId: string | null) => void;
   allowAll?: boolean;
+  layoutId?: string;
   children: ReactNode;
 }) {
   const bills = sortedBills(project);
   if (bills.length <= 1 || !onChange) return children;
   return (
-    <Split id="boq-rail" axis="x" defaultSize={220} min={160} max={380} className="boq-split">
+    <Split id={layoutId} axis="x" defaultSize={GRID.rail} min={GRID.railMin} max={GRID.railMax} className="boq-split">
       <aside className="boq-rail" aria-label="BOQs">
         <p className="boq-rail-label">BOQ</p>
         <BillSwitcher project={project} value={value} onChange={onChange} allowAll={allowAll} />

@@ -35,9 +35,11 @@ import {
   type SubmissionLayoutId,
 } from "../reportFormat";
 import { billById, billIdsFromFocus, billSourceLocked, billTotal, projectGrand, sortedBills } from "../bills";
-import { BrandLockup, BrandMark } from "./Brand";
+import { BrandMark } from "./Brand";
 import { MenuSelect } from "../ui/MenuSelect";
+import { ResetLayoutButton } from "../ui/ResetLayout";
 import { Split } from "../ui/Split";
+import { GRID } from "../ui/useLayoutSize";
 import { type ReportFormatPack } from "./ReportDesigner";
 import { SubmissionSheet, submissionExceptions } from "./SubmissionSheet";
 import { billQtyHeader, compareBills, formatCompareQty, shouldPivotQtyByBoq, submissionItemLines } from "../submissionCompare";
@@ -66,14 +68,15 @@ function Letterhead({
   mode: "source" | "submit";
 }) {
   const company = fmt.companyName.trim();
+  const address = fmt.companyAddress.trim();
   return (
-    <div className="doc-letterhead">
-      {fmt.showLogo ? (company ? <BrandMark size={32} /> : <BrandLockup size="sm" />) : null}
-      <div>
-        {company ? <div className="title">{company}</div> : mode === "source" ? <div className="title">{project.name}</div> : null}
-        {company ? <div className="title job">{project.name}</div> : mode === "submit" && !company ? <div className="title">{project.name}</div> : null}
-        {fmt.companyAddress.trim() ? <div className="addr">{fmt.companyAddress}</div> : null}
+    <div className="doc-letterhead letterhead-bar" data-mode={mode}>
+      {fmt.showLogo ? <BrandMark size={28} /> : null}
+      <div className="letterhead-copy">
+        <div className="title">{company || "Bid Craft"}</div>
+        <div className="title job">{project.name}</div>
       </div>
+      {address ? <div className="addr">{address}</div> : null}
     </div>
   );
 }
@@ -145,20 +148,34 @@ function BillTable({
     return columnLabel(c, fmt, project, currency);
   };
   const numeric = (c: string) => c === "qtyTotal" || c.startsWith("qty:") || isNumericColumn(c, project);
+  const headLabel = (text: string) => {
+    const split = text.match(/^(.*?)(\s*\([^)]*\))$/);
+    if (!split) return text;
+    return (
+      <>
+        <span className="col-head-name">{split[1]}</span>
+        <span className="col-head-unit">{split[2].trim()}</span>
+      </>
+    );
+  };
   const colSpanRest = headCols.length - 1;
 
   return (
     <table className="doc-table">
       <colgroup>
         {headCols.map((c) => (
-          <col key={c} style={{ width: `${c.startsWith("qty") ? Math.max(6, Math.round(28 / Math.max(qtyBills.length + 1, 1))) : colWidthPct(c === "qtyTotal" ? "qty" : c, fmt)}%` }} />
+          <col
+            key={c}
+            className={c === "rate" || c === "amount" ? `col-${c}` : undefined}
+            style={{ width: `${c.startsWith("qty:") || c === "qtyTotal" ? Math.max(6, Math.round(28 / Math.max(qtyBills.length + 1, 1))) : colWidthPct(c, fmt)}%` }}
+          />
         ))}
       </colgroup>
       <thead>
         <tr>
           {headCols.map((c) => (
-            <th key={c} className={numeric(c) ? "num" : undefined}>
-              {labelFor(c)}
+            <th key={c} className={[numeric(c) ? "num" : "", c === "rate" || c === "amount" ? `col-${c}` : ""].filter(Boolean).join(" ") || undefined}>
+              {headLabel(labelFor(c))}
             </th>
           ))}
         </tr>
@@ -219,7 +236,7 @@ function BillTable({
                     );
                   }
                   return (
-                    <td key={c} className={numeric(c) ? "num" : undefined}>
+                    <td key={c} className={[numeric(c) ? "num" : "", c === "rate" || c === "amount" ? `col-${c}` : ""].filter(Boolean).join(" ") || undefined}>
                       {cells[c] ?? ""}
                     </td>
                   );
@@ -994,6 +1011,9 @@ export function SubmitView({
             </button>
           </>
         ) : null}
+        <ResetLayoutButton
+          ids={["submit-dual", "submit-sheet", `submit-sheet-byboq-${sortedBills(project).length}`, "boq-rail-submit"]}
+        />
         <span className="hint">
           {project.sealedAt
             ? `Sealed ${new Date(project.sealedAt).toLocaleString()}. Print matches the packet preview.`
@@ -1001,7 +1021,14 @@ export function SubmitView({
         </span>
       </div>
       <div className="module-body submit-dual">
-        <Split id="submit-dual" axis="x" defaultSize={420} min={280} max={720} primary="end">
+        <Split
+          id="submit-dual"
+          axis="x"
+          defaultSize={GRID.companion}
+          min={GRID.companionMin}
+          max={GRID.companionMax}
+          primary="start"
+        >
           {sheet}
           <div className="submit-packet">
             <div className="submit-pane-label">Packet preview</div>

@@ -63,12 +63,12 @@ export type ReportColWidths = Record<ReportColId, number>;
 
 export const DEFAULT_COL_WIDTHS: ReportColWidths = {
   sl: 8,
-  description: 42,
-  qty: 12,
-  ourQty: 12,
+  description: 30,
+  qty: 10,
+  ourQty: 10,
   unit: 8,
-  rate: 14,
-  amount: 16,
+  rate: 20,
+  amount: 24,
 };
 
 export const UNIT_SUMMARY_COL_IDS = ["description", "amount"] as const;
@@ -81,7 +81,7 @@ export type GrandSummaryColWidths = Record<GrandSummaryColId, number>;
 
 export const DEFAULT_PAGE_SUMMARY_COL_WIDTHS: UnitSummaryColWidths = { description: 72, amount: 28 };
 export const DEFAULT_CATEGORY_SUMMARY_COL_WIDTHS: UnitSummaryColWidths = { description: 72, amount: 28 };
-export const DEFAULT_GRAND_SUMMARY_COL_WIDTHS: GrandSummaryColWidths = { sl: 12, description: 68, amount: 20 };
+export const DEFAULT_GRAND_SUMMARY_COL_WIDTHS: GrandSummaryColWidths = { sl: 12, description: 52, amount: 36 };
 
 export type ReportLayoutMode = "paged" | "continuous";
 export type ReportMoneyStyle = "inherit" | "code" | "symbol" | "plain";
