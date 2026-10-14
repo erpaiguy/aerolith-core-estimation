@@ -1,5 +1,5 @@
 import { recents, sessionScope, type Session } from "../platform/store";
-import { BrandLockup, PublisherMark } from "./Brand";
+import { BrandLockup, PublisherMark, useSurfaceTone } from "./Brand";
 import { isSoloTenant, tenantProjectsHint } from "../platform/tenant";
 
 export function HomeView({
@@ -50,6 +50,7 @@ export function HomeView({
         ]
           .filter(Boolean)
           .join(" · ");
+  const tone = useSurfaceTone();
   const trialLine = licenseLine
     ? `${licenseLine} Jobs stay in this workspace.`
     : "Jobs stay in this workspace.";
@@ -57,7 +58,7 @@ export function HomeView({
   return (
     <div className="app backstage">
       <aside className="back-nav">
-        <BrandLockup size="sm" tone="dark" />
+        <BrandLockup size="sm" tone={tone} />
         <div className="who">
           {who}
           <small>{roleLine}</small>
@@ -85,7 +86,7 @@ export function HomeView({
         <button type="button" onClick={onSignOut}>
           Sign out
         </button>
-        <PublisherMark tone="dark" compact />
+        <PublisherMark tone={tone} compact />
       </aside>
       <div className="home">
         <h1>Open</h1>

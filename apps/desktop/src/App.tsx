@@ -55,7 +55,7 @@ import { ImportWizard } from "./views/ImportWizard";
 import { LicensePanel } from "./views/LicensePanel";
 import { LoginView } from "./views/LoginView";
 import { SplashShell } from "./views/SplashShell";
-import { BrandLockup } from "./views/Brand";
+import { PrintProvider } from "./print/context";
 import { Sidebar, type SidebarTarget } from "./views/Sidebar";
 import { applyTheme, readTheme, type ThemeName } from "./theme";
 import { checkForUpdate, updatesAutoEnabled, type UpdateOffer } from "./updates";
@@ -750,6 +750,17 @@ export function App() {
         masterOpen={masterTab === "resources"}
         collapsed={navCollapsed}
         theme={theme}
+        projectName={project.name}
+        revision={`${project.sealedAt ? `sealed r${project.revision}` : `r${project.revision}`}${
+          license.session.isAuthenticated
+            ? ` · ${licenseReadOnly ? "read-only · " : ""}${planDisplayName(license.session.planCode)}`
+            : ""
+        }`}
+        total={formatMoney(total, project.currency)}
+        user={`${initials} · ${session.kind === "owner" ? "owner" : session.role.name}`}
+        trial={licenseBanner(license.session)}
+        showInspector={showInspector}
+        inspectorOpen={inspectorOpen}
         canView={canView}
         onNavigate={(id: SidebarTarget) => {
           if (id === "resources") {
@@ -775,50 +786,18 @@ export function App() {
           setTheme(next);
           applyTheme(next);
         }}
+        onClose={() => {
+          setProject(null);
+          setFilePath(null);
+          setRateCode(null);
+          setQtoLineId(null);
+          setSaveMsg("");
+          setScreen("home");
+        }}
+        onOpen={() => void openAeroFile()}
+        onSave={() => void saveAero()}
+        onToggleInspector={() => setInspectorOpen((v) => !v)}
       />
-      <header className="titlebar">
-        <BrandLockup size="sm" tone="dark" />
-        <div className="id">
-          <span className="job">{project.name}</span>
-          <span className="rev">
-            {project.sealedAt ? `sealed r${project.revision}` : `r${project.revision}`}
-            {license.session.isAuthenticated
-              ? ` · ${licenseReadOnly ? "read-only · " : ""}${planDisplayName(license.session.planCode)}`
-              : ""}
-          </span>
-        </div>
-        <span className="sp" />
-        <span className="gold">{formatMoney(total, project.currency)}</span>
-        <div className="tb-actions">
-          {showInspector ? (
-            <button type="button" onClick={() => setInspectorOpen((v) => !v)}>
-              {inspectorOpen ? "Hide inspector" : "Inspector"}
-            </button>
-          ) : null}
-          <button
-            type="button"
-            onClick={() => {
-              setProject(null);
-              setFilePath(null);
-              setRateCode(null);
-              setQtoLineId(null);
-              setSaveMsg("");
-              setScreen("home");
-            }}
-          >
-            Close
-          </button>
-          <button type="button" onClick={() => void openAeroFile()}>
-            Open
-          </button>
-          <button className="primary" type="button" onClick={() => void saveAero()}>
-            Save
-          </button>
-        </div>
-        <span className="who">
-          {initials} · {session.kind === "owner" ? "owner" : session.role.name}
-        </span>
-      </header>
       <div className="shell-banners">
         {updateOffer ? (
           <div className="banner" role="status">
@@ -837,11 +816,6 @@ export function App() {
             >
               {updateBusy ? "Installing…" : "Download, install, and relaunch"}
             </button>
-          </div>
-        ) : null}
-        {licenseBanner(license.session) ? (
-          <div className="banner" role="status">
-            {licenseBanner(license.session)}
           </div>
         ) : null}
         {catalogStale ? (
@@ -863,6 +837,7 @@ export function App() {
         ) : null}
       </div>
       <main className={`stage ${fillStage ? "stage-fill" : ""}`}>
+        <PrintProvider project={project} format={reportFormat}>
         {activity === "dashboard" ? (
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-dashboard">
             <DashboardView
@@ -1117,6 +1092,7 @@ export function App() {
             }}
           />
         ) : null}
+        </PrintProvider>
       </main>
       {inspectorVisible ? (
       <aside className="inspector">

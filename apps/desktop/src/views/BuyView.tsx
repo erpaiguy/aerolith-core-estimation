@@ -1,5 +1,8 @@
 import { formatMoney, formatQty, formatRate } from "@aerolith/shared";
 import { useEffect, useMemo, useState } from "react";
+import { PrintActions } from "../ui/PrintActions";
+import { usePrintHeader } from "../print/context";
+import { jobDocument } from "../print/types";
 import {
   applyCustomRate,
   applyVendorPack,
@@ -97,6 +100,7 @@ export function BuyView({
   const [sub, setSub] = useState("");
   const [focusPackId, setFocusPackId] = useState("");
   const [focusCode, setFocusCode] = useState<string | null>(null);
+  const header = usePrintHeader();
   const [settleOpen, setSettleOpen] = useState(false);
   const [keptAnalysis, setKeptAnalysis] = useState<Set<string>>(() => new Set());
   const billFilter = billId;
@@ -149,6 +153,28 @@ export function BuyView({
         </p>
       ) : null}
       <div className="buy-toolbar">
+        <PrintActions
+          build={() =>
+            jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Resource Prices", [
+              {
+                title: "Resources",
+                columns: [
+                  { label: "Category", width: 18 },
+                  { label: "Code", width: 16 },
+                  { label: "Description", width: 36 },
+                  { label: "Unit", width: 10 },
+                  { label: "Qty", width: 10, align: "right" },
+                  { label: "Spec", width: 10 },
+                ],
+                rows: lanes.flatMap((lane) =>
+                  laneTargets(live, lane.id, billFilter).map((target) => ({
+                    cells: [lane.label, target.code, target.description, target.unit ?? "", formatQty(target.qty), target.spec],
+                  })),
+                ),
+              },
+            ])
+          }
+        />
         <div className="buy-toolbar-main">
         {room ? (
           <>
@@ -904,6 +930,7 @@ function SendStage({
   onOpenQuotes: (packId: string) => void;
 }) {
   const ready = packs.filter((p) => p.lines.some((l) => l.included));
+  const { format } = usePrintHeader();
   const [packId, setPackId] = useState(focusPackId || ready[0]?.id || "");
   const pack = ready.find((p) => p.id === packId) ?? ready.find((p) => p.id === focusPackId) ?? ready[0] ?? null;
   const targets = laneTargets(project, laneId, billId);
@@ -928,7 +955,7 @@ function SendStage({
     if (kind === "csv") {
       downloadText(`enquiry-${issuedPack.vendorName.replace(/\s+/g, "-")}.csv`, enquiryCsv(next, issuedPack));
     } else {
-      printEnquiry(next, issuedPack);
+      printEnquiry(next, issuedPack, format);
     }
     onProject(next);
   }

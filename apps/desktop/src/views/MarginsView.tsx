@@ -18,6 +18,9 @@ import {
 } from "../marginRules";
 import { newId, type LoadedProject, type MarginFactorKey, type MarginTargetKind } from "../model";
 import { QtyInput } from "../ui/QtyInput";
+import { PrintActions } from "../ui/PrintActions";
+import { usePrintHeader } from "../print/context";
+import { jobDocument } from "../print/types";
 import { MenuSelect } from "../ui/MenuSelect";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
@@ -57,6 +60,7 @@ export function MarginsView({
 
   const presets = presetsOf(project);
   const rules = rulesOf(project);
+  const header = usePrintHeader();
   const scopedItems = useMemo(
     () => project.items.filter((i) => i.kind === "item" && (!billId || i.billId === billId)),
     [project.items, billId],
@@ -134,6 +138,29 @@ export function MarginsView({
         >
           Apply
         </button>
+        <PrintActions
+          build={() =>
+            jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Margins", [
+              {
+                title: "Assignments",
+                columns: [
+                  { label: "Name", width: 28 },
+                  { label: "Applies to", width: 42 },
+                  { label: "Factors", width: 20 },
+                  { label: "Items", width: 10, align: "right" },
+                ],
+                rows: rules.map((rule) => ({
+                  cells: [
+                    rule.name,
+                    describeRuleTarget(project, rule),
+                    factorSummary(rule.stack, rule.factors),
+                    String(itemsMatchingRule(project, rule).length),
+                  ],
+                })),
+              },
+            ])
+          }
+        />
       </div>
       <div className="margins-body">
         <Split id="margins" axis="x" defaultSize={440} min={280} max={720}>

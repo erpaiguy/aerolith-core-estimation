@@ -134,6 +134,98 @@ fn display_path(path: &Path) -> String {
     raw.strip_prefix(r"\\?\").unwrap_or(&raw).to_string()
 }
 
+fn user_path(path: &str) -> Result<PathBuf, String> {
+    let trimmed = path.trim().trim_matches('"');
+    if trimmed.is_empty() {
+        return Err("No file was chosen".into());
+    }
+    let path = PathBuf::from(trimmed);
+    if !path.is_absolute() {
+        return Err("Choose a full path".into());
+    }
+    Ok(path)
+}
+
+#[tauri::command]
+fn write_user_file(path: String, data: Vec<u8>) -> Result<String, String> {
+    let path = user_path(&path)?;
+    if let Some(parent) = path.parent() {
+        if !parent.as_os_str().is_empty() {
+            std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+        }
+    }
+    std::fs::write(&path, data).map_err(|e| e.to_string())?;
+    Ok(display_path(&path))
+}
+
+#[tauri::command]
+fn write_temp_pdf(name: String, data: Vec<u8>) -> Result<String, String> {
+    let safe = name
+        .chars()
+        .map(|c| if c.is_ascii_alphanumeric() || c == '.' || c == '-' || c == '_' { c } else { '-' })
+        .collect::<String>();
+    let file = std::env::temp_dir().join(if safe.to_ascii_lowercase().ends_with(".pdf") {
+        safe
+    } else {
+        format!("{safe}.pdf")
+    });
+    std::fs::write(&file, data).map_err(|e| e.to_string())?;
+    Ok(display_path(&file))
+}
+
+#[tauri::command]
+fn open_user_file(path: String) -> Result<(), String> {
+    let path = user_path(&path)?;
+    spawn_detached(open_command(path.to_string_lossy().as_ref()))
+}
+
+#[tauri::command]
+fn print_user_file(path: String) -> Result<(), String> {
+    let path = user_path(&path)?;
+    let text = path.to_string_lossy().to_string();
+    #[cfg(target_os = "windows")]
+    {
+        return spawn_detached(
+            std::process::Command::new("powershell")
+                .args([
+                    "-NoProfile",
+                    "-WindowStyle",
+                    "Hidden",
+                    "-Command",
+                    "Start-Process",
+                    "-LiteralPath",
+                    &text,
+                    "-Verb",
+                    "Print",
+                ]),
+        );
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        let _ = text;
+        Err("System print from a saved PDF is used on Windows. Print opens the dialog directly.".into())
+    }
+}
+
+fn open_command(path: &str) -> std::process::Command {
+    #[cfg(target_os = "windows")]
+    {
+        let mut cmd = std::process::Command::new("cmd");
+        cmd.args(["/C", "start", "", path]);
+        return cmd;
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        let mut cmd = std::process::Command::new("xdg-open");
+        cmd.arg(path);
+        cmd
+    }
+}
+
+fn spawn_detached(mut cmd: std::process::Command) -> Result<(), String> {
+    cmd.spawn().map(|_| ()).map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -145,7 +237,11 @@ pub fn run() {
             read_aero,
             default_projects_dir,
             write_tenant_catalog,
-            read_tenant_catalog
+            read_tenant_catalog,
+            write_user_file,
+            write_temp_pdf,
+            open_user_file,
+            print_user_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running Bid Craft");

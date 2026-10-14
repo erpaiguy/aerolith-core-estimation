@@ -8,6 +8,9 @@ import { billTotal, quoteMatchesItem, sortedBills } from "../bills";
 import type { ReactNode } from "react";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
+import { PrintActions } from "../ui/PrintActions";
+import { usePrintHeader } from "../print/context";
+import { jobDocument } from "../print/types";
 
 export function DashboardView({
   project,
@@ -61,8 +64,37 @@ export function DashboardView({
     project.items.filter((i) => i.kind === "item").reduce((s, i) => s + (i.result?.amount ?? 0), 0),
   );
 
+  const header = usePrintHeader();
   return (
     <div className="dashboard-view">
+      <div className="module-toolbar">
+        <h1 className="view">Dashboard</h1>
+        <PrintActions
+          build={() =>
+            jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Dashboard", [
+              {
+                title: "Summary",
+                columns: [
+                  { label: "Item", width: 60 },
+                  { label: `Amount (${project.currency})`, width: 40, align: "right" },
+                ],
+                rows: [
+                  ...waterfall.map((row) => ({ cells: [row.label, formatMoney(row.value, project.currency)] })),
+                  { kind: "total" as const, cells: [billId ? "This BOQ" : "Working total", formatMoney(total, project.currency)] },
+                ],
+              },
+              {
+                title: "Cost by category",
+                columns: [
+                  { label: "Category", width: 70 },
+                  { label: `Amount (${project.currency})`, width: 30, align: "right" },
+                ],
+                rows: tree.map((node) => ({ cells: [node.label, formatMoney(node.amount, project.currency)] })),
+              },
+            ])
+          }
+        />
+      </div>
       {license}
       <div className="kpis">
         <div className="kpi">

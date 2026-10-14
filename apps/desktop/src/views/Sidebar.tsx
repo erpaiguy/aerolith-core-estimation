@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Activity } from "../model";
 import { ACTIVITY_LABELS } from "../activityLabels";
-import { BrandMark } from "./Brand";
+import { BrandLockup, BrandMark, useSurfaceTone } from "./Brand";
 import type { ThemeName } from "../theme";
 
 export type SidebarTarget = Activity | "resources";
@@ -41,25 +41,79 @@ export function Sidebar({
   masterOpen,
   collapsed,
   theme,
+  projectName,
+  revision,
+  total,
+  user,
+  trial,
+  showInspector = false,
+  inspectorOpen = false,
   canView,
   onNavigate,
   onToggle,
   onTheme,
+  onClose,
+  onOpen,
+  onSave,
+  onToggleInspector,
 }: {
   activity: Activity;
   masterOpen: boolean;
   collapsed: boolean;
   theme: ThemeName;
+  projectName: string;
+  revision: string;
+  total: string;
+  user: string;
+  trial: string;
+  showInspector?: boolean;
+  inspectorOpen?: boolean;
   canView: (id: Activity) => boolean;
   onNavigate: (id: SidebarTarget) => void;
   onToggle: () => void;
   onTheme: (theme: ThemeName) => void;
+  onClose: () => void;
+  onOpen: () => void;
+  onSave: () => void;
+  onToggleInspector?: () => void;
 }) {
+  const tone = useSurfaceTone();
   return (
     <aside className={`sidebar ${collapsed ? "is-collapsed" : ""}`} aria-label="Modules">
       <div className="sidebar-brand">
-        <BrandMark size={collapsed ? 22 : 26} tone="dark" />
-        {collapsed ? null : <strong>Bid Craft</strong>}
+        {collapsed ? (
+          <BrandMark size={22} tone={tone} />
+        ) : (
+          <BrandLockup size="sm" tone={tone} />
+        )}
+      </div>
+      <div className="sidebar-job">
+        <p className="job" title={projectName}>
+          {projectName}
+        </p>
+        <p className="rev">{revision}</p>
+        <p className="gold">{total}</p>
+        <div className="sidebar-actions">
+          <button type="button" title="Close" aria-label="Close" onClick={onClose}>
+            {collapsed ? "×" : "Close"}
+          </button>
+          <button type="button" title="Open" aria-label="Open" onClick={onOpen}>
+            {collapsed ? "↗" : "Open"}
+          </button>
+          <button className="primary" type="button" title="Save" aria-label="Save" onClick={onSave}>
+            {collapsed ? "↓" : "Save"}
+          </button>
+          {showInspector ? (
+            <button
+              type="button"
+              title={inspectorOpen ? "Hide inspector" : "Inspector"}
+              aria-label={inspectorOpen ? "Hide inspector" : "Inspector"}
+              onClick={onToggleInspector}
+            >
+              {collapsed ? "i" : inspectorOpen ? "Hide" : "Inspector"}
+            </button>
+          ) : null}
+        </div>
       </div>
       <button
         type="button"
@@ -99,6 +153,12 @@ export function Sidebar({
         })}
       </div>
       <div className="sidebar-foot">
+        <div className="sidebar-account">
+          <p className="who" title={trial ? `${user}. ${trial}` : user}>
+            {collapsed ? user.split(" · ")[0] : user}
+          </p>
+          {trial ? <p className="trial">{trial}</p> : null}
+        </div>
         <button
           type="button"
           className="nav-btn"

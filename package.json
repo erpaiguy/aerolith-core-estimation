@@ -1,7 +1,7 @@
 {
   "name": "aerolith-core",
   "private": true,
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Bid Craft — desktop-first estimating product",
   "workspaces": [
     "packages/*",

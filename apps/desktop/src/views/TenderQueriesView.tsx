@@ -1,4 +1,7 @@
 import { useMemo, useState } from "react";
+import { PrintActions } from "../ui/PrintActions";
+import { usePrintHeader } from "../print/context";
+import { jobDocument } from "../print/types";
 import type { LoadedProject, QueryAttachment, QueryColumnDef, TenderQueryItem, TenderQueryList, TenderQueryReply } from "../model";
 import {
   addItemAttachments,
@@ -66,6 +69,7 @@ export function TenderQueriesView({
   onProject: (next: LoadedProject) => void;
   locked?: boolean;
 }) {
+  const header = usePrintHeader();
   const [stage, setStage] = useState<QueryStage>("log");
   const [focusListId, setFocusListId] = useState("");
   const [selectedId, setSelectedId] = useState("");
@@ -109,6 +113,24 @@ export function TenderQueriesView({
             </span>
           </span>
         </div>
+        <PrintActions
+          build={() =>
+            jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Client Queries", [
+              {
+                title: "Query log",
+                columns: [
+                  { label: "No.", width: 10 },
+                  { label: "Subject", width: 28 },
+                  { label: "Query", width: 42 },
+                  { label: "Ref", width: 20 },
+                ],
+                rows: (project.queryItems ?? []).map((item) => ({
+                  cells: [item.number, item.subject, item.question, item.documentRef],
+                })),
+              },
+            ])
+          }
+        />
       </div>
       <fieldset className="plain buy-body" disabled={locked}>
         {stage === "log" ? (
@@ -512,6 +534,7 @@ function SendStage({
   onFocusList: (id: string) => void;
 }) {
   const lists = project.queryLists ?? [];
+  const { format } = usePrintHeader();
   const live = lists.find((l) => l.id === focusListId) ?? lists.find((l) => l.status === "draft") ?? lists[0] ?? null;
   const lines = live?.lines ?? [];
 
@@ -546,7 +569,7 @@ function SendStage({
     const next = issueQueryList(project, live.id);
     const sent = (next.queryLists ?? []).find((l) => l.id === live.id) ?? live;
     if (kind === "csv") downloadText(`query-list-${sent.number}.csv`, queryListCsv(next, sent));
-    else printQueryList(next, sent);
+    else printQueryList(next, sent, format);
     onProject(next);
   }
 
