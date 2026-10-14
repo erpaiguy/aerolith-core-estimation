@@ -1,5 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { currencyMarker } from "@aerolith/shared";
+import { DataTable } from "../ui/tableLayout";
+import { ResetLayoutButton } from "../ui/ResetLayout";
 import {
   importResourceRows,
   parseResourceWorkbook,
@@ -97,6 +99,7 @@ export function ResourceMasterPanel({
         <button type="button" onClick={onExport}>
           Export Excel
         </button>
+        <ResetLayoutButton ids={[`resource-master-${scope}`]} />
         <input
           ref={fileRef}
           type="file"
@@ -124,7 +127,7 @@ export function ResourceMasterPanel({
         </p>
       ) : null}
       <div className="doc-scroll">
-        <table className="data master-table">
+        <DataTable layoutKey={`resource-master-${scope}`} className="data master-table">
           <thead>
             <tr>
               <th>Code</th>
@@ -183,7 +186,7 @@ export function ResourceMasterPanel({
               </tr>
             ))}
           </tbody>
-        </table>
+        </DataTable>
         {shown.length === 0 ? <p className="hint">No resources match that search.</p> : null}
       </div>
     </div>

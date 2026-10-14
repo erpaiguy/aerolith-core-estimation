@@ -23,6 +23,46 @@ export function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
+/** Shared grid and pane defaults so every window starts the same until the user resizes it. */
+export const GRID = {
+  rowHeight: 28,
+  colMin: 48,
+  rail: 220,
+  railMin: 160,
+  railMax: 380,
+  companion: 380,
+  companionMin: 280,
+  companionMax: 640,
+};
+
+export const LAYOUT_RESET_EVENT = "bidcraft-layout-reset";
+
+export function layoutKeyMatches(storageKey: string, ids: string[]) {
+  return ids.some(
+    (id) =>
+      storageKey === id ||
+      storageKey === `aerolith-split:${id}` ||
+      storageKey === `${id}-cols` ||
+      storageKey === `${id}-row`,
+  );
+}
+
+/** Drop saved pane, column, and row sizes for one window and tell open grids to restore defaults. */
+export function resetStoredLayout(ids: string[]) {
+  if (!ids.length) return;
+  for (const id of ids) {
+    try {
+      localStorage.removeItem(`aerolith-split:${id}`);
+      localStorage.removeItem(`${id}-cols`);
+      localStorage.removeItem(`${id}-row`);
+    } catch {
+      /* ignore quota / private mode */
+    }
+  }
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(LAYOUT_RESET_EVENT, { detail: { ids } }));
+}
+
 /** Capture the pointer so pane/column resize cannot leave dangling move listeners. */
 export function attachPointerDrag(el: HTMLElement, pointerId: number, onMove: (e: PointerEvent) => void) {
   let ended = false;
@@ -66,6 +106,16 @@ export function usePersistedNumber(key: string, fallback: number, min: number, m
   useEffect(() => {
     writeNumber(key, value);
   }, [key, value]);
+
+  useEffect(() => {
+    function onReset(ev: Event) {
+      const ids = (ev as CustomEvent<{ ids?: string[] }>).detail?.ids;
+      if (!ids?.length || !layoutKeyMatches(key, ids)) return;
+      setValue(clamp(fallback, min, max));
+    }
+    window.addEventListener(LAYOUT_RESET_EVENT, onReset);
+    return () => window.removeEventListener(LAYOUT_RESET_EVENT, onReset);
+  }, [key, fallback, min, max]);
 
   const set = useCallback(
     (n: number | ((prev: number) => number)) => {

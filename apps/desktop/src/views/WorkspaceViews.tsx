@@ -18,6 +18,7 @@ import { itemBadges, type BoqColumnDef, type ProjectBill, type WorkingItem } fro
 import { itemKeyOf, pivotWorkingByBoq, primaryWorkingTwin, type WorkingQtyRow } from "../bills";
 import { billQtyHeader, formatCompareQty } from "../submissionCompare";
 import { QtyInput } from "../ui/QtyInput";
+import { ResetLayoutButton } from "../ui/ResetLayout";
 import { VirtualTable } from "../ui/VirtualTable";
 
 function CostField({
@@ -775,6 +776,7 @@ export function EstimateView({
           >
             Add column
           </button>
+          <ResetLayoutButton ids={[pivot ? `working-qty-${bills.length}` : "working-qty", "boq-rail-estimate"]} />
         </div>
         <div className="tb-group tb-find">
           <input
