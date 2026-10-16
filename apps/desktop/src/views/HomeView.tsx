@@ -1,12 +1,16 @@
 import { recents, sessionScope, type Session } from "../platform/store";
-import { BrandLockup, PublisherMark, useSurfaceTone } from "./Brand";
+import { PublisherMark } from "./Brand";
 import { isSoloTenant, tenantProjectsHint } from "../platform/tenant";
+import { AppBar, ThemeButton, type BarMenuItem } from "./AppBar";
+import type { ThemeName } from "../theme";
 
 export function HomeView({
   session,
   canImport = true,
   accountName = null,
   licenseLine = null,
+  theme,
+  onTheme,
   onNew,
   onOpen,
   onSampleSingle,
@@ -20,6 +24,8 @@ export function HomeView({
   canImport?: boolean;
   accountName?: string | null;
   licenseLine?: string | null;
+  theme: ThemeName;
+  onTheme: (theme: ThemeName) => void;
   onNew: () => void;
   onOpen: () => void;
   onOpenPath?: (path: string) => void;
@@ -50,44 +56,31 @@ export function HomeView({
         ]
           .filter(Boolean)
           .join(" · ");
-  const tone = useSurfaceTone();
   const trialLine = licenseLine
     ? `${licenseLine} Jobs stay in this workspace.`
     : "Jobs stay in this workspace.";
+  const fileItems: BarMenuItem[] = [
+    { label: "New tender", onSelect: onNew },
+    { label: "Open .aero", onSelect: onOpen },
+    ...(canImport ? [{ label: "Import bill", onSelect: onImport }] : []),
+    ...(onOwnerPortal ? [{ label: "Owner portal", separatorBefore: true, onSelect: onOwnerPortal }] : []),
+    { label: "Sign out", separatorBefore: !onOwnerPortal, onSelect: onSignOut },
+  ];
 
   return (
-    <div className="app backstage">
-      <aside className="back-nav">
-        <BrandLockup size="sm" tone={tone} />
-        <div className="who">
-          {who}
-          <small>{roleLine}</small>
+    <div className="app shell">
+      <AppBar showIdle user={who} menu={{ label: "File", items: fileItems }} />
+      <aside className="sidebar" aria-label="Workspace">
+        <div className="sidebar-scroll">
+          <div className="sidebar-group">
+            <p className="sidebar-label">Workspace</p>
+            <button type="button" className="nav-btn on" aria-current="page">
+              <span>Jobs</span>
+            </button>
+          </div>
         </div>
-        <button type="button" className="on">
-          Open
-        </button>
-        <button type="button" onClick={onNew}>
-          New
-        </button>
-        <button type="button" onClick={onOpen}>
-          Open .aero
-        </button>
-        {canImport ? (
-          <button type="button" onClick={onImport}>
-            Import bill
-          </button>
-        ) : null}
-        <div className="sp" />
-        {onOwnerPortal ? (
-          <button type="button" onClick={onOwnerPortal}>
-            Owner portal
-          </button>
-        ) : null}
-        <button type="button" onClick={onSignOut}>
-          Sign out
-        </button>
-        <PublisherMark tone={tone} compact />
       </aside>
+      <main className="stage">
       <div className="home">
         <h1>Open</h1>
         <p className="home-sub">{trialLine}</p>
@@ -138,6 +131,13 @@ export function HomeView({
           </article>
         </section>
       </div>
+      </main>
+      <footer className="status" role="status">
+        <span>{roleLine}</span>
+        <span>{trialLine}</span>
+        <PublisherMark tone={theme === "dark" ? "dark" : "light"} compact />
+        <ThemeButton theme={theme} onTheme={onTheme} />
+      </footer>
     </div>
   );
 }

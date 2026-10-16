@@ -761,34 +761,128 @@ button.accent:active:not(:disabled) {
 
 .shell {
   display: grid;
-  grid-template-columns: 232px minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: var(--nav-w, 232px) minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   grid-template-areas:
-    "sidebar banners"
-    "sidebar stage"
-    "sidebar status";
+    "topbar topbar"
+    "banners banners"
+    "nav stage"
+    "status status";
   height: 100%;
 }
 .shell.nav-collapsed {
-  grid-template-columns: 64px minmax(0, 1fr);
+  grid-template-columns: var(--nav-collapsed, 64px) minmax(0, 1fr);
 }
 .shell.inspector-open {
-  grid-template-columns: 232px minmax(0, 1fr) var(--inspector-w, 300px);
+  grid-template-columns: var(--nav-w, 232px) minmax(0, 1fr) var(--inspector-w, 300px);
   grid-template-areas:
-    "sidebar banners banners"
-    "sidebar stage inspector"
-    "sidebar status status";
+    "topbar topbar topbar"
+    "banners banners banners"
+    "nav stage inspector"
+    "status status status";
 }
 .shell.nav-collapsed.inspector-open {
-  grid-template-columns: 64px minmax(0, 1fr) var(--inspector-w, 300px);
+  grid-template-columns: var(--nav-collapsed, 64px) minmax(0, 1fr) var(--inspector-w, 300px);
 }
 .shell.no-inspector.inspector-open {
-  grid-template-columns: 232px minmax(0, 1fr);
+  grid-template-columns: var(--nav-w, 232px) minmax(0, 1fr);
   grid-template-areas:
-    "sidebar banners"
-    "sidebar stage"
-    "sidebar status";
+    "topbar topbar"
+    "banners banners"
+    "nav stage"
+    "status status";
 }
+.shell.login-shell {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "topbar"
+    "stage"
+    "status";
+}
+.appbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--appbar-h, 48px);
+  height: var(--appbar-h, 48px);
+  padding: 0 12px 0 16px;
+  background: var(--ribbon);
+  color: var(--rail-text);
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.appbar .brand-logo { height: 28px; max-width: 168px; }
+.appbar-project {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.2;
+  gap: 1px;
+}
+.appbar-project strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rail-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.appbar-project span,
+.appbar-idle {
+  margin: 0;
+  font-size: 11px;
+  color: var(--rail-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.appbar-sp { flex: 1; min-width: 8px; }
+.appbar-user {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--rail-text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+.bar-menu { position: relative; flex-shrink: 0; }
+.bar-menu-btn {
+  height: 32px;
+  padding: 0 12px;
+  background: transparent;
+  border-color: transparent;
+  color: var(--rail-text);
+  font-weight: 600;
+}
+.bar-menu-btn:hover,
+.bar-menu-btn[aria-expanded="true"] {
+  background: var(--rail-hover);
+  color: var(--rail-text);
+}
+.login-stage {
+  display: grid;
+  grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+  padding: 0;
+  overflow: hidden;
+}
+.theme-toggle {
+  height: 26px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--rail-text);
+  border-color: var(--line);
+  flex-shrink: 0;
+}
+.theme-toggle:hover { background: var(--rail-hover); color: var(--rail-text); }
+.status .publisher { margin: 0 12px 0 auto; }
 .titlebar {
   grid-area: titlebar;
   display: flex;
@@ -3616,7 +3710,7 @@ button.buy-settle:hover {
 @media (max-width: 1279px) {
   .inspector {
     position: fixed;
-    top: 66px;
+    top: var(--appbar-h, 48px);
     right: 0;
     bottom: 32px;
     width: min(300px, 86vw);
@@ -3658,9 +3752,9 @@ button.buy-settle:hover {
   .rate-analysis-heading { font-size: 18px; padding: 16px 16px 0; }
   .rate-analysis .module-toolbar,
   .rate-analysis .module-body { padding-left: 16px; padding-right: 16px; }
-  .login {
+  .login-stage {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(160px, 28%) 1fr;
+    grid-template-rows: minmax(140px, 28%) 1fr;
   }
   .login-panel {
     border-left: 0;
@@ -3762,7 +3856,7 @@ html[data-theme="dark"] {
 html[data-theme="dark"] ::selection { background: var(--select); color: var(--ink); }
 
 .sidebar {
-  grid-area: sidebar;
+  grid-area: nav;
   background: var(--rail);
   color: var(--rail-text);
   border-right: 1px solid var(--line);
