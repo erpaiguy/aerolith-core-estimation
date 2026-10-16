@@ -1,0 +1,90 @@
+/*
+  Bid Craft UI option 2 — Dense pro spreadsheet.
+  Licenses: IBM Plex Sans and IBM Plex Mono OFL-1.1, Inter OFL-1.1, Outfit OFL-1.1
+  via @fontsource. Icons: @phosphor-icons/react MIT.
+  Copper accent and the brand-kit wordmark stay on the kit artwork.
+*/
+
+:root {
+  --sans: "IBM Plex Sans", Inter, "Segoe UI", system-ui, sans-serif;
+  --nav-w: 196px;
+  --nav-collapsed: 52px;
+  --appbar-h: 34px;
+  --radius: 0px;
+  --paper: #e8ebf0;
+  --paper-2: #ffffff;
+  --ink: #12151a;
+  --ink-soft: #3c4450;
+  --line: #9aa3b2;
+  --rail: #d5dae3;
+  --rail-text: #12151a;
+  --rail-muted: #3c4450;
+  --rail-hover: #c5ccd6;
+  --rail-on: #ffffff;
+  --ribbon: #dfe3ea;
+  --hover: #eef2f6;
+  --select: #f6e4da;
+  --xl: #d5dae3;
+  --navy: #12151a;
+  --navy-2: #3c4450;
+  --shadow: none;
+  --accent: #c65a28;
+  --blue: #c65a28;
+  --accent-2: #9a4318;
+  --money: #9a4318;
+  --gold: #c65a28;
+  --on-accent: #ffffff;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+html[data-theme="dark"] {
+  --paper: #0f1216;
+  --paper-2: #171b21;
+  --ink: #e7ebf2;
+  --ink-soft: #9aa3b2;
+  --line: #5c6778;
+  --rail: #0c0e12;
+  --rail-text: #e7ebf2;
+  --rail-muted: #9aa3b2;
+  --rail-hover: #222833;
+  --rail-on: #171b21;
+  --ribbon: #171b21;
+  --hover: #222833;
+  --select: #3d2a22;
+  --xl: #171b21;
+  --accent: #e07a45;
+  --blue: #e07a45;
+  --accent-2: #c65a28;
+  --money: #e07a45;
+  --gold: #e07a45;
+  --on-accent: #1a120e;
+}
+
+button, .bar-menu-btn, .theme-toggle { height: 24px; border-radius: 0; font-size: 12px; padding: 0 8px; }
+.appbar { height: 34px; min-height: 34px; background: var(--ribbon); border-bottom: 1px solid var(--line); padding: 0 8px; }
+.appbar .brand-logo { height: 22px; }
+.appbar-project strong { font-size: 12px; }
+.appbar-user { border-radius: 0; padding: 2px 6px; }
+.sidebar .nav-btn, .sidebar-collapse { height: 26px; border-radius: 0; font-size: 12px; margin: 0; width: 100%; }
+.sidebar .nav-btn.on { background: var(--paper-2); box-shadow: inset 3px 0 0 var(--accent); border-radius: 0; }
+.sidebar-label { margin: 8px 8px 2px; font-size: 9px; }
+.module-toolbar { min-height: 36px; padding: 2px 8px; background: var(--xl); border-bottom: 1px solid var(--line); gap: 4px; }
+.module-toolbar h1.view { font-size: 13px; line-height: 24px; letter-spacing: 0; font-weight: 600; }
+.stage { padding: 0; }
+.status { min-height: 24px; height: 24px; font-family: var(--mono); font-size: 11px; background: var(--ribbon); border-top: 1px solid var(--line); padding: 0 8px; }
+table.data { border: 1px solid var(--line); background: var(--paper-2); }
+table.data th, table.data td { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 2px 6px; font-size: 12px; line-height: 1.3; }
+table.data th { background: #dfe3ea; color: var(--ink); letter-spacing: 0.04em; }
+html[data-theme="dark"] table.data th { background: #222833; }
+.kpi { border-radius: 0; padding: 6px 8px; box-shadow: none; }
+.kpi b { font-size: 14px; }
+.kpis { gap: 6px; }
+.login-card { border-radius: 0; border: 1px solid var(--line); box-shadow: none; padding: 16px; }
+.login-hero { padding: 28px 24px; }
+.login-side-copy h1 { font-size: 26px; }
+.sample-job, .file-row, .modal, .file-menu, .dashboard-view .note { border-radius: 0; box-shadow: none; }
+.field input, .field select, .field textarea { height: 24px; border-radius: 0; }
+.home { padding: 12px; }
+.home h1 { font-size: 20px; }
+.seg, .seg button { border-radius: 0; }
