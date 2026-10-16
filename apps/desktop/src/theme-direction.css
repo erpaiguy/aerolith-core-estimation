@@ -1,0 +1,86 @@
+/*
+  Bid Craft UI option 3 — Dark-first modern.
+  Licenses: Inter OFL-1.1, IBM Plex Sans OFL-1.1, IBM Plex Mono OFL-1.1, Outfit OFL-1.1
+  via @fontsource. Icons: @phosphor-icons/react MIT.
+  Copper accent and the brand-kit wordmark stay on the kit artwork.
+*/
+
+:root {
+  --sans: Inter, "Segoe UI", system-ui, sans-serif;
+  --nav-w: 220px;
+  --appbar-h: 48px;
+  --radius: 8px;
+  --paper: #fafafa;
+  --paper-2: #ffffff;
+  --ink: #0a0a0a;
+  --ink-soft: #666666;
+  --line: #ececec;
+  --rail: #fafafa;
+  --rail-text: #0a0a0a;
+  --rail-muted: #666666;
+  --rail-hover: #f2f2f2;
+  --rail-on: #f6e4da;
+  --ribbon: #fafafa;
+  --hover: #f5f5f5;
+  --select: #f6e4da;
+  --xl: #f5f5f5;
+  --navy: #0a0a0a;
+  --navy-2: #444444;
+  --shadow: none;
+  --accent: #c65a28;
+  --blue: #c65a28;
+  --accent-2: #9a4318;
+  --money: #9a4318;
+  --gold: #c65a28;
+  --on-accent: #ffffff;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+html[data-theme="dark"] {
+  --paper: #090909;
+  --paper-2: #111111;
+  --ink: #ededed;
+  --ink-soft: #a1a1a1;
+  --line: rgba(255, 255, 255, 0.08);
+  --rail: #090909;
+  --rail-text: #ededed;
+  --rail-muted: #a1a1a1;
+  --rail-hover: rgba(255, 255, 255, 0.06);
+  --rail-on: rgba(224, 122, 69, 0.16);
+  --ribbon: #090909;
+  --hover: #171717;
+  --select: rgba(224, 122, 69, 0.16);
+  --xl: #111111;
+  --navy: #ededed;
+  --navy-2: #a1a1a1;
+  --shadow: none;
+  --accent: #e07a45;
+  --blue: #e07a45;
+  --accent-2: #c65a28;
+  --money: #e07a45;
+  --gold: #e07a45;
+  --on-accent: #1a120e;
+  --overlay: rgba(0, 0, 0, 0.72);
+}
+
+button { border-radius: 8px; background: transparent; }
+button.primary, button.accent { background: var(--accent); }
+.appbar, .sidebar, .status { background: var(--paper); border-color: var(--line); }
+.appbar { border-bottom: 1px solid var(--line); }
+.sidebar .nav-btn, .sidebar-collapse { border-radius: 8px; }
+.sidebar .nav-btn.on { box-shadow: none; background: var(--rail-on); border-radius: 8px; }
+.module-toolbar { background: transparent; border-bottom: 1px solid var(--line); min-height: 52px; }
+.module-toolbar h1.view { font-size: 15px; font-weight: 560; letter-spacing: -0.02em; }
+table.data th, table.data td { border-right: 0; border-bottom: 1px solid var(--line); }
+table.data th { background: transparent; color: var(--ink-soft); font-weight: 500; text-transform: none; letter-spacing: 0; }
+.kpi, .sample-job, .file-row, .dashboard-view .note, .login-card, .modal, .file-menu {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+.login-hero { background: var(--paper); }
+.login-card { border-top: 1px solid var(--line); }
+.field input, .field select, .field textarea { border-radius: 8px; background: var(--paper); }
+.status { font-family: var(--sans); letter-spacing: 0; }
