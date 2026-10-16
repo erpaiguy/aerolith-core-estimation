@@ -81,6 +81,8 @@ export function App() {
   const [project, setProject] = useState<LoadedProject | null>(null);
   const [activity, setActivity] = useState<Activity>("estimate");
   const [finalisePane, setFinalisePane] = useState<FinalisePane>("summary");
+  const [settingsTab, setSettingsTab] = useState<"license" | "legal">("license");
+  const [settingsFocus, setSettingsFocus] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [qtoLineId, setQtoLineId] = useState<string | null>(null);
   const [rateCode, setRateCode] = useState<string | null>(null);
@@ -801,6 +803,11 @@ export function App() {
         onOpen={() => void openAeroFile()}
         onSave={() => void saveAero()}
         onToggleInspector={() => setInspectorOpen((v) => !v)}
+        onLegal={() => {
+          setSettingsTab("legal");
+          setSettingsFocus((n) => n + 1);
+          goTo("settings");
+        }}
       />
       <div className="shell-banners">
         {updateOffer ? (
@@ -1112,6 +1119,8 @@ export function App() {
               setTheme(next);
               applyTheme(next);
             }}
+            initialTab={settingsTab}
+            settingsFocus={settingsFocus}
           />
         ) : null}
         </PrintProvider>

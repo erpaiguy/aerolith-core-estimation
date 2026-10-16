@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import type { Activity } from "../model";
 import { ACTIVITY_LABELS } from "../activityLabels";
 import { BrandLockup, BrandMark, useSurfaceTone } from "./Brand";
@@ -57,6 +58,7 @@ export function Sidebar({
   onOpen,
   onSave,
   onToggleInspector,
+  onLegal,
 }: {
   activity: Activity;
   masterOpen: boolean;
@@ -77,6 +79,7 @@ export function Sidebar({
   onOpen: () => void;
   onSave: () => void;
   onToggleInspector?: () => void;
+  onLegal: () => void;
 }) {
   const tone = useSurfaceTone();
   return (
@@ -88,33 +91,22 @@ export function Sidebar({
           <BrandLockup size="sm" tone={tone} />
         )}
       </div>
+      <FileMenu
+        collapsed={collapsed}
+        showInspector={showInspector}
+        inspectorOpen={inspectorOpen}
+        onOpen={onOpen}
+        onSave={onSave}
+        onClose={onClose}
+        onToggleInspector={onToggleInspector}
+        onLegal={onLegal}
+      />
       <div className="sidebar-job">
         <p className="job" title={projectName}>
           {projectName}
         </p>
         <p className="rev">{revision}</p>
         <p className="gold">{total}</p>
-        <div className="sidebar-actions">
-          <button type="button" title="Close" aria-label="Close" onClick={onClose}>
-            {collapsed ? "×" : "Close"}
-          </button>
-          <button type="button" title="Open" aria-label="Open" onClick={onOpen}>
-            {collapsed ? "↗" : "Open"}
-          </button>
-          <button className="primary" type="button" title="Save" aria-label="Save" onClick={onSave}>
-            {collapsed ? "↓" : "Save"}
-          </button>
-          {showInspector ? (
-            <button
-              type="button"
-              title={inspectorOpen ? "Hide inspector" : "Inspector"}
-              aria-label={inspectorOpen ? "Hide inspector" : "Inspector"}
-              onClick={onToggleInspector}
-            >
-              {collapsed ? "i" : inspectorOpen ? "Hide" : "Inspector"}
-            </button>
-          ) : null}
-        </div>
       </div>
       <button
         type="button"
@@ -174,5 +166,110 @@ export function Sidebar({
         </button>
       </div>
     </aside>
+  );
+}
+
+function FileMenu({
+  collapsed,
+  showInspector,
+  inspectorOpen,
+  onOpen,
+  onSave,
+  onClose,
+  onToggleInspector,
+  onLegal,
+}: {
+  collapsed: boolean;
+  showInspector: boolean;
+  inspectorOpen: boolean;
+  onOpen: () => void;
+  onSave: () => void;
+  onClose: () => void;
+  onToggleInspector?: () => void;
+  onLegal: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (!open) return;
+    const place = () => {
+      const rect = btnRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const width = 220;
+      const left = Math.min(rect.left, Math.max(8, window.innerWidth - width - 8));
+      setPos({ top: rect.bottom + 4, left });
+    };
+    place();
+    const onDoc = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (btnRef.current?.contains(target) || menuRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      btnRef.current?.focus();
+    };
+    const close = () => setOpen(false);
+    window.addEventListener("pointerdown", onDoc, true);
+    window.addEventListener("keydown", onKey, true);
+    window.addEventListener("resize", close);
+    return () => {
+      window.removeEventListener("pointerdown", onDoc, true);
+      window.removeEventListener("keydown", onKey, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
+  function run(action: () => void) {
+    setOpen(false);
+    action();
+  }
+
+  return (
+    <div className="sidebar-file">
+      <button
+        ref={btnRef}
+        type="button"
+        className="nav-btn"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="File"
+        title="File"
+        onClick={() => setOpen((value) => !value)}
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M2.5 3.5h4l1.4 1.5H13.5v8h-11v-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
+        {collapsed ? null : <span>File</span>}
+      </button>
+      {open
+        ? createPortal(
+            <div ref={menuRef} className="file-menu" role="menu" aria-label="File" style={{ top: pos.top, left: pos.left }}>
+              <button type="button" role="menuitem" onClick={() => run(onOpen)}>
+                Open
+              </button>
+              <button type="button" role="menuitem" onClick={() => run(onSave)}>
+                Save
+              </button>
+              <button type="button" role="menuitem" onClick={() => run(onClose)}>
+                Close
+              </button>
+              {showInspector ? (
+                <button type="button" role="menuitem" onClick={() => run(() => onToggleInspector?.())}>
+                  {inspectorOpen ? "Hide inspector" : "Inspector"}
+                </button>
+              ) : null}
+              <button type="button" role="menuitem" onClick={() => run(onLegal)}>
+                Legal
+              </button>
+            </div>,
+            document.body,
+          )
+        : null}
+    </div>
   );
 }

@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import type { LegalId } from "../legal";
+import { LegalDialog } from "./LegalDocs";
 import { SplashShell } from "./SplashShell";
 
 export function LoginView({
@@ -16,6 +18,7 @@ export function LoginView({
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [legal, setLegal] = useState<LegalId | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -82,7 +85,22 @@ export function LoginView({
             Buy license
           </button>
         </div>
+        <div className="legal-links">
+          <button type="button" onClick={() => setLegal("privacy")}>
+            Privacy policy
+          </button>
+          <button type="button" onClick={() => setLegal("terms-of-service")}>
+            Terms of service
+          </button>
+          <button type="button" onClick={() => setLegal("terms-and-conditions")}>
+            Terms and conditions
+          </button>
+          <button type="button" onClick={() => setLegal("license")}>
+            License terms
+          </button>
+        </div>
       </form>
+      {legal ? <LegalDialog id={legal} onClose={() => setLegal(null)} /> : null}
     </SplashShell>
   );
 }
