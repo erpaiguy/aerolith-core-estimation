@@ -3895,3 +3895,31 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
 .resource-master { display: flex; flex-direction: column; min-height: 0; height: 100%; gap: 0; padding: 0; }
 .resource-master > .hint { margin: var(--space-sm) var(--space-lg); }
 .resource-master .doc-scroll { min-height: 0; }
+.finalise { min-height: 0; height: 100%; }
+.finalise > .split { flex: 1; min-height: 0; }
+.finalise-status { margin: 0; padding: 6px 16px; }
+.finalise-banner {
+  margin: 0 0 12px;
+  padding: 8px 10px;
+  background: var(--banner-bg);
+  color: var(--ink);
+  border: 1px solid var(--warn-line);
+}
+.finalise table.data tr.bill td { background: var(--hover); font-weight: 600; }
+.finalise table.data tr.tender td { background: var(--xl); font-weight: 700; }
+.check-jump {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: auto;
+  text-align: left;
+  padding: 8px 10px;
+  margin: 0 0 6px;
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.check-jump strong { font-weight: 600; }
+.check-jump span { color: var(--ink-soft); font-weight: 400; }
+.check-jump.warn { border-color: var(--warn-line); }
+.check-jump.block { border-color: var(--danger-line); }

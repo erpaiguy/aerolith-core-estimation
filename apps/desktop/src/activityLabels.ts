@@ -11,6 +11,7 @@ export const ACTIVITY_LABELS: Record<Activity, string> = {
   queries: "Client Queries",
   buy: "Resource Prices",
   submit: "Submission BOQ",
+  finalise: "Finalise",
   masters: "Masters",
   settings: "Settings",
 };
@@ -25,6 +26,7 @@ export const RIBBON_ORDER: Activity[] = [
   "queries",
   "buy",
   "submit",
+  "finalise",
   "masters",
   "settings",
 ];
