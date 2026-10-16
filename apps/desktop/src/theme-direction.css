@@ -1,7 +1,9 @@
 /*
-  Bid Craft UI option 1 — Clean minimal.
-  Licenses: Inter OFL-1.1, IBM Plex Sans OFL-1.1, IBM Plex Mono OFL-1.1,
-  Outfit OFL-1.1 via @fontsource. Icons: @phosphor-icons/react MIT.
+  Bid Craft theme styles. Clean minimal is the default.
+  Settings stores the choice on bidcraft.themeStyle and sets data-style.
+  Light and dark (data-theme) apply with every style.
+  Licenses: Inter, Outfit, IBM Plex Sans, and IBM Plex Mono are OFL-1.1
+  via @fontsource. Icons: @phosphor-icons/react MIT.
   Copper accent and the brand-kit wordmark stay on the kit artwork.
 */
 
@@ -89,3 +91,528 @@ table.data { background: transparent; }
 .field input, .field select, .field textarea { height: 40px; border-radius: 8px; }
 .home h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.04em; }
 .sidebar-label { margin-top: 18px; }
+
+/* spreadsheet */
+html[data-style="spreadsheet"] {
+  --sans: "IBM Plex Sans", Inter, "Segoe UI", system-ui, sans-serif;
+    --nav-w: 196px;
+    --nav-collapsed: 52px;
+    --appbar-h: 34px;
+    --radius: 0px;
+    --paper: #e8ebf0;
+    --paper-2: #ffffff;
+    --ink: #12151a;
+    --ink-soft: #3c4450;
+    --line: #9aa3b2;
+    --rail: #d5dae3;
+    --rail-text: #12151a;
+    --rail-muted: #3c4450;
+    --rail-hover: #c5ccd6;
+    --rail-on: #ffffff;
+    --ribbon: #dfe3ea;
+    --hover: #eef2f6;
+    --select: #f6e4da;
+    --xl: #d5dae3;
+    --navy: #12151a;
+    --navy-2: #3c4450;
+    --shadow: none;
+    --accent: #c65a28;
+    --blue: #c65a28;
+    --accent-2: #9a4318;
+    --money: #9a4318;
+    --gold: #c65a28;
+    --on-accent: #ffffff;
+    font-size: 12px;
+    line-height: 1.25;
+}
+html[data-theme="dark"][data-style="spreadsheet"] {
+  --paper: #0f1216;
+    --paper-2: #171b21;
+    --ink: #e7ebf2;
+    --ink-soft: #9aa3b2;
+    --line: #5c6778;
+    --rail: #0c0e12;
+    --rail-text: #e7ebf2;
+    --rail-muted: #9aa3b2;
+    --rail-hover: #222833;
+    --rail-on: #171b21;
+    --ribbon: #171b21;
+    --hover: #222833;
+    --select: #3d2a22;
+    --xl: #171b21;
+    --accent: #e07a45;
+    --blue: #e07a45;
+    --accent-2: #c65a28;
+    --money: #e07a45;
+    --gold: #e07a45;
+    --on-accent: #1a120e;
+}
+html[data-style="spreadsheet"] button,
+html[data-style="spreadsheet"] .bar-menu-btn,
+html[data-style="spreadsheet"] .theme-toggle {
+  height: 24px; border-radius: 0; font-size: 12px; padding: 0 8px;
+}
+html[data-style="spreadsheet"] .appbar {
+  height: 34px; min-height: 34px; background: var(--ribbon); border-bottom: 1px solid var(--line); padding: 0 8px;
+}
+html[data-style="spreadsheet"] .appbar .brand-logo {
+  height: 22px;
+}
+html[data-style="spreadsheet"] .appbar-project strong {
+  font-size: 12px;
+}
+html[data-style="spreadsheet"] .appbar-user {
+  border-radius: 0; padding: 2px 6px;
+}
+html[data-style="spreadsheet"] .sidebar .nav-btn,
+html[data-style="spreadsheet"] .sidebar-collapse {
+  height: 26px; border-radius: 0; font-size: 12px; margin: 0; width: 100%;
+}
+html[data-style="spreadsheet"] .sidebar .nav-btn.on {
+  background: var(--paper-2); box-shadow: inset 3px 0 0 var(--accent); border-radius: 0;
+}
+html[data-style="spreadsheet"] .sidebar-label {
+  margin: 8px 8px 2px; font-size: 9px;
+}
+html[data-style="spreadsheet"] .module-toolbar {
+  min-height: 36px; padding: 2px 8px; background: var(--xl); border-bottom: 1px solid var(--line); gap: 4px;
+}
+html[data-style="spreadsheet"] .module-toolbar h1.view {
+  font-size: 13px; line-height: 24px; letter-spacing: 0; font-weight: 600;
+}
+html[data-style="spreadsheet"] .stage {
+  padding: 0;
+}
+html[data-style="spreadsheet"] .status {
+  min-height: 24px; height: 24px; font-family: var(--mono); font-size: 11px; background: var(--ribbon); border-top: 1px solid var(--line); padding: 0 8px;
+}
+html[data-style="spreadsheet"] table.data {
+  border: 1px solid var(--line); background: var(--paper-2);
+}
+html[data-style="spreadsheet"] table.data th,
+html[data-style="spreadsheet"] table.data td {
+  border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 2px 6px; font-size: 12px; line-height: 1.3;
+}
+html[data-style="spreadsheet"] table.data th {
+  background: #dfe3ea; color: var(--ink); letter-spacing: 0.04em;
+}
+html[data-theme="dark"][data-style="spreadsheet"] table.data th {
+  background: #222833;
+}
+html[data-style="spreadsheet"] .kpi {
+  border-radius: 0; padding: 6px 8px; box-shadow: none;
+}
+html[data-style="spreadsheet"] .kpi b {
+  font-size: 14px;
+}
+html[data-style="spreadsheet"] .kpis {
+  gap: 6px;
+}
+html[data-style="spreadsheet"] .login-card {
+  border-radius: 0; border: 1px solid var(--line); box-shadow: none; padding: 16px;
+}
+html[data-style="spreadsheet"] .login-hero {
+  padding: 28px 24px;
+}
+html[data-style="spreadsheet"] .login-side-copy h1 {
+  font-size: 26px;
+}
+html[data-style="spreadsheet"] .sample-job,
+html[data-style="spreadsheet"] .file-row,
+html[data-style="spreadsheet"] .modal,
+html[data-style="spreadsheet"] .file-menu,
+html[data-style="spreadsheet"] .dashboard-view .note {
+  border-radius: 0; box-shadow: none;
+}
+html[data-style="spreadsheet"] .field input,
+html[data-style="spreadsheet"] .field select,
+html[data-style="spreadsheet"] .field textarea {
+  height: 24px; border-radius: 0;
+}
+html[data-style="spreadsheet"] .home {
+  padding: 12px;
+}
+html[data-style="spreadsheet"] .home h1 {
+  font-size: 20px;
+}
+html[data-style="spreadsheet"] .seg,
+html[data-style="spreadsheet"] .seg button {
+  border-radius: 0;
+}
+
+/* modern */
+html[data-style="modern"] {
+  --sans: Inter, "Segoe UI", system-ui, sans-serif;
+    --nav-w: 220px;
+    --appbar-h: 48px;
+    --radius: 8px;
+    --paper: #fafafa;
+    --paper-2: #ffffff;
+    --ink: #0a0a0a;
+    --ink-soft: #666666;
+    --line: #ececec;
+    --rail: #fafafa;
+    --rail-text: #0a0a0a;
+    --rail-muted: #666666;
+    --rail-hover: #f2f2f2;
+    --rail-on: #f6e4da;
+    --ribbon: #fafafa;
+    --hover: #f5f5f5;
+    --select: #f6e4da;
+    --xl: #f5f5f5;
+    --navy: #0a0a0a;
+    --navy-2: #444444;
+    --shadow: none;
+    --accent: #c65a28;
+    --blue: #c65a28;
+    --accent-2: #9a4318;
+    --money: #9a4318;
+    --gold: #c65a28;
+    --on-accent: #ffffff;
+    font-size: 13px;
+    line-height: 1.45;
+}
+html[data-theme="dark"][data-style="modern"] {
+  --paper: #090909;
+    --paper-2: #111111;
+    --ink: #ededed;
+    --ink-soft: #a1a1a1;
+    --line: rgba(255, 255, 255, 0.08);
+    --rail: #090909;
+    --rail-text: #ededed;
+    --rail-muted: #a1a1a1;
+    --rail-hover: rgba(255, 255, 255, 0.06);
+    --rail-on: rgba(224, 122, 69, 0.16);
+    --ribbon: #090909;
+    --hover: #171717;
+    --select: rgba(224, 122, 69, 0.16);
+    --xl: #111111;
+    --navy: #ededed;
+    --navy-2: #a1a1a1;
+    --shadow: none;
+    --accent: #e07a45;
+    --blue: #e07a45;
+    --accent-2: #c65a28;
+    --money: #e07a45;
+    --gold: #e07a45;
+    --on-accent: #1a120e;
+    --overlay: rgba(0, 0, 0, 0.72);
+}
+html[data-style="modern"] button {
+  border-radius: 8px; background: transparent;
+}
+html[data-style="modern"] button.primary,
+html[data-style="modern"] button.accent {
+  background: var(--accent);
+}
+html[data-style="modern"] .appbar,
+html[data-style="modern"] .sidebar,
+html[data-style="modern"] .status {
+  background: var(--paper); border-color: var(--line);
+}
+html[data-style="modern"] .appbar {
+  border-bottom: 1px solid var(--line);
+}
+html[data-style="modern"] .sidebar .nav-btn,
+html[data-style="modern"] .sidebar-collapse {
+  border-radius: 8px;
+}
+html[data-style="modern"] .sidebar .nav-btn.on {
+  box-shadow: none; background: var(--rail-on); border-radius: 8px;
+}
+html[data-style="modern"] .module-toolbar {
+  background: transparent; border-bottom: 1px solid var(--line); min-height: 52px;
+}
+html[data-style="modern"] .module-toolbar h1.view {
+  font-size: 15px; font-weight: 560; letter-spacing: -0.02em;
+}
+html[data-style="modern"] table.data th,
+html[data-style="modern"] table.data td {
+  border-right: 0; border-bottom: 1px solid var(--line);
+}
+html[data-style="modern"] table.data th {
+  background: transparent; color: var(--ink-soft); font-weight: 500; text-transform: none; letter-spacing: 0;
+}
+html[data-style="modern"] .kpi,
+html[data-style="modern"] .sample-job,
+html[data-style="modern"] .file-row,
+html[data-style="modern"] .dashboard-view .note,
+html[data-style="modern"] .login-card,
+html[data-style="modern"] .modal,
+html[data-style="modern"] .file-menu {
+  background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: none;
+}
+html[data-style="modern"] .login-hero {
+  background: var(--paper);
+}
+html[data-style="modern"] .login-card {
+  border-top: 1px solid var(--line);
+}
+html[data-style="modern"] .field input,
+html[data-style="modern"] .field select,
+html[data-style="modern"] .field textarea {
+  border-radius: 8px; background: var(--paper);
+}
+html[data-style="modern"] .status {
+  font-family: var(--sans); letter-spacing: 0;
+}
+
+/* cards */
+html[data-style="cards"] {
+  --sans: Outfit, Inter, "Segoe UI", system-ui, sans-serif;
+    --nav-w: 232px;
+    --appbar-h: 60px;
+    --radius: 16px;
+    --paper: #efe6dc;
+    --paper-2: #fffdfb;
+    --ink: #2c241e;
+    --ink-soft: #6f655c;
+    --line: #eadfd2;
+    --rail: #fffdfb;
+    --rail-text: #2c241e;
+    --rail-muted: #6f655c;
+    --rail-hover: #f6efe7;
+    --rail-on: #f8e6da;
+    --ribbon: #fffdfb;
+    --hover: #f6efe7;
+    --select: #f8e6da;
+    --xl: #f6efe7;
+    --navy: #2c241e;
+    --navy-2: #6f655c;
+    --shadow: 0 10px 28px rgba(70, 46, 28, 0.08);
+    --accent: #c65a28;
+    --blue: #c65a28;
+    --accent-2: #9a4318;
+    --money: #9a4318;
+    --gold: #c65a28;
+    --on-accent: #ffffff;
+    font-size: 14px;
+    line-height: 1.45;
+}
+html[data-theme="dark"][data-style="cards"] {
+  --paper: #241c17;
+    --paper-2: #312820;
+    --ink: #f6f0ea;
+    --ink-soft: #c4b6a8;
+    --line: #4a3d34;
+    --rail: #312820;
+    --rail-text: #f6f0ea;
+    --rail-muted: #c4b6a8;
+    --rail-hover: #3c3128;
+    --rail-on: #4a3024;
+    --ribbon: #312820;
+    --hover: #3c3128;
+    --select: #4a3024;
+    --xl: #3c3128;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    --accent: #e07a45;
+    --blue: #e07a45;
+    --accent-2: #c65a28;
+    --money: #e07a45;
+    --gold: #e07a45;
+    --on-accent: #2a160f;
+}
+html[data-style="cards"] .shell {
+  gap: 12px; padding: 12px; background: var(--paper);
+}
+html[data-style="cards"] .appbar,
+html[data-style="cards"] .sidebar,
+html[data-style="cards"] .stage,
+html[data-style="cards"] .status,
+html[data-style="cards"] .inspector,
+html[data-style="cards"] .shell-banners .banner {
+  border: 0;
+    border-radius: 18px;
+    background: var(--paper-2);
+    box-shadow: var(--shadow);
+}
+html[data-style="cards"] .appbar {
+  height: auto; min-height: 60px; padding: 8px 14px;
+}
+html[data-style="cards"] .sidebar {
+  border-right: 0;
+}
+html[data-style="cards"] .status {
+  border-top: 0; min-height: 44px;
+}
+html[data-style="cards"] button,
+html[data-style="cards"] .bar-menu-btn,
+html[data-style="cards"] .theme-toggle {
+  border-radius: 999px; height: 36px;
+}
+html[data-style="cards"] .sidebar .nav-btn,
+html[data-style="cards"] .sidebar-collapse {
+  border-radius: 12px; height: 40px;
+}
+html[data-style="cards"] .sidebar .nav-btn.on {
+  box-shadow: none; background: var(--rail-on);
+}
+html[data-style="cards"] .module-toolbar {
+  background: transparent; border-bottom: 0; min-height: 60px;
+}
+html[data-style="cards"] .module-toolbar h1.view {
+  font-size: 22px; letter-spacing: -0.03em;
+}
+html[data-style="cards"] table.data {
+  border-collapse: separate; border-spacing: 0; border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+}
+html[data-style="cards"] table.data th,
+html[data-style="cards"] table.data td {
+  border-right: 0;
+}
+html[data-style="cards"] .kpi,
+html[data-style="cards"] .sample-job,
+html[data-style="cards"] .file-row,
+html[data-style="cards"] .dashboard-view .note,
+html[data-style="cards"] .login-card,
+html[data-style="cards"] .modal,
+html[data-style="cards"] .file-menu {
+  border: 0;
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    background: var(--paper-2);
+}
+html[data-style="cards"] .login-card {
+  padding: 28px;
+}
+html[data-style="cards"] .login-hero {
+  background: transparent; border: 0;
+}
+html[data-style="cards"] .field input,
+html[data-style="cards"] .field select,
+html[data-style="cards"] .field textarea {
+  border-radius: 12px; height: 40px;
+}
+html[data-style="cards"] .home h1 {
+  font-size: 32px;
+}
+
+/* enterprise */
+html[data-style="enterprise"] {
+  --sans: "IBM Plex Sans", Inter, "Segoe UI", system-ui, sans-serif;
+    --nav-w: 228px;
+    --appbar-h: 52px;
+    --radius: 2px;
+    --paper: #f4f1ea;
+    --paper-2: #ffffff;
+    --ink: #101114;
+    --ink-soft: #2a3038;
+    --line: #6f6a62;
+    --rail: #e7e1d6;
+    --rail-text: #101114;
+    --rail-muted: #2a3038;
+    --rail-hover: #ddd6c8;
+    --rail-on: #ffffff;
+    --ribbon: #e7e1d6;
+    --hover: #f7f4ee;
+    --select: #f6e4da;
+    --xl: #e7e1d6;
+    --navy: #101114;
+    --navy-2: #2a3038;
+    --shadow: none;
+    --accent: #c65a28;
+    --blue: #c65a28;
+    --accent-2: #9a4318;
+    --money: #9a4318;
+    --gold: #c65a28;
+    --on-accent: #ffffff;
+    font-size: 13px;
+    line-height: 1.35;
+}
+html[data-theme="dark"][data-style="enterprise"] {
+  --paper: #101114;
+    --paper-2: #1a1d24;
+    --ink: #f5f3ef;
+    --ink-soft: #c8c2b8;
+    --line: #8a8278;
+    --rail: #0c0e12;
+    --rail-text: #f5f3ef;
+    --rail-muted: #c8c2b8;
+    --rail-hover: #22262e;
+    --rail-on: #1a1d24;
+    --ribbon: #0c0e12;
+    --hover: #22262e;
+    --select: #3d2a22;
+    --xl: #1a1d24;
+    --accent: #e07a45;
+    --blue: #e07a45;
+    --accent-2: #c65a28;
+    --money: #e07a45;
+    --gold: #e07a45;
+    --on-accent: #1a120e;
+}
+html[data-style="enterprise"] button,
+html[data-style="enterprise"] .bar-menu-btn,
+html[data-style="enterprise"] .theme-toggle,
+html[data-style="enterprise"] .field input,
+html[data-style="enterprise"] .field select,
+html[data-style="enterprise"] .field textarea,
+html[data-style="enterprise"] .modal,
+html[data-style="enterprise"] .file-menu,
+html[data-style="enterprise"] .sample-job,
+html[data-style="enterprise"] .kpi,
+html[data-style="enterprise"] .file-row {
+  border-radius: 2px;
+}
+html[data-style="enterprise"] .appbar {
+  background: var(--ribbon);
+    border-bottom: 2px solid var(--ink);
+    height: 52px;
+    min-height: 52px;
+}
+html[data-style="enterprise"] .sidebar {
+  background: var(--rail); border-right: 2px solid var(--ink);
+}
+html[data-style="enterprise"] .sidebar .nav-btn,
+html[data-style="enterprise"] .sidebar-collapse {
+  border-radius: 0; font-weight: 500;
+}
+html[data-style="enterprise"] .sidebar .nav-btn.on {
+  background: var(--paper-2); box-shadow: inset 4px 0 0 var(--accent); border-radius: 0;
+}
+html[data-style="enterprise"] .sidebar-label {
+  letter-spacing: 0.14em; color: var(--ink); font-weight: 700;
+}
+html[data-style="enterprise"] .module-toolbar {
+  background: var(--paper-2);
+    border-bottom: 2px solid var(--ink);
+    min-height: 48px;
+}
+html[data-style="enterprise"] .module-toolbar h1.view {
+  font-size: 16px; font-weight: 700; letter-spacing: 0; text-transform: none;
+}
+html[data-style="enterprise"] .status {
+  background: var(--ribbon);
+    border-top: 2px solid var(--ink);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 12px;
+    min-height: 32px;
+}
+html[data-style="enterprise"] table.data {
+  border: 1px solid var(--ink); background: var(--paper-2);
+}
+html[data-style="enterprise"] table.data th,
+html[data-style="enterprise"] table.data td {
+  border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+html[data-style="enterprise"] table.data th {
+  background: var(--xl); color: var(--ink); font-weight: 700;
+}
+html[data-style="enterprise"] .login-card {
+  border: 2px solid var(--ink); border-radius: 2px; box-shadow: none;
+}
+html[data-style="enterprise"] .login-hero {
+  background: var(--rail); border-right: 2px solid var(--ink);
+}
+html[data-style="enterprise"] .dashboard-view .note,
+html[data-style="enterprise"] .modal,
+html[data-style="enterprise"] .file-menu {
+  border: 1px solid var(--ink); border-radius: 2px; box-shadow: none;
+}
+html[data-style="enterprise"] .home h1 {
+  font-weight: 700; letter-spacing: -0.02em;
+}

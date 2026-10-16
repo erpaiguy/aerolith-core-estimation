@@ -29,7 +29,7 @@ import { LegalBrowser } from "./LegalDocs";
 import { PublisherMark } from "./Brand";
 import { convertMasterRates } from "../resourceMaster";
 import { convertProjectCurrency } from "../projectResourceMaster";
-import { applyTheme, type ThemeName } from "../theme";
+import { applyTheme, applyThemeStyle, readThemeStyle, THEME_STYLES, type ThemeName, type ThemeStyle } from "../theme";
 import { checkForUpdate, setUpdatesAutoEnabled, updatesAutoEnabled, type UpdateOffer } from "../updates";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
@@ -47,6 +47,7 @@ import {
 
 type SettingsTab =
   | "license"
+  | "appearance"
   | "legal"
   | "numbers"
   | "updates"
@@ -104,6 +105,7 @@ export function SettingsView({
   const [updateOffer, setUpdateOffer] = useState<UpdateOffer | null>(null);
   const [updateMsg, setUpdateMsg] = useState("");
   const [updateBusy, setUpdateBusy] = useState(false);
+  const [themeStyle, setThemeStyle] = useState<ThemeStyle>(readThemeStyle);
   if (session.kind !== "tenant") {
     return <p className="hint">Settings belong to a tenant workspace.</p>;
   }
@@ -113,6 +115,7 @@ export function SettingsView({
   const solo = isSoloTenant(tenant);
   const tabs: Array<[SettingsTab, string]> = [
     ["license", "License"],
+    ["appearance", "Appearance"],
     ["legal", "Legal"],
     ["numbers", "Numbers"],
     ["updates", "Updates"],
@@ -143,6 +146,10 @@ export function SettingsView({
     currency: project?.currency ?? tenant.displayFormat?.currency,
   });
   const placeOptions = [0, 1, 2, 3, 4, 5, 6];
+
+  function chooseStyle(next: ThemeStyle) {
+    setThemeStyle(applyThemeStyle(next));
+  }
 
   function patchNumbers(patch: Partial<DisplayFormat>) {
     const aligned = patch.qtyDecimals != null ? { ...patch, nosDecimals: patch.qtyDecimals } : patch;
@@ -308,6 +315,37 @@ export function SettingsView({
       )}
       <PublisherMark tone={theme === "dark" ? "dark" : "light"} />
       <p className="hint">Bid Craft {APP_VERSION}</p>
+      </div>
+      ) : null}
+      {active === "appearance" ? (
+      <div className="settings-section">
+        <h2 className="view">Appearance</h2>
+        <p className="hint">
+          Theme style sets type, density, and panels. Light and dark apply to the style you choose.
+        </p>
+        <fieldset className="theme-style-picker">
+          <legend>Theme style</legend>
+          {THEME_STYLES.map((style) => (
+            <label key={style.id} className={themeStyle === style.id ? "on" : ""}>
+              <input
+                type="radio"
+                name="theme-style"
+                value={style.id}
+                checked={themeStyle === style.id}
+                onChange={() => chooseStyle(style.id)}
+              />
+              {style.label}
+            </label>
+          ))}
+        </fieldset>
+        <div className="tb-group">
+          <button
+            type="button"
+            onClick={() => (onTheme ?? applyTheme)(theme === "dark" ? "light" : "dark")}
+          >
+            {theme === "dark" ? "Use light theme" : "Use dark theme"}
+          </button>
+        </div>
       </div>
       ) : null}
       {active === "legal" ? (
