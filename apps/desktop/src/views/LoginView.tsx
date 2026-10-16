@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { LegalId } from "../legal";
+import type { ThemeName } from "../theme";
 import { LegalDialog } from "./LegalDocs";
 import { SplashShell } from "./SplashShell";
 
@@ -11,6 +12,8 @@ export function LoginView({
   onPricing,
   onRequestReset,
   onResetPassword,
+  theme,
+  onTheme,
 }: {
   busy: boolean;
   error: string;
@@ -24,6 +27,8 @@ export function LoginView({
     password: string,
     confirm: string,
   ) => Promise<{ ok: boolean; error: string | null }>;
+  theme?: ThemeName;
+  onTheme?: (theme: ThemeName) => void;
 }) {
   const [mode, setMode] = useState<"sign-in" | "reset">("sign-in");
   const [email, setEmail] = useState("");
@@ -86,7 +91,7 @@ export function LoginView({
   const problem = mode === "reset" ? resetError : error;
 
   return (
-    <SplashShell>
+    <SplashShell theme={theme} onTheme={onTheme}>
       {mode === "reset" ? (
         <form
           className="login-form"

@@ -59,6 +59,7 @@ import { LoginView } from "./views/LoginView";
 import { SplashShell } from "./views/SplashShell";
 import { PrintProvider } from "./print/context";
 import { Sidebar, type SidebarTarget } from "./views/Sidebar";
+import { AppBar, ThemeButton } from "./views/AppBar";
 import { applyTheme, readTheme, type ThemeName } from "./theme";
 import { checkForUpdate, updatesAutoEnabled, type UpdateOffer } from "./updates";
 import { cloneResourceMaster, pushRateToMaster } from "./resourceMaster";
@@ -96,6 +97,10 @@ export function App() {
   const inspectorW = usePersistedNumber("aerolith-split:inspector", 300, 220, 560);
   const license = useAerolithLicense();
   const [theme, setTheme] = useState<ThemeName>(readTheme);
+  function chooseTheme(next: ThemeName) {
+    setTheme(next);
+    applyTheme(next);
+  }
   const [navCollapsed, setNavCollapsed] = useState(() => {
     try {
       return localStorage.getItem("bidcraft.navCollapsed") === "1";
@@ -588,6 +593,8 @@ export function App() {
       <LoginView
         busy={license.busy}
         error={license.error}
+        theme={theme}
+        onTheme={chooseTheme}
         onSubmit={(email, password) => {
           void license.login(email, password).then((ok) => {
             if (!ok) return;
@@ -611,6 +618,8 @@ export function App() {
     return (
       <OwnerView
         platform={platform}
+        theme={theme}
+        onTheme={chooseTheme}
         onPlatform={applyPlatform}
         onImpersonate={(s) => {
           setSession(s);
@@ -627,6 +636,8 @@ export function App() {
   if (screen === "import") {
     return (
       <ImportWizard
+        theme={theme}
+        onTheme={chooseTheme}
         currency={displayFormat.currency}
         catalog={effectiveCatalog(liveTenant)}
         appendTo={importMode !== "create" ? project : null}
@@ -665,6 +676,8 @@ export function App() {
         onOpenPath={(path) => void openAeroFile(path)}
         accountName={license.session.displayName || license.session.email}
         licenseLine={licenseLine}
+        theme={theme}
+        onTheme={chooseTheme}
         onSignOut={signOut}
         onOwnerPortal={session.kind === "owner" ? () => setScreen("owner") : undefined}
       />
@@ -753,22 +766,54 @@ export function App() {
       className={`app shell ${navCollapsed ? "nav-collapsed" : ""} ${editLocked ? "readonly" : ""} ${inspectorVisible ? "inspector-open" : "no-inspector"}`}
       style={inspectorVisible ? ({ ["--inspector-w"]: `${inspectorW.value}px` } as CSSProperties) : undefined}
     >
-      <Sidebar
-        activity={activity}
-        masterOpen={masterTab === "resources"}
-        collapsed={navCollapsed}
-        theme={theme}
+      <AppBar
         projectName={project.name}
         revision={`${project.sealedAt ? `sealed r${project.revision}` : `r${project.revision}`}${
           license.session.isAuthenticated
             ? ` · ${licenseReadOnly ? "read-only · " : ""}${planDisplayName(license.session.planCode)}`
             : ""
         }`}
-        total={formatMoney(total, project.currency)}
-        user={`${initials} · ${session.kind === "owner" ? "owner" : session.role.name}`}
-        trial={licenseBanner(license.session)}
-        showInspector={showInspector}
-        inspectorOpen={inspectorOpen}
+        user={initials}
+        menu={{
+          label: "File",
+          items: [
+            { label: "Open", onSelect: () => void openAeroFile() },
+            { label: "Save", onSelect: () => void saveAero() },
+            {
+              label: "Close",
+              onSelect: () => {
+                setProject(null);
+                setFilePath(null);
+                setRateCode(null);
+                setQtoLineId(null);
+                setSaveMsg("");
+                setScreen("home");
+              },
+            },
+            ...(showInspector
+              ? [
+                  {
+                    label: inspectorOpen ? "Hide inspector" : "Inspector",
+                    onSelect: () => setInspectorOpen((v) => !v),
+                  },
+                ]
+              : []),
+            {
+              label: "Legal",
+              separatorBefore: true,
+              onSelect: () => {
+                setSettingsTab("legal");
+                setSettingsFocus((n) => n + 1);
+                goTo("settings");
+              },
+            },
+          ],
+        }}
+      />
+      <Sidebar
+        activity={activity}
+        masterOpen={masterTab === "resources"}
+        collapsed={navCollapsed}
         canView={canView}
         onNavigate={(id: SidebarTarget) => {
           if (id === "resources") {
@@ -789,26 +834,6 @@ export function App() {
             }
             return next;
           });
-        }}
-        onTheme={(next) => {
-          setTheme(next);
-          applyTheme(next);
-        }}
-        onClose={() => {
-          setProject(null);
-          setFilePath(null);
-          setRateCode(null);
-          setQtoLineId(null);
-          setSaveMsg("");
-          setScreen("home");
-        }}
-        onOpen={() => void openAeroFile()}
-        onSave={() => void saveAero()}
-        onToggleInspector={() => setInspectorOpen((v) => !v)}
-        onLegal={() => {
-          setSettingsTab("legal");
-          setSettingsFocus((n) => n + 1);
-          goTo("settings");
         }}
       />
       <div className="shell-banners">
@@ -1117,10 +1142,7 @@ export function App() {
             onPricing={license.openPricing}
             onSignOut={signOut}
             theme={theme}
-            onTheme={(next) => {
-              setTheme(next);
-              applyTheme(next);
-            }}
+            onTheme={chooseTheme}
             initialTab={settingsTab}
             settingsFocus={settingsFocus}
           />
@@ -1197,7 +1219,11 @@ export function App() {
         <span>{unpriced} unpriced</span>
         <span>{diffs} qty diffs</span>
         <span>{missing} missing analysis</span>
-        {saveMsg ? <span className="status-msg">{saveMsg}</span> : null}
+        <span>{project.currency}</span>
+        <span>{`Qty ${displayFormat.qtyDecimals} · Rate ${displayFormat.rateDecimals} · Amt ${displayFormat.amountDecimals}`}</span>
+        <span className="status-msg">{saveMsg || "Not saved"}</span>
+        {licenseBanner(license.session) ? <span>{licenseBanner(license.session)}</span> : null}
+        <ThemeButton theme={theme} onTheme={chooseTheme} />
         <span className={`grand ${green ? "ok" : ""}`}>
           {green ? "GREEN " : ""}
           {formatMoney(total, project.currency)}
