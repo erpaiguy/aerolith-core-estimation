@@ -11,6 +11,8 @@ import {
   type LicenseUnit,
 } from "../platform/licenseTerm";
 import { DataTable } from "../ui/tableLayout";
+import { AppBar, ThemeButton } from "./AppBar";
+import type { ThemeName } from "../theme";
 
 type IssueDraft = {
   tenantId: string;
@@ -41,11 +43,15 @@ function termFromDraft(draft: IssueDraft): LicenseTerm | null {
 
 export function OwnerView({
   platform,
+  theme = "light",
+  onTheme,
   onPlatform,
   onImpersonate,
   onSignOut,
 }: {
   platform: PlatformState;
+  theme?: ThemeName;
+  onTheme?: (theme: ThemeName) => void;
   onPlatform: (next: PlatformState) => void;
   onImpersonate: (session: Session) => void;
   onSignOut: () => void;
@@ -126,20 +132,23 @@ export function OwnerView({
   const issueTenant = draft ? platform.tenants.find((t) => t.id === draft.tenantId) : null;
 
   return (
-    <div className="app backstage">
-      <aside className="back-nav">
-        <div className="who">
-          Owner portal
-          <small>One installer · many workspaces</small>
+    <div className="app shell">
+      <AppBar
+        projectName="Owner portal"
+        revision="One installer · many workspaces"
+        menu={{ label: "File", items: [{ label: "Sign out", onSelect: onSignOut }] }}
+      />
+      <aside className="sidebar" aria-label="Owner">
+        <div className="sidebar-scroll">
+          <div className="sidebar-group">
+            <p className="sidebar-label">Portal</p>
+            <button type="button" className="nav-btn on" aria-current="page">
+              Tenants
+            </button>
+          </div>
         </div>
-        <button type="button" className="on">
-          Tenants
-        </button>
-        <div className="sp" />
-        <button type="button" onClick={onSignOut}>
-          Sign out
-        </button>
       </aside>
+      <main className="stage">
       <div className="home">
         <h1>Tenants</h1>
         <p className="home-sub">
@@ -223,6 +232,7 @@ export function OwnerView({
         </DataTable>
         <p className="hint">{platform.tenants[0] ? tenantProjectsHint(platform.tenants[0].id) : null}</p>
       </div>
+      </main>
       {draft && issueTenant ? (
         <div
           className="owner-issue-mask"
@@ -311,6 +321,10 @@ export function OwnerView({
           </form>
         </div>
       ) : null}
+      <footer className="status" role="status">
+        <span>{platform.tenants.length} workspaces</span>
+        {onTheme ? <ThemeButton theme={theme} onTheme={onTheme} /> : null}
+      </footer>
     </div>
   );
 }

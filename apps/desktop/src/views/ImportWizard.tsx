@@ -3,7 +3,8 @@ import { extractBill, canCommitImport, type ExtractKind } from "../import/extrac
 import { appendBillFromClientRows, amendBillFromClientRows, projectFromClientRows } from "../loadReference";
 import type { BoqColumnDef, LoadedProject } from "../model";
 import type { TenantCatalog } from "../tenantCatalog";
-import { BrandLockup, useSurfaceTone } from "./Brand";
+import { AppBar, ThemeButton } from "./AppBar";
+import type { ThemeName } from "../theme";
 import { defaultClientColumns, slugColumnId } from "../boqColumns";
 import { parseSignedNumber } from "@aerolith/shared";
 import { sortedBills } from "../bills";
@@ -22,6 +23,8 @@ function splitRows(text: string): string[][] {
 
 export function ImportWizard({
   currency = "QAR",
+  theme = "light",
+  onTheme,
   catalog,
   appendTo = null,
   amendBillId = null,
@@ -30,6 +33,8 @@ export function ImportWizard({
   onAppend,
 }: {
   currency?: string;
+  theme?: ThemeName;
+  onTheme?: (theme: ThemeName) => void;
   catalog?: TenantCatalog;
   appendTo?: LoadedProject | null;
   amendBillId?: string | null;
@@ -38,7 +43,6 @@ export function ImportWizard({
   onAppend?: (project: LoadedProject) => void;
 }) {
   const bills = appendTo ? sortedBills(appendTo) : [];
-  const tone = useSurfaceTone();
   const [intent, setIntent] = useState<"new-bill" | "amend">(amendBillId ? "amend" : "new-bill");
   const [targetBillId, setTargetBillId] = useState(amendBillId || bills[0]?.id || "");
   const [name, setName] = useState(() => {
@@ -157,8 +161,24 @@ export function ImportWizard({
   const blockCreate = needsReview && !reviewed;
 
   return (
-    <div className="app home">
-      <BrandLockup size="md" tone={tone} />
+    <div className="app shell">
+      <AppBar
+        projectName={appendTo?.name ?? "Import"}
+        revision={appendTo ? "Existing job" : "New job"}
+        menu={{ label: "File", items: [{ label: "Close", onSelect: onCancel }] }}
+      />
+      <aside className="sidebar" aria-label="Import">
+        <div className="sidebar-scroll">
+          <div className="sidebar-group">
+            <p className="sidebar-label">Setup</p>
+            <button type="button" className="nav-btn on" aria-current="page">
+              Import bill
+            </button>
+          </div>
+        </div>
+      </aside>
+      <main className="stage">
+      <div className="home">
       <p className="kicker">{appendTo ? "Existing job" : "New job"}</p>
       <h1>{appendTo ? (intent === "amend" ? "Amend BOQ" : "Add BOQ") : "Import client bill"}</h1>
       <p className="lede">
@@ -269,6 +289,13 @@ export function ImportWizard({
           Cancel
         </button>
       </div>
+      </div>
+      </main>
+      <footer className="status" role="status">
+        <span>{currency}</span>
+        <span>Import does not price the bill</span>
+        {onTheme ? <ThemeButton theme={theme} onTheme={onTheme} /> : null}
+      </footer>
     </div>
   );
 }
