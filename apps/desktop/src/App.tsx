@@ -597,6 +597,8 @@ export function App() {
         }}
         onSignup={license.openSignup}
         onPricing={license.openPricing}
+        onRequestReset={(email) => license.requestPasswordReset(email)}
+        onResetPassword={(email, proof, password, confirm) => license.resetPassword(email, proof, password, confirm)}
       />
     );
   }

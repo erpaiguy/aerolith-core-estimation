@@ -622,11 +622,15 @@ a:focus-visible {
   gap: 6px;
 }
 .login-form .field input,
-.login-form .field select {
-  height: 34px;
+.login-form .field select,
+.login-form .field textarea {
   background: var(--paper-2);
   border-color: var(--line);
   border-radius: var(--radius);
+}
+.login-form .field input,
+.login-form .field select {
+  height: 34px;
 }
 .login-mode { display: flex; width: 100%; margin: 0 0 8px; }
 .login-mode button { flex: 1; height: 32px; max-width: none; }
@@ -657,6 +661,23 @@ a:focus-visible {
   font-weight: 600;
 }
 .login-error p { margin: 0; }
+.login-inline {
+  display: flex;
+  justify-content: flex-end;
+  margin: 2px 0 0;
+}
+.login-inline button {
+  background: transparent;
+  border: 0;
+  height: auto;
+  padding: 0;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.login-inline button:hover { background: transparent; color: var(--ink); }
 .login-links {
   display: flex;
   gap: 8px;
