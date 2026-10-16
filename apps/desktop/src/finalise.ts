@@ -332,8 +332,28 @@ function itemBucket(project: LoadedProject, item: WorkingItem, applied: FinalAdj
   };
 }
 
+function moneyCents(n: number): number {
+  const rounded = Math.round(n * 100) / 100;
+  return rounded === 0 ? 0 : rounded;
+}
+
 function rowFrom(id: string, level: SummaryRow["level"], depth: number, label: string, bucket: Bucket): SummaryRow {
-  return { id, level, depth, label, ...bucket };
+  return {
+    id,
+    level,
+    depth,
+    label,
+    cost: moneyCents(bucket.cost),
+    margin: moneyCents(bucket.margin),
+    sell: moneyCents(bucket.sell),
+    offer: moneyCents(bucket.offer),
+    preview: moneyCents(bucket.preview),
+    labour: moneyCents(bucket.labour),
+    material: moneyCents(bucket.material),
+    subcontract: moneyCents(bucket.subcontract),
+    plant: moneyCents(bucket.plant),
+    other: moneyCents(bucket.other),
+  };
 }
 
 export function tenderSummary(project: LoadedProject): SummaryRow[] {

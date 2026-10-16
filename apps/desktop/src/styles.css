@@ -3897,6 +3897,21 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
 .resource-master .doc-scroll { min-height: 0; }
 .finalise { min-height: 0; height: 100%; }
 .finalise > .split { flex: 1; min-height: 0; }
+.finalise .scroll { overflow: auto; max-width: 100%; }
+.finalise table.data {
+  width: max-content;
+  min-width: 100%;
+  table-layout: auto;
+}
+.finalise table.data th:first-child,
+.finalise table.data td:first-child {
+  min-width: 180px;
+  max-width: 280px;
+}
+.finalise table.data td.num,
+.finalise table.data th.num {
+  overflow: visible;
+}
 .finalise-status { margin: 0; padding: 6px 16px; }
 .finalise-banner {
   margin: 0 0 12px;
