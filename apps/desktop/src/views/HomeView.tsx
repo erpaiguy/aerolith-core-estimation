@@ -97,7 +97,9 @@ export function HomeView({
             {tenant ? tenantProjectsHint(tenant.id) : "Documents\\Aerolith\\Projects"}.
           </p>
         ) : (
-          recent.map((r) => (
+          <>
+          <h2 className="view">Recent</h2>
+          {recent.map((r) => (
             <div className="file-row" key={r.path}>
               <div>
                 <b>{r.name}</b>
@@ -107,9 +109,11 @@ export function HomeView({
                 Open
               </button>
             </div>
-          ))
+          ))}
+          </>
         )}
-        <section className="sample-jobs" aria-label="Sample jobs">
+        <h2 className="view" id="sample-jobs-title">Sample jobs</h2>
+        <section className="sample-jobs" aria-labelledby="sample-jobs-title">
           <article className="sample-job">
             <p className="kicker">Single BOQ</p>
             <h2>Interior refurbishment</h2>
@@ -121,7 +125,7 @@ export function HomeView({
               Open sample
             </button>
           </article>
-          <article className="sample-job">
+          <article className="sample-job is-featured">
             <p className="kicker">Multiple BOQs</p>
             <h2>Al Maha Campus, Lusail</h2>
             <p>

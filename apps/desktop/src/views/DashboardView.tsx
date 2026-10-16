@@ -111,13 +111,17 @@ export function DashboardView({
           <b>{formatMoney(total, project.currency)}</b>
         </div>
       </div>
-      <p className="dash-flags">
-        {unpriced} unpriced
-        <span>·</span>
-        {diffs} qty diffs
-        <span>·</span>
-        {missing} missing analysis
-      </p>
+      <ul className="dash-flags" aria-label="Pricing flags">
+        <li>
+          <b>{unpriced}</b> unpriced
+        </li>
+        <li>
+          <b>{diffs}</b> qty diffs
+        </li>
+        <li>
+          <b>{missing}</b> missing analysis
+        </li>
+      </ul>
       {bills.length > 1 ? (
         <div className="note boq-grand">
           <h2>Grand summary</h2>

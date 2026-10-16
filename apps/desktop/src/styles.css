@@ -154,7 +154,7 @@ button.primary {
 }
 button:hover { background: var(--hover); }
 button.primary:hover { background: var(--accent-2); color: var(--on-accent); }
-button:disabled { opacity: 0.4; cursor: default; }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
 button.accent {
   background: var(--blue);
   color: var(--on-accent);
@@ -179,7 +179,15 @@ select:focus-visible,
 textarea:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 1px;
+  outline-offset: 2px;
+}
+button:active:not(:disabled) {
+  background: color-mix(in srgb, var(--ink) 8%, var(--paper-2));
+}
+button.primary:active:not(:disabled),
+button.accent:active:not(:disabled) {
+  background: var(--accent-2);
+  color: var(--on-accent);
 }
 @media (prefers-reduced-motion: reduce) {
   button, a, input, select, textarea { transition: none; }
@@ -323,8 +331,7 @@ a:focus-visible {
 .back-nav a.on {
   background: var(--rail-on);
   color: var(--rail-text);
-  border-left: 3px solid var(--gold);
-  padding-left: 13px;
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 .back-nav .sp { flex: 1; }
 .owner-issue-mask {
@@ -374,15 +381,20 @@ a:focus-visible {
   margin: 0 0 var(--space-md);
   font-size: 13px;
 }
+.home h2.view { margin: 20px 0 10px; }
 .file-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper-2);
   align-items: center;
   font-size: 13px;
 }
+.file-row:hover { background: var(--hover); }
 .file-row b { font-size: 14px; font-weight: 600; }
 .file-row .meta { color: var(--ink-soft); font-size: 12px; margin-top: 2px; }
 .file-row .num { font-family: var(--mono); text-align: right; }
@@ -418,6 +430,7 @@ a:focus-visible {
   max-width: none;
 }
 .sample-job button { margin-top: auto; }
+.sample-job.is-featured { box-shadow: inset 3px 0 0 var(--accent); }
 @media (max-width: 820px) {
   .sample-jobs { grid-template-columns: 1fr; gap: 12px; }
   .backstage { grid-template-columns: 1fr; }
@@ -608,6 +621,7 @@ a:focus-visible {
   max-width: 100%;
   background: var(--paper-2);
   border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
   border-radius: 10px;
   padding: 32px 28px 24px;
   box-shadow: var(--shadow);
@@ -677,7 +691,8 @@ a:focus-visible {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-.login-inline button:hover { background: transparent; color: var(--ink); }
+.login-inline button:hover,
+.login-inline button:active { background: transparent; color: var(--ink); }
 .login-links {
   display: flex;
   gap: 8px;
@@ -912,6 +927,7 @@ a:focus-visible {
   padding: 16px;
   min-width: 0;
   min-height: 0;
+  scroll-padding: 16px;
 }
 .stage.stage-fill {
   overflow: hidden;
@@ -2229,8 +2245,12 @@ table.data tr.selected:hover td { background: var(--select); }
   min-height: 0;
   overflow: auto;
   padding: 16px;
+  scroll-padding: 16px;
 }
-.dashboard-view .kpi-total b { color: var(--ok); }
+.dashboard-view .kpi-total {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.dashboard-view .kpi-total b { color: var(--money); }
 .dashboard-view .note {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -2279,10 +2299,22 @@ table.data tr.selected:hover td { background: var(--select); }
   grid-template-columns: minmax(96px, 1.6fr) minmax(0, 1fr) auto;
 }
 .dash-cat summary.bar-row span::before {
-  content: "▸ ";
-  color: var(--ink-soft);
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 6px;
+  vertical-align: 1px;
+  border-style: solid;
+  border-width: 4px 0 4px 5px;
+  border-color: transparent transparent transparent currentColor;
 }
-.dash-cat[open] summary.bar-row span::before { content: "▾ "; }
+.dash-cat[open] summary.bar-row span::before {
+  content: "";
+  vertical-align: 2px;
+  border-width: 5px 4px 0 4px;
+  border-color: currentColor transparent transparent transparent;
+}
 .dash-lvl {
   display: block;
   font-size: 9px;
@@ -2310,11 +2342,31 @@ table.data tr.selected:hover td { background: var(--select); }
   overflow: visible;
 }
 .dash-flags {
-  margin: 0 0 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+.dash-flags li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-2);
   color: var(--ink-soft);
   font-size: 12px;
 }
-.dash-flags span { margin: 0 8px; color: var(--line); }
+.dash-flags b {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
 
 input.cell {
   width: 100%;
@@ -2326,7 +2378,7 @@ input.cell {
   font-variant-numeric: tabular-nums;
 }
 input.cell.num { text-align: right; font-family: var(--mono); }
-input.cell:focus { outline: 1px solid var(--accent); background: var(--paper-2); }
+input.cell:focus { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--paper-2); }
 
 .field {
   display: flex;
@@ -2459,6 +2511,7 @@ input.cell:focus { outline: 1px solid var(--accent); background: var(--paper-2);
 .scroll {
   overflow-x: auto;
   margin: 8px 0 16px;
+  scroll-padding: 12px;
 }
 
 table.analysis {
@@ -2814,9 +2867,10 @@ button.allow-when-locked { pointer-events: auto; opacity: 1; }
 }
 .settings-nav button:hover { background: var(--select); color: var(--ink); }
 .settings-nav button.on {
-  background: var(--paper-2);
+  background: var(--select);
   color: var(--ink);
-  font-weight: 650;
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 .settings-pane {
   min-width: 0;
@@ -3750,7 +3804,7 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
 }
 .sidebar.is-collapsed .sidebar-collapse,
 .sidebar.is-collapsed .nav-btn { justify-content: center; padding: 0; width: 40px; margin-left: 12px; margin-right: 12px; }
-.sidebar-scroll { overflow: auto; padding: 4px 0 12px; min-height: 0; }
+.sidebar-scroll { overflow: auto; padding: 4px 0 12px; min-height: 0; scroll-padding: 8px; }
 .sidebar-group { margin-top: 4px; }
 .sidebar-label {
   margin: 14px 16px 4px;
@@ -3769,9 +3823,19 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   text-align: left;
   font-weight: 500;
 }
+.sidebar .nav-btn svg,
+.sidebar-collapse svg { flex: 0 0 auto; }
 .sidebar .nav-btn:hover,
 .sidebar-collapse:hover { background: var(--rail-hover); color: var(--rail-text); }
-.sidebar .nav-btn.on { background: var(--rail-on); color: var(--rail-text); }
+.sidebar .nav-btn:active,
+.sidebar-collapse:active { background: var(--rail-hover); }
+.sidebar .nav-btn.on {
+  background: var(--rail-on);
+  color: var(--rail-text);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.sidebar .nav-btn.on svg { color: var(--accent); }
 .sidebar-foot { margin-top: auto; padding: 8px 0 12px; border-top: 1px solid var(--line); }
 .brand-logo { display: block; width: auto; height: 36px; max-width: 100%; object-fit: contain; align-self: flex-start; flex: 0 0 auto; background: transparent; }
 .sidebar-job {
@@ -3781,6 +3845,13 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   padding: 12px 16px 14px;
   min-width: 0;
   border-bottom: 1px solid var(--line);
+}
+.sidebar:not(.is-collapsed) .sidebar-job {
+  margin: 8px 12px 4px;
+  padding: 10px 12px 12px;
+  background: color-mix(in srgb, var(--paper-2) 70%, var(--rail));
+  border: 1px solid var(--line);
+  border-radius: 8px;
 }
 .sidebar-job .job {
   margin: 0;
@@ -3799,12 +3870,13 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   font-size: 11px;
 }
 .sidebar-job .gold {
-  margin: 2px 0 0;
+  margin: 4px 0 0;
   color: var(--money);
   font-family: var(--mono);
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 .file-menu {
   position: fixed;
@@ -3829,7 +3901,17 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   padding: 0 10px;
   font-weight: 500;
 }
-.file-menu button:hover { background: var(--hover); }
+.file-menu button:hover,
+.file-menu button:focus-visible { background: var(--select); color: var(--ink); }
+.file-menu button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.file-menu-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--line);
+}
 .sidebar.is-collapsed .sidebar-file {
   display: flex;
   justify-content: center;
@@ -3856,7 +3938,8 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-.legal-links button:hover { background: transparent; color: var(--ink); }
+.legal-links button:hover,
+.legal-links button:active { background: transparent; color: var(--ink); }
 .legal-browser {
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
@@ -3871,7 +3954,13 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   background: transparent;
   border-color: transparent;
 }
-.legal-nav button.on { background: var(--select); color: var(--ink); }
+.legal-nav button.on {
+  background: var(--select);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.settings-pane { scroll-padding: 16px; }
 .legal-doc h2 {
   font-size: 14px;
   margin: 16px 0 6px;
