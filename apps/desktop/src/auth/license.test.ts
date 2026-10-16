@@ -174,4 +174,44 @@ describe("auth client", () => {
     expect(auth).toContain("/auth/v1/token?grant_type=password");
     expect(login.success).toBe(false);
   });
+
+  it("emails a reset link without saying whether the account exists", async () => {
+    const seen: string[] = [];
+    const fetchImpl = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      seen.push(String(input));
+      const body = JSON.parse(String(init?.body)) as { email?: string };
+      expect(body.email).toBe("ada@example.com");
+      expect(new Headers(init?.headers).get("apikey")).toBe(releaseConfig.supabaseAnonKey);
+      return jsonResponse({ msg: "User not found" }, 400);
+    }) as typeof fetch;
+    const client = new AuthApiClient(releaseConfig, fetchImpl);
+    const result = await client.requestPasswordReset("ada@example.com");
+    expect(result.ok).toBe(true);
+    expect(seen[0]).toContain("/auth/v1/recover");
+  });
+
+  it("verifies the email link and then sets the new password", async () => {
+    const calls: Array<{ url: string; body: Record<string, string>; auth: string | null }> = [];
+    const fetchImpl = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body)) as Record<string, string>;
+      calls.push({ url: String(input), body, auth: new Headers(init?.headers).get("Authorization") });
+      if (String(input).endsWith("/verify")) {
+        expect(body.token_hash).toBe("abc123hash");
+        expect(body.type).toBe("recovery");
+        return jsonResponse({ access_token: "reset-access", refresh_token: "reset-refresh", user: { id: "u" } });
+      }
+      expect(body.password).toBe("long-enough");
+      return jsonResponse({ id: "u" });
+    }) as typeof fetch;
+    const client = new AuthApiClient(releaseConfig, fetchImpl);
+    const result = await client.resetPassword(
+      "ada@example.com",
+      { kind: "hash", tokenHash: "abc123hash" },
+      "long-enough",
+    );
+    expect(result.ok).toBe(true);
+    expect(calls[0]?.url).toContain("/auth/v1/verify");
+    expect(calls[1]?.url).toContain("/auth/v1/user");
+    expect(calls[1]?.auth).toBe("Bearer reset-access");
+  });
 });

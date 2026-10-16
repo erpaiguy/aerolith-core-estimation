@@ -31,6 +31,7 @@ export const LEGAL_DOCS: LegalDocument[] = [
         heading: "Account and license",
         paragraphs: [
           "Sign-in sends your email and password to Aerolith account services over HTTPS so this device can start or refresh the Bid Craft trial. The app then stores the session on this device so you can reopen the workspace.",
+          "Forgot password sends that email address to the same service, which emails a one-time reset link. Bid Craft never sees the inbox. The new password is sent only after you paste that link back into the app.",
           "A license check sends the app id aerolith-estimation, a device hash, and the app version. It does not send bill lines or prices.",
           "The trial is 30 days for this app. When it ends, the workspace locks until the plan is renewed. Signing out clears the saved session on this device.",
         ],
