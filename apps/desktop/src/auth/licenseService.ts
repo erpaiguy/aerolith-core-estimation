@@ -1,3 +1,5 @@
+import { invoke } from "@tauri-apps/api/core";
+import { isTauri } from "../nativeAero";
 import { AuthApiClient, type FetchLike } from "./authApiClient";
 import {
   clockTrusted,
@@ -434,5 +436,11 @@ export class LicenseService {
 
 export function openHttps(url: string): void {
   if (!url.startsWith("https://")) return;
+  if (isTauri()) {
+    void invoke("open_https", { url }).catch(() => {
+      /* The desktop shell rejected the host. */
+    });
+    return;
+  }
   window.open(url, "_blank", "noopener,noreferrer");
 }

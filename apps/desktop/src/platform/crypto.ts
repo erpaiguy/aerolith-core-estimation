@@ -18,7 +18,11 @@ export function newSalt(): string {
 }
 
 export async function verifyPin(pin: string, salt: string, pinHash: string): Promise<boolean> {
-  return (await hashPin(pin, salt)) === pinHash;
+  const got = await hashPin(pin, salt);
+  if (got.length !== pinHash.length) return false;
+  let diff = 0;
+  for (let i = 0; i < got.length; i += 1) diff |= got.charCodeAt(i) ^ pinHash.charCodeAt(i);
+  return diff === 0;
 }
 
 export function licenseStatus(trialStartedAt: string, expiresAt: string | null, now = Date.now()) {

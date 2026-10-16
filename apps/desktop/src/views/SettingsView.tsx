@@ -24,7 +24,8 @@ import { mergeReportFormat, type ReportFormat, type StoredReportTemplate } from 
 import { ReportFormatFields } from "./DocumentRenderer";
 import { applyCatalogToProject, applyPromotion, effectiveCatalog } from "../tenantCatalog";
 import type { LoadedProject } from "../model";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { LegalBrowser } from "./LegalDocs";
 import { PublisherMark } from "./Brand";
 import { convertMasterRates } from "../resourceMaster";
 import { convertProjectCurrency } from "../projectResourceMaster";
@@ -46,6 +47,7 @@ import {
 
 type SettingsTab =
   | "license"
+  | "legal"
   | "numbers"
   | "updates"
   | "replica"
@@ -70,6 +72,8 @@ export function SettingsView({
   onSignOut,
   theme = "light",
   onTheme,
+  initialTab = "license",
+  settingsFocus = 0,
 }: {
   session: Session;
   platform: PlatformState;
@@ -86,8 +90,13 @@ export function SettingsView({
   onSignOut?: () => void;
   theme?: ThemeName;
   onTheme?: (theme: ThemeName) => void;
+  initialTab?: SettingsTab;
+  settingsFocus?: number;
 }) {
-  const [tab, setTab] = useState<SettingsTab>("license");
+  const [tab, setTab] = useState<SettingsTab>(initialTab);
+  useEffect(() => {
+    setTab(initialTab);
+  }, [initialTab, settingsFocus]);
   const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
   const [factorText, setFactorText] = useState("1");
   const [factorError, setFactorError] = useState("");
@@ -104,6 +113,7 @@ export function SettingsView({
   const solo = isSoloTenant(tenant);
   const tabs: Array<[SettingsTab, string]> = [
     ["license", "License"],
+    ["legal", "Legal"],
     ["numbers", "Numbers"],
     ["updates", "Updates"],
     ...(onCompareReplica ? ([["replica", "Replica compare"]] as Array<[SettingsTab, string]>) : []),
@@ -299,6 +309,11 @@ export function SettingsView({
       <PublisherMark tone={theme === "dark" ? "dark" : "light"} />
       <p className="hint">Bid Craft {APP_VERSION}</p>
       </div>
+      ) : null}
+      {active === "legal" ? (
+        <div className="settings-section">
+          <LegalBrowser />
+        </div>
       ) : null}
       {active === "numbers" ? (
       <div className="settings-section">

@@ -95,6 +95,7 @@ export function DashboardView({
           }
         />
       </div>
+      <div className="dash-body">
       {license}
       <div className="kpis">
         <div className="kpi">
@@ -181,6 +182,7 @@ export function DashboardView({
           </div>
         </div>
         </Split>
+      </div>
       </div>
     </div>
   );
