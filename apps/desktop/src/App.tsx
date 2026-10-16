@@ -49,6 +49,8 @@ import type { ReportFormatPack } from "./views/ReportDesigner";
 import { BuyView } from "./views/BuyView";
 import { ConflictQueue } from "./views/ConflictQueue";
 import { DashboardView } from "./views/DashboardView";
+import { FinaliseView } from "./views/FinaliseView";
+import type { FinalisePane, SubmissionIssue } from "./finalise";
 import { MarginsView } from "./views/MarginsView";
 import { HomeView } from "./views/HomeView";
 import { ImportWizard } from "./views/ImportWizard";
@@ -78,6 +80,7 @@ export function App() {
   const [screen, setScreen] = useState<Screen>("login");
   const [project, setProject] = useState<LoadedProject | null>(null);
   const [activity, setActivity] = useState<Activity>("estimate");
+  const [finalisePane, setFinalisePane] = useState<FinalisePane>("summary");
   const [selected, setSelected] = useState<string | null>(null);
   const [qtoLineId, setQtoLineId] = useState<string | null>(null);
   const [rateCode, setRateCode] = useState<string | null>(null);
@@ -130,7 +133,7 @@ export function App() {
   const licenseLine = license.session.isAuthenticated ? describeLicense(license.session) : "";
   const roleEdit = (mod: string) => can(session, mod, "edit");
   const permModule =
-    activity === "analysis" || activity === "queries" || activity === "margins" ? "estimate" : activity;
+    activity === "analysis" || activity === "queries" || activity === "margins" || activity === "finalise" ? "estimate" : activity;
   const sealed = Boolean(project?.sealedAt);
   const editLocked =
     licenseReadOnly || sealed || (session?.kind === "tenant" && !roleEdit(permModule));
@@ -687,6 +690,7 @@ export function App() {
     activity === "source" ||
     activity === "dashboard" ||
     activity === "margins" ||
+    activity === "finalise" ||
     activity === "masters" ||
     activity === "settings";
   const whoLabel =
@@ -735,7 +739,7 @@ export function App() {
   function canView(id: Activity) {
     if (!session) return false;
     return (
-      can(session, id === "analysis" || id === "queries" || id === "margins" ? "estimate" : id, "view") ||
+      can(session, id === "analysis" || id === "queries" || id === "margins" || id === "finalise" ? "estimate" : id, "view") ||
       (id === "settings" && session.kind === "owner")
     );
   }
@@ -996,6 +1000,24 @@ export function App() {
             <BuyView project={project} locked={editLocked} onProject={(next) => commit(next)} billId={billFocus} />
             </BoqSplit>
           </>
+        ) : null}
+        {activity === "finalise" ? (
+          <FinaliseView
+            project={project}
+            locked={editLocked}
+            pane={finalisePane}
+            onPane={setFinalisePane}
+            onProject={(next) => commit(next)}
+            onJump={(issue: SubmissionIssue) => {
+              if (issue.pane) setFinalisePane(issue.pane);
+              if (issue.itemKey) {
+                setSelected(issue.itemKey);
+                const item = findItemByKey(project.items, issue.itemKey);
+                if (item) setBillFocus(item.billId);
+              }
+              if (issue.activity !== "finalise") setActivity(issue.activity);
+            }}
+          />
         ) : null}
         {activity === "submit" ? (
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-submit">

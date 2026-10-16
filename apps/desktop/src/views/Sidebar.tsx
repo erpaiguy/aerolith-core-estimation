@@ -8,7 +8,7 @@ export type SidebarTarget = Activity | "resources";
 
 const GROUPS: Array<{ label: string; items: SidebarTarget[] }> = [
   { label: "Estimate", items: ["dashboard", "source", "takeoff", "estimate", "analysis", "margins"] },
-  { label: "Commercial", items: ["queries", "buy", "submit"] },
+  { label: "Commercial", items: ["queries", "buy", "submit", "finalise"] },
   { label: "Library", items: ["masters", "resources", "settings"] },
 ];
 
@@ -29,6 +29,7 @@ function Icon({ id }: { id: SidebarTarget }) {
     queries: <path d="M3 3.5h10v7H6.2L3 13V3.5z" {...stroke} />,
     buy: <path d="M3 4.5h10l-1 7H4l-1-7zM6 4.5V3.2A1.2 1.2 0 0 1 7.2 2h1.6A1.2 1.2 0 0 1 10 3.2v1.3" {...stroke} />,
     submit: <path d="M4 8.2l2.4 2.3L12 5M3 13.5h10" {...stroke} />,
+    finalise: <path d="M3 2.5h10v11H3v-11zM5.5 6h5M5.5 8.5h5M5.5 11h3" {...stroke} />,
     masters: <path d="M3 6.5h10v7H3v-7zM5.5 6.5V4.2A1.2 1.2 0 0 1 6.7 3h2.6a1.2 1.2 0 0 1 1.2 1.2v2.3" {...stroke} />,
     resources: <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" {...stroke} />,
     settings: <path d="M8 5.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6zM8 2.2v1.4M8 12.4v1.4M2.2 8h1.4M12.4 8h1.4M3.8 3.8l1 1M11.2 11.2l1 1M12.2 3.8l-1 1M4.8 11.2l-1 1" {...stroke} />,
