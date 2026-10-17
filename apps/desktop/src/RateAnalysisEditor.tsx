@@ -378,7 +378,7 @@ export function RateAnalysisEditor({
           <div
             className="rate-sheet"
             ref={sheetRef}
-            style={{ ...tableStyle, minWidth: colW("resource") }}
+            style={{ ...tableStyle, ["--factor-col" as string]: `${colW("nos1")}px` }}
             role="table"
             aria-label="Resource lines"
             onWheel={onFactorWheel}
@@ -424,6 +424,11 @@ export function RateAnalysisEditor({
                   <div className="rate-res rate-c desc" role="cell">
                     <select
                       value={line.projectResourceCode ?? ""}
+                      title={
+                        line.projectResourceCode
+                          ? `${line.projectResourceCode} — ${line.description || ""}`.trim()
+                          : line.description || "Custom resource"
+                      }
                       onChange={(e) => applyResource(idx, e.target.value)}
                     >
                       <option value="">Custom (new resource)</option>

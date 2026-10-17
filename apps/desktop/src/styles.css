@@ -1064,10 +1064,12 @@ button.accent:active:not(:disabled) {
   grid-area: status;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0;
   padding: 0 16px;
+  height: 32px;
   min-height: 32px;
+  max-height: 32px;
   border-top: 1px solid var(--line);
   background: var(--rail);
   font-size: 11px;
@@ -1082,10 +1084,19 @@ button.accent:active:not(:disabled) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   padding: 0 14px 0 0;
   margin-right: 14px;
   border-right: 1px solid var(--line);
   white-space: nowrap;
+  flex: 0 1 auto;
+}
+.status .grand,
+.status .theme-toggle { flex-shrink: 0; }
+@media (max-width: 1360px) {
+  .status .status-low { display: none; }
 }
 .status span:last-child { border-right: 0; margin-right: 0; }
 .status strong { color: var(--rail-text); font-weight: 500; }
@@ -1381,11 +1392,11 @@ h2.view {
   display: block;
   width: 100%;
   min-width: 0;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+  word-break: normal;
   line-height: 1.3;
   font-weight: 400;
 }
@@ -2129,6 +2140,14 @@ html[data-style] .seg.boq-seg button {
   max-width: 100%;
   overflow-x: auto;
 }
+html[data-style] .rate-actions > button,
+html[data-style] .rate-actions .menu-select-btn {
+  white-space: nowrap;
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  min-height: 32px;
+}
 .takeoff-header .hint {
   min-width: 0;
   overflow: visible;
@@ -2144,6 +2163,7 @@ table.data tr.qto-seed td { color: var(--ink-soft); }
 
 table.data {
   width: 100%;
+  min-width: 720px;
   border-collapse: collapse;
   background: var(--paper-2);
   font-variant-numeric: tabular-nums;
@@ -2175,10 +2195,10 @@ table.data th, table.data td {
   text-align: left;
   vertical-align: middle;
   overflow: hidden;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  text-overflow: unset;
-  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   line-height: 1.4;
   height: auto;
   min-height: var(--row-min);
@@ -2318,8 +2338,8 @@ table.data tr.selected:hover td { background: var(--select); }
   vertical-align: top;
   text-align: left;
   white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 .doc-table th {
   background: var(--paper);
@@ -2338,8 +2358,8 @@ table.data tr.selected:hover td { background: var(--select); }
 }
 .doc-table th.num {
   white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: normal;
+  word-break: normal;
   line-height: 1.25;
   letter-spacing: 0.02em;
 }
@@ -3048,16 +3068,67 @@ html[data-style] .rate-sheet button {
   border: 0;
   background: transparent;
 }
-@container rateeditor (max-width: 560px) {
+@container rateeditor (max-width: 420px) {
   .rate-editor .kpis { grid-template-columns: 1fr 1fr; }
   .rate-editor .kpi { min-height: 3.4rem; padding-block: 8px; }
 }
+@container rateeditor (max-width: 620px) {
+  .rate-sheet { min-width: 0; }
+  .rate-band {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .rate-res {
+    flex: 1 1 140px;
+    width: auto;
+    min-width: 0;
+  }
+  .rate-res.rate-h { height: 32px; }
+  .rate-res.rate-c {
+    height: 44px;
+    min-height: 0;
+    flex-direction: row;
+    align-items: center;
+  }
+  .rate-res.rate-c input.cell { display: none; }
+  .rate-nums {
+    flex: 0 0 auto;
+    width: auto;
+  }
+  .rate-mid {
+    flex: 0 0 var(--factor-col, 72px);
+    width: var(--factor-col, 72px);
+    min-width: var(--factor-col, 72px);
+    max-width: var(--factor-col, 72px);
+    overflow: hidden;
+    scrollbar-gutter: auto;
+  }
+  .rate-editor .scroll { min-height: 200px; }
+}
 @media (max-width: 1100px) {
-  .boq-split:has(.rate-analysis) {
-    grid-template-columns: 120px 7px minmax(0, 1fr) !important;
+  .boq-split {
+    grid-template-columns: 92px 7px minmax(0, 1fr) !important;
+  }
+  .boq-rail { padding-inline: 8px; }
+  .boq-rail .seg.boq-seg button .bill-name { display: none; }
+  .boq-rail .seg.boq-seg button {
+    justify-content: center;
+    padding-inline: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .boq-rail .seg.boq-seg button:first-child {
+    font-size: 0;
+  }
+  .boq-rail .seg.boq-seg button:first-child::after {
+    content: "All";
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 600;
   }
   .rate-analysis > .split.split-x {
-    grid-template-columns: 228px 7px minmax(0, 1fr) !important;
+    grid-template-columns: 200px 7px minmax(0, 1fr) !important;
   }
 }
 .rate-editor .kpi {
