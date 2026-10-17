@@ -18,6 +18,8 @@ export function ResizableTh({
   onRowResize,
   children,
   className,
+  fitTotal,
+  extraStyle,
 }: {
   id: string;
   label?: ReactNode;
@@ -27,12 +29,23 @@ export function ResizableTh({
   onRowResize?: (ev: ReactPointerEvent<HTMLElement>) => void;
   children?: ReactNode;
   className?: string;
+  /** Share of the table. Columns scale with the pane instead of locking a pixel min-width. */
+  fitTotal?: number;
+  extraStyle?: CSSProperties;
 }) {
   const w = widths[id];
+  const style: CSSProperties | undefined = {
+    ...(w == null
+      ? {}
+      : fitTotal
+        ? { width: `${(w / fitTotal) * 100}%`, minWidth: 0 }
+        : { width: w, minWidth: w }),
+    ...extraStyle,
+  };
   return (
     <th
       className={[numeric ? "num" : "", className].filter(Boolean).join(" ") || undefined}
-      style={w ? { width: w, minWidth: w } : undefined}
+      style={style}
     >
       {children ?? label}
       <i className="col-resizer" aria-hidden onPointerDown={(e) => onResize(id, e)} />

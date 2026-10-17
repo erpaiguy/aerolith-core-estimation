@@ -1217,12 +1217,12 @@ export function App() {
           {focusBill && billSourceLocked(project, focusBill.id) ? " · Client BOQ locked" : ""}
         </span>
         <span>{unpriced} unpriced</span>
-        <span>{diffs} qty diffs</span>
+        <span className="status-low">{diffs} qty diffs</span>
         <span>{missing} missing analysis</span>
         <span>{project.currency}</span>
-        <span>{`Qty ${displayFormat.qtyDecimals} · Rate ${displayFormat.rateDecimals} · Amt ${displayFormat.amountDecimals}`}</span>
-        <span className="status-msg">{saveMsg || "Not saved"}</span>
-        {licenseBanner(license.session) ? <span>{licenseBanner(license.session)}</span> : null}
+        <span className="status-low">{`Qty ${displayFormat.qtyDecimals} · Rate ${displayFormat.rateDecimals} · Amt ${displayFormat.amountDecimals}`}</span>
+        <span className="status-msg status-low">{saveMsg || "Not saved"}</span>
+        {licenseBanner(license.session) ? <span className="status-low">{licenseBanner(license.session)}</span> : null}
         <ThemeButton theme={theme} onTheme={chooseTheme} />
         <span className={`grand ${green ? "ok" : ""}`}>
           {green ? "GREEN " : ""}

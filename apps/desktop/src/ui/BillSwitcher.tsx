@@ -26,6 +26,7 @@ export function BillSwitcher({
           role="option"
           aria-selected={value == null}
           className={value == null ? "primary" : ""}
+          title="All BOQs"
           onClick={() => onChange(null)}
         >
           All BOQs
@@ -39,7 +40,7 @@ export function BillSwitcher({
           aria-selected={value === b.id}
           className={value === b.id ? "primary" : ""}
           onClick={() => onChange(b.id)}
-          title={b.issuedRef || b.name}
+          title={`${b.code} — ${b.name}`}
         >
           <span className="bill-code">{b.code}</span>
           <span className="bill-name">{b.name}</span>
