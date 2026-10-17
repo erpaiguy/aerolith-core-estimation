@@ -5,6 +5,7 @@
   Licenses: Inter, Outfit, IBM Plex Sans, and IBM Plex Mono are OFL-1.1
   via @fontsource. Icons: @phosphor-icons/react MIT.
   Copper accent and the brand-kit wordmark stay on the kit artwork.
+  Each style sets its own grid, card, panel, and toolbar padding below.
 */
 
 :root {
@@ -36,6 +37,20 @@
   --money: #9a4318;
   --gold: #c65a28;
   --on-accent: #ffffff;
+  --pad-grid-y: 12px;
+  --pad-grid-x: 14px;
+  --pad-card-y: 12px;
+  --pad-card-x: 16px;
+  --pad-note: 0;
+  --pad-panel: 20px;
+  --pad-toolbar-y: 12px;
+  --pad-toolbar-x: 20px;
+  --pad-home: 28px;
+  --pad-login: 8px 8px 0;
+  --pad-hero: 64px 48px;
+  --pad-modal: 22px;
+  --gap-card: 28px;
+  --pad-row: 40px;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -71,23 +86,25 @@ button { height: 36px; border-radius: 8px; font-weight: 500; }
 .sidebar { background: var(--paper); border-right: 1px solid var(--line); }
 .sidebar .nav-btn,
 .sidebar-collapse { height: 40px; border-radius: 8px; }
-.module-toolbar { min-height: 64px; padding: 12px 20px; background: transparent; border-bottom: 0; }
+.module-toolbar { min-height: 64px; background: transparent; border-bottom: 0; }
 .module-toolbar h1.view { font-size: 22px; font-weight: 600; letter-spacing: -0.03em; }
-.stage { padding: 20px 24px; }
 .status { min-height: 36px; background: var(--paper-2); font-family: var(--sans); font-size: 12px; }
-table.data th,
-table.data td { border-right: 0; padding: 12px 14px; }
-table.data th { background: transparent; letter-spacing: 0.04em; font-weight: 600; }
-table.data { background: transparent; }
-.kpi { border: 0; box-shadow: none; padding: 8px 0; background: transparent; }
-.kpis { gap: 28px; }
-.login-card { border: 0; box-shadow: none; border-radius: 0; padding: 8px 8px 0; background: transparent; }
-.login-hero { background: var(--paper); border-right: 0; padding: 64px 48px; }
-.sample-job, .file-row, .note, .modal, .file-menu {
+html[data-style="minimal"] table.data th,
+html[data-style="minimal"] table.data td { border-right: 0; }
+html[data-style="minimal"] table.data th { background: transparent; letter-spacing: 0.04em; font-weight: 600; }
+html[data-style="minimal"] table.data { background: transparent; }
+html[data-style="minimal"] .kpi { border: 0; box-shadow: none; background: transparent; }
+html[data-style="minimal"] .login-card { border: 0; box-shadow: none; border-radius: 0; background: transparent; }
+html[data-style="minimal"] .login-hero { background: var(--paper); border-right: 0; }
+html[data-style="minimal"] .sample-job,
+html[data-style="minimal"] .file-row,
+html[data-style="minimal"] .note,
+html[data-style="minimal"] .modal,
+html[data-style="minimal"] .file-menu {
   border-radius: 12px;
   box-shadow: none;
 }
-.dashboard-view .note { border: 0; background: transparent; padding: 0; }
+html[data-style="minimal"] .dashboard-view .note { border: 0; background: transparent; }
 .field input, .field select, .field textarea { height: 40px; border-radius: 8px; }
 .home h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.04em; }
 .sidebar-label { margin-top: 18px; }
@@ -122,6 +139,20 @@ html[data-style="spreadsheet"] {
     --money: #9a4318;
     --gold: #c65a28;
     --on-accent: #ffffff;
+    --pad-grid-y: 2px;
+    --pad-grid-x: 6px;
+    --pad-card-y: 6px;
+    --pad-card-x: 8px;
+    --pad-note: 6px 8px;
+    --pad-panel: 6px;
+    --pad-toolbar-y: 2px;
+    --pad-toolbar-x: 8px;
+    --pad-home: 12px;
+    --pad-login: 16px;
+    --pad-hero: 28px 24px;
+    --pad-modal: 12px;
+    --gap-card: 6px;
+    --pad-row: 22px;
     font-size: 12px;
     line-height: 1.25;
 }
@@ -175,13 +206,10 @@ html[data-style="spreadsheet"] .sidebar-label {
   margin: 8px 8px 2px; font-size: 9px;
 }
 html[data-style="spreadsheet"] .module-toolbar {
-  min-height: 36px; padding: 2px 8px; background: var(--xl); border-bottom: 1px solid var(--line); gap: 4px;
+  min-height: 36px; background: var(--xl); border-bottom: 1px solid var(--line); gap: 4px;
 }
 html[data-style="spreadsheet"] .module-toolbar h1.view {
   font-size: 13px; line-height: 24px; letter-spacing: 0; font-weight: 600;
-}
-html[data-style="spreadsheet"] .stage {
-  padding: 0;
 }
 html[data-style="spreadsheet"] .status {
   min-height: 24px; height: 24px; font-family: var(--mono); font-size: 11px; background: var(--ribbon); border-top: 1px solid var(--line); padding: 0 8px;
@@ -191,7 +219,7 @@ html[data-style="spreadsheet"] table.data {
 }
 html[data-style="spreadsheet"] table.data th,
 html[data-style="spreadsheet"] table.data td {
-  border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 2px 6px; font-size: 12px; line-height: 1.3;
+  border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 12px; line-height: 1.3;
 }
 html[data-style="spreadsheet"] table.data th {
   background: #dfe3ea; color: var(--ink); letter-spacing: 0.04em;
@@ -200,19 +228,13 @@ html[data-theme="dark"][data-style="spreadsheet"] table.data th {
   background: #222833;
 }
 html[data-style="spreadsheet"] .kpi {
-  border-radius: 0; padding: 6px 8px; box-shadow: none;
+  border-radius: 0; box-shadow: none;
 }
 html[data-style="spreadsheet"] .kpi b {
   font-size: 14px;
 }
-html[data-style="spreadsheet"] .kpis {
-  gap: 6px;
-}
 html[data-style="spreadsheet"] .login-card {
-  border-radius: 0; border: 1px solid var(--line); box-shadow: none; padding: 16px;
-}
-html[data-style="spreadsheet"] .login-hero {
-  padding: 28px 24px;
+  border-radius: 0; border: 1px solid var(--line); box-shadow: none;
 }
 html[data-style="spreadsheet"] .login-side-copy h1 {
   font-size: 26px;
@@ -228,9 +250,6 @@ html[data-style="spreadsheet"] .field input,
 html[data-style="spreadsheet"] .field select,
 html[data-style="spreadsheet"] .field textarea {
   height: 24px; border-radius: 0;
-}
-html[data-style="spreadsheet"] .home {
-  padding: 12px;
 }
 html[data-style="spreadsheet"] .home h1 {
   font-size: 20px;
@@ -269,6 +288,20 @@ html[data-style="modern"] {
     --money: #9a4318;
     --gold: #c65a28;
     --on-accent: #ffffff;
+    --pad-grid-y: 10px;
+    --pad-grid-x: 12px;
+    --pad-card-y: 14px;
+    --pad-card-x: 16px;
+    --pad-note: 16px;
+    --pad-panel: 16px;
+    --pad-toolbar-y: 10px;
+    --pad-toolbar-x: 16px;
+    --pad-home: 24px;
+    --pad-login: 28px 24px 22px;
+    --pad-hero: 56px 40px;
+    --pad-modal: 20px;
+    --gap-card: 12px;
+    --pad-row: 36px;
     font-size: 13px;
     line-height: 1.45;
 }
@@ -389,6 +422,20 @@ html[data-style="cards"] {
     --money: #9a4318;
     --gold: #c65a28;
     --on-accent: #ffffff;
+    --pad-grid-y: 14px;
+    --pad-grid-x: 18px;
+    --pad-card-y: 18px;
+    --pad-card-x: 20px;
+    --pad-note: 18px 20px;
+    --pad-panel: 16px;
+    --pad-toolbar-y: 8px;
+    --pad-toolbar-x: 16px;
+    --pad-home: 20px;
+    --pad-login: 28px;
+    --pad-hero: 48px 36px;
+    --pad-modal: 24px;
+    --gap-card: 16px;
+    --pad-row: 44px;
     font-size: 14px;
     line-height: 1.45;
 }
@@ -475,11 +522,11 @@ html[data-style="cards"] .file-menu {
     box-shadow: var(--shadow);
     background: var(--paper-2);
 }
-html[data-style="cards"] .login-card {
-  padding: 28px;
-}
 html[data-style="cards"] .login-hero {
   background: transparent; border: 0;
+}
+html[data-style="cards"] .module-body {
+  padding: var(--pad-panel);
 }
 html[data-style="cards"] .field input,
 html[data-style="cards"] .field select,
@@ -519,6 +566,20 @@ html[data-style="enterprise"] {
     --money: #9a4318;
     --gold: #c65a28;
     --on-accent: #ffffff;
+    --pad-grid-y: 6px;
+    --pad-grid-x: 10px;
+    --pad-card-y: 10px;
+    --pad-card-x: 12px;
+    --pad-note: 12px 14px;
+    --pad-panel: 12px;
+    --pad-toolbar-y: 8px;
+    --pad-toolbar-x: 12px;
+    --pad-home: 16px;
+    --pad-login: 24px 22px 20px;
+    --pad-hero: 40px 32px;
+    --pad-modal: 16px;
+    --gap-card: 12px;
+    --pad-row: 30px;
     font-size: 13px;
     line-height: 1.35;
 }
