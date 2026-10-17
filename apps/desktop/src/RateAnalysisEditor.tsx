@@ -1,3 +1,4 @@
+import { useRef, type UIEvent, type WheelEvent } from "react";
 import { composeAnalysis, composeResourceLine, resolveAnalysisUnitCost } from "@aerolith/calc";
 import {
   currencyMarker,
@@ -17,9 +18,8 @@ import { canLinkAnalysis, toCalcItems } from "./projectCompute";
 import { displayItemRef, findItemByKey, itemKeyOf, sortedBills } from "./bills";
 import { QtyInput } from "./ui/QtyInput";
 import { MenuSelect } from "./ui/MenuSelect";
-import type { CSSProperties } from "react";
 import { useTableLayout } from "./ui/useColWidths";
-import { DataTable, ResizableTh } from "./ui/tableLayout";
+import { DataTable } from "./ui/tableLayout";
 
 const FACTOR_LABELS = ["Nos", "Nos", "Qty 1", "Qty 2", "Qty 3", "Qty 4"] as const;
 const RATE_COL_IDS = [
@@ -39,21 +39,40 @@ const RATE_COL_IDS = [
   "act",
 ] as const;
 const RATE_COL_DEFAULTS: Record<(typeof RATE_COL_IDS)[number], number> = {
-  resource: 200,
-  nos1: 64,
-  nos2: 64,
-  qty1: 68,
-  qty2: 68,
-  qty3: 68,
-  qty4: 68,
-  qty: 68,
-  wastage: 72,
-  itemQty: 72,
-  unit: 56,
-  rate: 88,
-  amount: 96,
-  act: 84,
+  resource: 320,
+  nos1: 72,
+  nos2: 72,
+  qty1: 76,
+  qty2: 76,
+  qty3: 76,
+  qty4: 76,
+  qty: 72,
+  wastage: 84,
+  itemQty: 80,
+  unit: 64,
+  rate: 80,
+  amount: 100,
+  act: 76,
 };
+const RATE_COL_FLOOR: Record<(typeof RATE_COL_IDS)[number], number> = {
+  resource: 320,
+  nos1: 68,
+  nos2: 68,
+  qty1: 72,
+  qty2: 72,
+  qty3: 72,
+  qty4: 72,
+  qty: 68,
+  wastage: 80,
+  itemQty: 76,
+  unit: 56,
+  rate: 80,
+  amount: 100,
+  act: 76,
+};
+const MID_IDS = ["nos1", "nos2", "qty1", "qty2", "qty3", "qty4", "qty", "wastage", "itemQty", "unit"] as const;
+const MID_LABELS = ["Nos", "Nos", "Qty 1", "Qty 2", "Qty 3", "Qty 4", "Qty", "Wastage %", "Item qty", "Unit"] as const;
+const PIN_IDS = ["rate", "amount", "act"] as const;
 
 function padFactors(factors: Array<number | null | undefined>): Array<number | null> {
   return Array.from({ length: 6 }, (_, i) => {
@@ -184,16 +203,30 @@ export function RateAnalysisEditor({
   const ownCost = item.lines.length > 0 ? composed.unitCost : 0;
   const fmt = getDisplayFormat();
   const moneyMark = currencyMarker(currency);
-  const { widths, startResize, startRowResize, tableStyle } = useTableLayout("aerolith-rate-v2", RATE_COL_DEFAULTS, 40);
-  const colW = (id: (typeof RATE_COL_IDS)[number]) => widths[id] ?? RATE_COL_DEFAULTS[id];
-  const fitTotal = RATE_COL_IDS.reduce((s, id) => s + colW(id), 0);
-  const pin = (id: (typeof RATE_COL_IDS)[number]): CSSProperties | undefined => {
-    if (id === "resource") return { position: "sticky", left: 0, zIndex: 2 };
-    if (id === "rate") return { position: "sticky", right: colW("act") + colW("amount"), zIndex: 2 };
-    if (id === "amount") return { position: "sticky", right: colW("act"), zIndex: 2 };
-    if (id === "act") return { position: "sticky", right: 0, zIndex: 2 };
-    return undefined;
-  };
+  const { widths, startResize, tableStyle } = useTableLayout("aerolith-rate-v4", RATE_COL_DEFAULTS, 56);
+  const colW = (id: (typeof RATE_COL_IDS)[number]) => Math.max(widths[id] ?? RATE_COL_DEFAULTS[id], RATE_COL_FLOOR[id]);
+  const track = (ids: readonly (typeof RATE_COL_IDS)[number][]) => ids.map((id) => `${colW(id)}px`).join(" ");
+  const midTrack = track(MID_IDS);
+  const pinTrack = track(PIN_IDS);
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  function syncFactors(left: number) {
+    sheetRef.current?.querySelectorAll<HTMLElement>(".rate-mid").forEach((el) => {
+      if (el.scrollLeft !== left) el.scrollLeft = left;
+    });
+  }
+
+  function onFactorScroll(e: UIEvent<HTMLDivElement>) {
+    syncFactors(e.currentTarget.scrollLeft);
+  }
+
+  function onFactorWheel(e: WheelEvent<HTMLDivElement>) {
+    const dx = e.deltaX !== 0 ? e.deltaX : e.shiftKey ? e.deltaY : 0;
+    if (!dx) return;
+    const rail = sheetRef.current?.querySelector<HTMLElement>(".rate-mid-head");
+    if (!rail) return;
+    rail.scrollLeft += dx;
+  }
 
   return (
     <div className="rate-editor">
@@ -342,114 +375,136 @@ export function RateAnalysisEditor({
       <p className="hint">Own resources {ownCost ? `· ${formatMoney(ownCost, currency)}` : ""}</p>
       <div className="scroll">
         <fieldset className="plain" disabled={locked || linked}>
-          <table className="data analysis" style={{ ...tableStyle, width: fitTotal, minWidth: fitTotal }}>
-            <colgroup>
-              {RATE_COL_IDS.map((id) => (
-                <col key={id} style={{ width: colW(id) }} />
-              ))}
-            </colgroup>
-            <thead>
-              <tr>
-                <ResizableTh id="resource" label="Resource" widths={widths} extraStyle={pin("resource")} onResize={startResize} onRowResize={startRowResize} />
-                {FACTOR_LABELS.map((label, i) => (
-                  <ResizableTh
-                    key={RATE_COL_IDS[i + 1]}
-                    id={RATE_COL_IDS[i + 1]!}
-                    label={label}
-                    numeric
-                    widths={widths}
-                    onResize={startResize}
-                  />
-                ))}
-                <ResizableTh id="qty" label="Qty" numeric widths={widths} onResize={startResize} />
-                <ResizableTh id="wastage" label="Wastage %" numeric widths={widths} onResize={startResize} />
-                <ResizableTh id="itemQty" label="Item qty" numeric widths={widths} onResize={startResize} />
-                <ResizableTh id="unit" label="Unit" widths={widths} onResize={startResize} />
-                <ResizableTh id="rate" label={`Rate (${moneyMark})`} numeric widths={widths} extraStyle={pin("rate")} onResize={startResize} />
-                <ResizableTh id="amount" label={`Amount (${moneyMark})`} numeric widths={widths} extraStyle={pin("amount")} onResize={startResize} />
-                <ResizableTh id="act" label="" widths={widths} extraStyle={pin("act")} onResize={startResize} />
-              </tr>
-            </thead>
-            <tbody>
-              {item.lines.map((line, idx) => {
-                const factors = padFactors(line.factors);
-                const built = composeResourceLine(line, item.ourQty);
-                return (
-                  <tr key={idx}>
-                    <td className="desc">
-                      <select
-                        value={line.projectResourceCode ?? ""}
-                        onChange={(e) => applyResource(idx, e.target.value)}
-                      >
-                        <option value="">Custom (new resource)</option>
-                        {resources.map((r) => (
-                          <option key={r.project_code} value={r.project_code}>
-                            {r.project_code} — {r.description ?? ""}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        className="cell"
-                        value={line.description ?? ""}
-                        placeholder="Resource description"
-                        onChange={(e) => patchLine(idx, { description: e.target.value })}
-                      />
-                    </td>
-                    {factors.map((f, fi) => (
-                      <td className="num" key={fi}>
-                        <QtyInput
-                          value={f}
-                          empty={null}
-                          disabled={locked}
-                          decimals={fi < 2 ? fmt.nosDecimals : fmt.dimDecimals}
-                          round="up"
-                          aria-label={FACTOR_LABELS[fi]}
-                          onValue={(n) => setFactor(idx, fi, n)}
-                        />
-                      </td>
+          <div
+            className="rate-sheet"
+            ref={sheetRef}
+            style={{ ...tableStyle, minWidth: colW("resource") }}
+            role="table"
+            aria-label="Resource lines"
+            onWheel={onFactorWheel}
+          >
+            <div className="rate-band rate-head" role="rowgroup">
+              <div className="rate-res rate-h" role="columnheader">
+                <span>Resource</span>
+              </div>
+              <div className="rate-nums">
+                <div className="rate-mid rate-mid-head" onScroll={onFactorScroll}>
+                  <div className="rate-track rate-track-h" style={{ gridTemplateColumns: midTrack }} role="row">
+                    {MID_IDS.map((id, i) => (
+                      <div className="rate-h num" role="columnheader" key={id}>
+                        <span>{MID_LABELS[i]}</span>
+                        <i className="col-resizer" aria-hidden onPointerDown={(e) => startResize(id, e)} />
+                      </div>
                     ))}
-                    <td className="num">{formatDim(built.qty)}</td>
-                    <td className="num">
-                      <QtyInput
-                        value={roundTo((line.wastagePct || 0) * 100, 4)}
-                        empty={0}
-                        disabled={locked}
-                        decimals={2}
-                        round="half"
-                        aria-label="Wastage %"
-                        onValue={(n) => patchLine(idx, { wastagePct: (n ?? 0) / 100 })}
-                      />
-                    </td>
-                    <td className="num">{formatDim(built.itemQty)}</td>
-                    <td>
-                      <input
-                        className="cell"
-                        value={line.unit ?? ""}
-                        onChange={(e) => patchLine(idx, { unit: e.target.value })}
-                      />
-                    </td>
-                    <td className="num stick" style={pin("rate")}>
-                      <QtyInput
-                        value={line.resourceRate}
-                        empty={0}
-                        disabled={locked}
-                        decimals={fmt.rateDecimals}
-                        round="half"
-                        aria-label={`Rate (${moneyMark})`}
-                        onValue={(n) => patchLine(idx, { resourceRate: n ?? 0 })}
-                      />
-                    </td>
-                    <td className="num stick" style={pin("amount")}>{formatMoneyPlain(built.amount, fmt.amountDecimals)}</td>
-                    <td className="stick" style={pin("act")}>
-                      <button type="button" onClick={() => removeLine(idx)}>
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  </div>
+                </div>
+                <div className="rate-pin rate-pin-right">
+                  <div className="rate-track rate-track-h" style={{ gridTemplateColumns: pinTrack }} role="row">
+                    <div className="rate-h num" role="columnheader">
+                      <span>{`Rate (${moneyMark})`}</span>
+                      <i className="col-resizer" aria-hidden onPointerDown={(e) => startResize("rate", e)} />
+                    </div>
+                    <div className="rate-h num" role="columnheader">
+                      <span>{`Amount (${moneyMark})`}</span>
+                      <i className="col-resizer" aria-hidden onPointerDown={(e) => startResize("amount", e)} />
+                    </div>
+                    <div className="rate-h" role="columnheader">
+                      <span>Remove</span>
+                      <i className="col-resizer" aria-hidden onPointerDown={(e) => startResize("act", e)} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {item.lines.map((line, idx) => {
+              const factors = padFactors(line.factors);
+              const built = composeResourceLine(line, item.ourQty);
+              return (
+                <div className="rate-band" role="rowgroup" key={idx}>
+                  <div className="rate-res rate-c desc" role="cell">
+                    <select
+                      value={line.projectResourceCode ?? ""}
+                      onChange={(e) => applyResource(idx, e.target.value)}
+                    >
+                      <option value="">Custom (new resource)</option>
+                      {resources.map((r) => (
+                        <option key={r.project_code} value={r.project_code}>
+                          {r.project_code} — {r.description ?? ""}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      className="cell"
+                      value={line.description ?? ""}
+                      placeholder="Resource description"
+                      onChange={(e) => patchLine(idx, { description: e.target.value })}
+                    />
+                  </div>
+                  <div className="rate-nums">
+                    <div className="rate-mid">
+                      <div className="rate-track" style={{ gridTemplateColumns: midTrack }} role="row">
+                        {factors.map((f, fi) => (
+                          <div className="rate-c num" role="cell" key={fi}>
+                            <QtyInput
+                              value={f}
+                              empty={null}
+                              disabled={locked}
+                              decimals={fi < 2 ? fmt.nosDecimals : fmt.dimDecimals}
+                              round="up"
+                              aria-label={FACTOR_LABELS[fi]}
+                              onValue={(n) => setFactor(idx, fi, n)}
+                            />
+                          </div>
+                        ))}
+                        <div className="rate-c num" role="cell">{formatDim(built.qty)}</div>
+                        <div className="rate-c num" role="cell">
+                          <QtyInput
+                            value={roundTo((line.wastagePct || 0) * 100, 4)}
+                            empty={0}
+                            disabled={locked}
+                            decimals={2}
+                            round="half"
+                            aria-label="Wastage %"
+                            onValue={(n) => patchLine(idx, { wastagePct: (n ?? 0) / 100 })}
+                          />
+                        </div>
+                        <div className="rate-c num" role="cell">{formatDim(built.itemQty)}</div>
+                        <div className="rate-c" role="cell">
+                          <input
+                            className="cell"
+                            value={line.unit ?? ""}
+                            aria-label="Unit"
+                            onChange={(e) => patchLine(idx, { unit: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rate-pin rate-pin-right">
+                      <div className="rate-track" style={{ gridTemplateColumns: pinTrack }} role="row">
+                        <div className="rate-c num" role="cell">
+                          <QtyInput
+                            value={line.resourceRate}
+                            empty={0}
+                            disabled={locked}
+                            decimals={fmt.rateDecimals}
+                            round="half"
+                            aria-label={`Rate (${moneyMark})`}
+                            onValue={(n) => patchLine(idx, { resourceRate: n ?? 0 })}
+                          />
+                        </div>
+                        <div className="rate-c num" role="cell">{formatMoneyPlain(built.amount, fmt.amountDecimals)}</div>
+                        <div className="rate-c" role="cell">
+                          <button type="button" onClick={() => removeLine(idx)}>
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </fieldset>
       </div>
       <div className="actions rate-foot">

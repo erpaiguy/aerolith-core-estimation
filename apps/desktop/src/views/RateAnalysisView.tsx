@@ -135,12 +135,12 @@ export function RateAnalysisView({
                 onClick={() => onSelect(key)}
               >
                 <span className="takeoff-item-code">{row.boqCode}</span>
-                <span className="takeoff-item-copy">
-                  <span className="takeoff-item-desc">{row.description}</span>
+                <span className="takeoff-item-desc">{row.description}</span>
+                <span className="takeoff-item-foot">
                   <span className="takeoff-item-unit">{row.unit || "No unit"}</span>
-                </span>
-                <span className="takeoff-item-amt">
-                  {missing ? "No analysis" : formatWorkingAmount(row, project.currency)}
+                  <span className="takeoff-item-amt">
+                    {missing ? "No analysis" : formatWorkingAmount(row, project.currency)}
+                  </span>
                 </span>
               </button>
             );
@@ -200,6 +200,7 @@ export function RateAnalysisView({
               {quoted ? ` · quoted${quotedVendor ? ` (${quotedVendor})` : ""}` : ""}
             </span>
           </div>
+          <div className="rate-head-actions">
           <div className="rate-nav">
             <button type="button" className="allow-when-locked" onClick={onBack}>
               Working BOQ
@@ -234,6 +235,7 @@ export function RateAnalysisView({
               ])
             }
           />
+          </div>
         </div>
         <div className="rate-actions">
           <button type="button" disabled={locked} onClick={() => onProject(newBlankAnalysis(project, itemKeyOf(item)))}>
