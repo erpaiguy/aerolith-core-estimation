@@ -1,4 +1,5 @@
 import { formatMoney, formatQty, formatRate } from "@aerolith/shared";
+import { formatWorkingAmount } from "../boqCarry";
 import { resolveAnalysisUnitCost } from "@aerolith/calc";
 import { useEffect, useMemo, useState } from "react";
 import { filterableColumns, itemMatchesColumnFilters, itemMatchesQuery } from "../boqColumns";
@@ -134,15 +135,12 @@ export function RateAnalysisView({
                 onClick={() => onSelect(key)}
               >
                 <span className="takeoff-item-code">{row.boqCode}</span>
-                <span className="takeoff-item-desc">{row.description}</span>
-                <span className="takeoff-item-meta">
-                  {missing
-                    ? "No analysis"
-                    : row.carryMode === "rateOnly"
-                      ? "Rate only"
-                      : row.carryMode === "amountOnly"
-                        ? "Amount only"
-                        : formatRate(row.result?.rate ?? 0, project.currency)}
+                <span className="takeoff-item-copy">
+                  <span className="takeoff-item-desc">{row.description}</span>
+                  <span className="takeoff-item-unit">{row.unit || "No unit"}</span>
+                </span>
+                <span className="takeoff-item-amt">
+                  {missing ? "No analysis" : formatWorkingAmount(row, project.currency)}
                 </span>
               </button>
             );

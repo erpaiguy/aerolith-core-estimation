@@ -677,3 +677,16 @@ html[data-style="enterprise"] .file-menu {
 html[data-style="enterprise"] .home h1 {
   font-weight: 700; letter-spacing: -0.02em;
 }
+
+/* Rate cards keep their own padding when a style strips .kpi chrome. */
+html[data-style] .rate-editor .kpi {
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+html[data-style] .menu-select-btn,
+html[data-style] .menu-select-list button {
+  height: auto;
+  min-height: 32px;
+}

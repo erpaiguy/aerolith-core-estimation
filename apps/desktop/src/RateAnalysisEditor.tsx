@@ -184,7 +184,7 @@ export function RateAnalysisEditor({
   const fmt = getDisplayFormat();
   const moneyMark = currencyMarker(currency);
   const { widths, startResize, startRowResize, tableStyle } = useTableLayout("aerolith-rate", RATE_COL_DEFAULTS, 52);
-  const tableWidth = RATE_COL_IDS.reduce((s, id) => s + (widths[id] ?? RATE_COL_DEFAULTS[id]), 0);
+  const fitTotal = RATE_COL_IDS.reduce((s, id) => s + (widths[id] ?? RATE_COL_DEFAULTS[id]), 0);
 
   return (
     <div className="rate-editor">
@@ -307,7 +307,7 @@ export function RateAnalysisEditor({
         </DataTable>
       ) : null}
 
-      <div className="actions">
+      <div className="actions rate-includes">
         <MenuSelect
           label="Include analysis"
           disabled={locked || linkable.length === 0 || linked}
@@ -333,15 +333,18 @@ export function RateAnalysisEditor({
       <p className="hint">Own resources {ownCost ? `· ${formatMoney(ownCost, currency)}` : ""}</p>
       <div className="scroll">
         <fieldset className="plain" disabled={locked || linked}>
-          <table className="data analysis" style={{ ...tableStyle, width: tableWidth, minWidth: "100%" }}>
+          <table className="data analysis" style={{ ...tableStyle, width: "100%", minWidth: 960 }}>
             <colgroup>
               {RATE_COL_IDS.map((id) => (
-                <col key={id} style={{ width: widths[id] ?? RATE_COL_DEFAULTS[id] }} />
+                <col
+                  key={id}
+                  style={{ width: `${((widths[id] ?? RATE_COL_DEFAULTS[id]) / fitTotal) * 100}%` }}
+                />
               ))}
             </colgroup>
             <thead>
               <tr>
-                <ResizableTh id="resource" label="Resource" widths={widths} onResize={startResize} onRowResize={startRowResize} />
+                <ResizableTh id="resource" label="Resource" widths={widths} fitTotal={fitTotal} onResize={startResize} onRowResize={startRowResize} />
                 {FACTOR_LABELS.map((label, i) => (
                   <ResizableTh
                     key={RATE_COL_IDS[i + 1]}
@@ -349,16 +352,17 @@ export function RateAnalysisEditor({
                     label={label}
                     numeric
                     widths={widths}
+                    fitTotal={fitTotal}
                     onResize={startResize}
                   />
                 ))}
-                <ResizableTh id="qty" label="Qty" numeric widths={widths} onResize={startResize} />
-                <ResizableTh id="wastage" label="Wastage %" numeric widths={widths} onResize={startResize} />
-                <ResizableTh id="itemQty" label="Item qty" numeric widths={widths} onResize={startResize} />
-                <ResizableTh id="unit" label="Unit" widths={widths} onResize={startResize} />
-                <ResizableTh id="rate" label={`Rate (${moneyMark})`} numeric widths={widths} onResize={startResize} />
-                <ResizableTh id="amount" label={`Amount (${moneyMark})`} numeric widths={widths} onResize={startResize} />
-                <ResizableTh id="act" label="" widths={widths} onResize={startResize} />
+                <ResizableTh id="qty" label="Qty" numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
+                <ResizableTh id="wastage" label="Wastage %" numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
+                <ResizableTh id="itemQty" label="Item qty" numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
+                <ResizableTh id="unit" label="Unit" widths={widths} fitTotal={fitTotal} onResize={startResize} />
+                <ResizableTh id="rate" label={`Rate (${moneyMark})`} numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
+                <ResizableTh id="amount" label={`Amount (${moneyMark})`} numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
+                <ResizableTh id="act" label="" widths={widths} fitTotal={fitTotal} onResize={startResize} />
               </tr>
             </thead>
             <tbody>
@@ -443,7 +447,7 @@ export function RateAnalysisEditor({
           </table>
         </fieldset>
       </div>
-      <div className="actions">
+      <div className="actions rate-foot">
         <button className="primary" type="button" disabled={locked || linked} onClick={addLine}>
           Add resource line
         </button>
