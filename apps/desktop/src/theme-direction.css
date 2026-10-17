@@ -690,3 +690,7 @@ html[data-style] .menu-select-list button {
   height: auto;
   min-height: 32px;
 }
+/* Cards clips tables with overflow:hidden, which stops sticky rate columns. */
+html[data-style="cards"] .rate-editor table.analysis {
+  overflow: visible;
+}

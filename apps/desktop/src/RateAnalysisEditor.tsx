@@ -17,6 +17,7 @@ import { canLinkAnalysis, toCalcItems } from "./projectCompute";
 import { displayItemRef, findItemByKey, itemKeyOf, sortedBills } from "./bills";
 import { QtyInput } from "./ui/QtyInput";
 import { MenuSelect } from "./ui/MenuSelect";
+import type { CSSProperties } from "react";
 import { useTableLayout } from "./ui/useColWidths";
 import { DataTable, ResizableTh } from "./ui/tableLayout";
 
@@ -38,19 +39,19 @@ const RATE_COL_IDS = [
   "act",
 ] as const;
 const RATE_COL_DEFAULTS: Record<(typeof RATE_COL_IDS)[number], number> = {
-  resource: 320,
-  nos1: 72,
-  nos2: 72,
-  qty1: 88,
-  qty2: 88,
-  qty3: 88,
-  qty4: 88,
-  qty: 88,
-  wastage: 84,
-  itemQty: 96,
-  unit: 64,
-  rate: 100,
-  amount: 112,
+  resource: 200,
+  nos1: 64,
+  nos2: 64,
+  qty1: 68,
+  qty2: 68,
+  qty3: 68,
+  qty4: 68,
+  qty: 68,
+  wastage: 72,
+  itemQty: 72,
+  unit: 56,
+  rate: 88,
+  amount: 96,
   act: 84,
 };
 
@@ -183,8 +184,16 @@ export function RateAnalysisEditor({
   const ownCost = item.lines.length > 0 ? composed.unitCost : 0;
   const fmt = getDisplayFormat();
   const moneyMark = currencyMarker(currency);
-  const { widths, startResize, startRowResize, tableStyle } = useTableLayout("aerolith-rate", RATE_COL_DEFAULTS, 52);
-  const fitTotal = RATE_COL_IDS.reduce((s, id) => s + (widths[id] ?? RATE_COL_DEFAULTS[id]), 0);
+  const { widths, startResize, startRowResize, tableStyle } = useTableLayout("aerolith-rate-v2", RATE_COL_DEFAULTS, 40);
+  const colW = (id: (typeof RATE_COL_IDS)[number]) => widths[id] ?? RATE_COL_DEFAULTS[id];
+  const fitTotal = RATE_COL_IDS.reduce((s, id) => s + colW(id), 0);
+  const pin = (id: (typeof RATE_COL_IDS)[number]): CSSProperties | undefined => {
+    if (id === "resource") return { position: "sticky", left: 0, zIndex: 2 };
+    if (id === "rate") return { position: "sticky", right: colW("act") + colW("amount"), zIndex: 2 };
+    if (id === "amount") return { position: "sticky", right: colW("act"), zIndex: 2 };
+    if (id === "act") return { position: "sticky", right: 0, zIndex: 2 };
+    return undefined;
+  };
 
   return (
     <div className="rate-editor">
@@ -333,18 +342,15 @@ export function RateAnalysisEditor({
       <p className="hint">Own resources {ownCost ? `· ${formatMoney(ownCost, currency)}` : ""}</p>
       <div className="scroll">
         <fieldset className="plain" disabled={locked || linked}>
-          <table className="data analysis" style={{ ...tableStyle, width: "100%", minWidth: 960 }}>
+          <table className="data analysis" style={{ ...tableStyle, width: fitTotal, minWidth: fitTotal }}>
             <colgroup>
               {RATE_COL_IDS.map((id) => (
-                <col
-                  key={id}
-                  style={{ width: `${((widths[id] ?? RATE_COL_DEFAULTS[id]) / fitTotal) * 100}%` }}
-                />
+                <col key={id} style={{ width: colW(id) }} />
               ))}
             </colgroup>
             <thead>
               <tr>
-                <ResizableTh id="resource" label="Resource" widths={widths} fitTotal={fitTotal} onResize={startResize} onRowResize={startRowResize} />
+                <ResizableTh id="resource" label="Resource" widths={widths} extraStyle={pin("resource")} onResize={startResize} onRowResize={startRowResize} />
                 {FACTOR_LABELS.map((label, i) => (
                   <ResizableTh
                     key={RATE_COL_IDS[i + 1]}
@@ -352,17 +358,16 @@ export function RateAnalysisEditor({
                     label={label}
                     numeric
                     widths={widths}
-                    fitTotal={fitTotal}
                     onResize={startResize}
                   />
                 ))}
-                <ResizableTh id="qty" label="Qty" numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
-                <ResizableTh id="wastage" label="Wastage %" numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
-                <ResizableTh id="itemQty" label="Item qty" numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
-                <ResizableTh id="unit" label="Unit" widths={widths} fitTotal={fitTotal} onResize={startResize} />
-                <ResizableTh id="rate" label={`Rate (${moneyMark})`} numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
-                <ResizableTh id="amount" label={`Amount (${moneyMark})`} numeric widths={widths} fitTotal={fitTotal} onResize={startResize} />
-                <ResizableTh id="act" label="" widths={widths} fitTotal={fitTotal} onResize={startResize} />
+                <ResizableTh id="qty" label="Qty" numeric widths={widths} onResize={startResize} />
+                <ResizableTh id="wastage" label="Wastage %" numeric widths={widths} onResize={startResize} />
+                <ResizableTh id="itemQty" label="Item qty" numeric widths={widths} onResize={startResize} />
+                <ResizableTh id="unit" label="Unit" widths={widths} onResize={startResize} />
+                <ResizableTh id="rate" label={`Rate (${moneyMark})`} numeric widths={widths} extraStyle={pin("rate")} onResize={startResize} />
+                <ResizableTh id="amount" label={`Amount (${moneyMark})`} numeric widths={widths} extraStyle={pin("amount")} onResize={startResize} />
+                <ResizableTh id="act" label="" widths={widths} extraStyle={pin("act")} onResize={startResize} />
               </tr>
             </thead>
             <tbody>
@@ -423,7 +428,7 @@ export function RateAnalysisEditor({
                         onChange={(e) => patchLine(idx, { unit: e.target.value })}
                       />
                     </td>
-                    <td className="num">
+                    <td className="num stick" style={pin("rate")}>
                       <QtyInput
                         value={line.resourceRate}
                         empty={0}
@@ -434,8 +439,8 @@ export function RateAnalysisEditor({
                         onValue={(n) => patchLine(idx, { resourceRate: n ?? 0 })}
                       />
                     </td>
-                    <td className="num">{formatMoneyPlain(built.amount, fmt.amountDecimals)}</td>
-                    <td>
+                    <td className="num stick" style={pin("amount")}>{formatMoneyPlain(built.amount, fmt.amountDecimals)}</td>
+                    <td className="stick" style={pin("act")}>
                       <button type="button" onClick={() => removeLine(idx)}>
                         Remove
                       </button>

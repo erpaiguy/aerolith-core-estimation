@@ -2730,15 +2730,20 @@ table.analysis td.desc { min-width: 180px; }
 .rate-editor table.analysis th,
 .rate-editor table.analysis td { min-width: 0; }
 .rate-editor table.analysis th:first-child,
-.rate-editor table.analysis td.desc {
+.rate-editor table.analysis td.desc,
+.rate-editor table.analysis .stick {
   position: sticky;
-  left: 0;
   z-index: 2;
   background: var(--paper-2);
 }
-.rate-editor table.analysis th:first-child {
-  z-index: 3;
-  background: var(--xl);
+.rate-editor table.analysis th:first-child,
+.rate-editor table.analysis thead .stick {
+  z-index: 4;
+  background: var(--paper-2);
+}
+.rate-editor table.analysis th,
+.rate-editor table.analysis td {
+  padding: max(2px, calc(var(--pad-grid-y, 8px) / 2)) 4px;
 }
 table.analysis td.desc select {
   width: 100%;
@@ -2759,6 +2764,20 @@ table.analysis td.desc input.cell { min-width: 10em; }
   min-width: 0;
   width: 100%;
   max-width: 100%;
+}
+.rate-editor table.analysis {
+  font-size: 12px;
+}
+html[data-style] table.data td button,
+html[data-style] .rate-editor table.analysis td button {
+  height: auto;
+  min-height: 28px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  width: auto;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rate-analysis-heading {
