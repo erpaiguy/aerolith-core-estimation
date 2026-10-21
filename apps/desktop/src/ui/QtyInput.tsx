@@ -46,8 +46,18 @@ export function QtyInput({
   const [draft, setDraft] = useState(committedText(value, decimals, round, moneyCurrency));
 
   useEffect(() => {
-    if (!focused) setDraft(committedText(value, decimals, round, moneyCurrency));
-  }, [value, focused, decimals, round, moneyCurrency]);
+    const shown = committedText(value, decimals, round, moneyCurrency);
+    if (!focused) {
+      setDraft(shown);
+      return;
+    }
+    const parsed = parseSignedNumber(draft);
+    const external = parsed == null || value == null || Math.abs(parsed - value) > 1e-6;
+    if (external) {
+      setDraft(shown);
+      setFocused(false);
+    }
+  }, [value, focused, decimals, round, moneyCurrency, draft]);
 
   function snap(n: number): number {
     if (decimals == null) return n;
