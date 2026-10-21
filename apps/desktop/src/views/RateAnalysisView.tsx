@@ -35,6 +35,7 @@ export function RateAnalysisView({
   lineFocus = null,
   focusKeys = null,
   onClearLineFocus,
+  find,
 }: {
   project: LoadedProject;
   rateCode: string | null;
@@ -48,9 +49,11 @@ export function RateAnalysisView({
   lineFocus?: LineFocus | null;
   focusKeys?: Set<string> | null;
   onClearLineFocus?: () => void;
+  find?: string;
 }) {
   const extras = filterableColumns(project);
-  const [query, setQuery] = useState("");
+  const [localQuery, setLocalQuery] = useState("");
+  const query = find ?? localQuery;
   const [filters, setFilters] = useState<Record<string, string>>({});
   const items = useMemo(() => {
     const allPriced = project.items.filter((i) => i.kind === "item");
@@ -115,13 +118,15 @@ export function RateAnalysisView({
   const itemList = (
     <aside className="takeoff-items rate-items" aria-label="Priced items">
       <div className="takeoff-items-tools">
+        {find == null ? (
         <input
           className="takeoff-search"
           placeholder="Search items"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={localQuery}
+          onChange={(e) => setLocalQuery(e.target.value)}
           aria-label="Filter items"
         />
+        ) : null}
         {lineFocus ? (
           <button type="button" className="line-focus" onClick={onClearLineFocus}>
             {LINE_FOCUS_LABEL[lineFocus]} · Clear

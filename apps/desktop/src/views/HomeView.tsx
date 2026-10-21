@@ -68,69 +68,71 @@ export function HomeView({
   ];
 
   return (
-    <div className="app shell">
+    <div className="app shell home-shell">
       <AppBar showIdle user={who} menu={{ label: "File", items: fileItems }} />
-      <aside className="sidebar" aria-label="Workspace">
-        <div className="sidebar-scroll">
-          <div className="sidebar-group">
-            <p className="sidebar-label">Workspace</p>
-            <button type="button" className="nav-btn on" aria-current="page">
-              <span>Jobs</span>
-            </button>
-          </div>
-        </div>
-      </aside>
       <main className="stage">
-      <div className="home">
-        <h1>Open</h1>
-        <p className="home-sub">{trialLine}</p>
-        {recent.length === 0 ? (
-          <p className="hint">
-            No saved jobs yet. Save a .aero under{" "}
-            {tenant ? tenantProjectsHint(tenant.id) : "Documents\\Aerolith\\Projects"}.
-          </p>
-        ) : (
-          <>
-          <h2 className="view">Recent</h2>
-          {recent.map((r) => (
-            <div className="file-row" key={r.path}>
-              <div>
-                <b>{r.name}</b>
-                <div className="meta">{r.path}</div>
-              </div>
-              <button type="button" onClick={() => onOpenPath?.(r.path)}>
-                Open
+        <div className="home-frame">
+          <nav className="home-rail" aria-label="Jobs">
+            <button className="primary" type="button" onClick={onNew}>
+              New
+            </button>
+            <button type="button" onClick={onOpen}>
+              Open
+            </button>
+            {canImport ? (
+              <button type="button" onClick={onImport}>
+                Import
               </button>
-            </div>
-          ))}
-          </>
-        )}
-        <h2 className="view" id="sample-jobs-title">Sample jobs</h2>
-        <section className="sample-jobs" aria-labelledby="sample-jobs-title">
-          <article className="sample-job">
-            <p className="kicker">Single BOQ</p>
-            <h2>Interior refurbishment</h2>
-            <p>
-              Medical Institute. Working total stays GREEN at QAR 100,826,297.13. Resource Prices, Client
-              Queries and Take-off are seeded.
-            </p>
-            <button type="button" onClick={onSampleSingle}>
-              Open sample
-            </button>
-          </article>
-          <article className="sample-job is-featured">
-            <p className="kicker">Multiple BOQs</p>
-            <h2>Al Maha Campus, Lusail</h2>
-            <p>
-              Three issued bills — 10,000 / 15,000 / 2,500 m². Same item numbers on each bill. Rate
-              links stay on one catalogue.
-            </p>
-            <button className="primary" type="button" onClick={onSampleCampus}>
-              Open sample
-            </button>
-          </article>
-        </section>
-      </div>
+            ) : null}
+          </nav>
+          <section className="home-recent" aria-label="Recent jobs">
+            <h1>Open</h1>
+            <p className="home-sub">{trialLine}</p>
+            {recent.length === 0 ? (
+              <div className="file-row">
+                <div>
+                  <b>No jobs yet</b>
+                  <div className="meta">
+                    Save a .aero under {tenant ? tenantProjectsHint(tenant.id) : "Documents\\Aerolith\\Projects"}.
+                  </div>
+                </div>
+              </div>
+            ) : (
+              recent.map((r) => (
+                <div className="file-row" key={r.path}>
+                  <div>
+                    <b>{r.name}</b>
+                    <div className="meta">{r.path}</div>
+                  </div>
+                  <button type="button" onClick={() => onOpenPath?.(r.path)}>
+                    Open
+                  </button>
+                </div>
+              ))
+            )}
+          </section>
+          <section className="home-samples" aria-labelledby="sample-jobs-title">
+            <h2 className="view" id="sample-jobs-title">
+              Sample jobs
+            </h2>
+            <article className="sample-job">
+              <p className="kicker">Single BOQ</p>
+              <h2>Interior refurbishment</h2>
+              <p>Medical Institute. Working total stays GREEN at QAR 100,826,297.13.</p>
+              <button type="button" onClick={onSampleSingle}>
+                Open sample
+              </button>
+            </article>
+            <article className="sample-job is-featured">
+              <p className="kicker">Multiple BOQs</p>
+              <h2>Al Maha Campus, Lusail</h2>
+              <p>Three issued bills. Same item numbers on each bill.</p>
+              <button className="primary" type="button" onClick={onSampleCampus}>
+                Open sample
+              </button>
+            </article>
+          </section>
+        </div>
       </main>
       <footer className="status" role="status">
         <span>{roleLine}</span>

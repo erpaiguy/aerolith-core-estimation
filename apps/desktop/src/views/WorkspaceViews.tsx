@@ -269,6 +269,7 @@ export function EstimateView({
   lineFocus = null,
   focusKeys = null,
   onClearLineFocus,
+  find,
 }: {
   items: WorkingItem[];
   selected: string | null;
@@ -295,6 +296,7 @@ export function EstimateView({
   lineFocus?: LineFocus | null;
   focusKeys?: Set<string> | null;
   onClearLineFocus?: () => void;
+  find?: string;
 }) {
   const freezeClient = Boolean(sourceLocked || locked);
   const clientExtras = clientColumns.filter((c) => c.role === "extra");
@@ -304,7 +306,8 @@ export function EstimateView({
   const extraCount = extras.length;
   const qtyCols = pivot ? bills.length + 1 : 2;
   const colCount = 1 + (showBillColumn && !pivot ? 1 : 0) + 1 + extraCount + qtyCols + 6;
-  const [query, setQuery] = useState("");
+  const [localQuery, setLocalQuery] = useState("");
+  const query = find ?? localQuery;
   const [filters, setFilters] = useState<Record<string, string>>({});
   const pivotAll = useMemo(() => (pivot ? pivotWorkingByBoq(items, bills) : null), [pivot, items, bills]);
   const display = useMemo(() => {
@@ -809,12 +812,14 @@ export function EstimateView({
               {LINE_FOCUS_LABEL[lineFocus]} · Clear
             </button>
           ) : null}
+          {find == null ? (
           <input
             className="filter"
             placeholder="Filter items"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={localQuery}
+            onChange={(e) => setLocalQuery(e.target.value)}
           />
+          ) : null}
           {extras.map((c) => (
             <input
               key={c.id}

@@ -71,7 +71,7 @@ export function DashboardView({
   return (
     <div className="dashboard-view">
       <div className="module-toolbar">
-        <h1 className="view">Dashboard</h1>
+        <h1 className="view">Overview</h1>
         <PrintActions
           build={() =>
             jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Dashboard", [

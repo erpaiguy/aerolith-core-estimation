@@ -44,6 +44,7 @@ import {
   visibleItems,
 } from "./bills";
 import { BoqSplit } from "./ui/BillSwitcher";
+import { BoqChips, StageBar, Subnav, type StageId } from "./views/FrameChrome";
 import { mergeReportFormat, type ReportFormat, type StoredReportTemplate } from "./reportFormat";
 import type { ReportFormatPack } from "./views/ReportDesigner";
 import { BuyView } from "./views/BuyView";
@@ -58,7 +59,6 @@ import { LicensePanel } from "./views/LicensePanel";
 import { LoginView } from "./views/LoginView";
 import { SplashShell } from "./views/SplashShell";
 import { PrintProvider } from "./print/context";
-import { Sidebar, type SidebarTarget } from "./views/Sidebar";
 import { AppBar, ThemeButton } from "./views/AppBar";
 import { applyTheme, readTheme, type ThemeName } from "./theme";
 import { checkForUpdate, updatesAutoEnabled, type UpdateOffer } from "./updates";
@@ -83,6 +83,7 @@ export function App() {
   const [screen, setScreen] = useState<Screen>("login");
   const [project, setProject] = useState<LoadedProject | null>(null);
   const [lineFocus, setLineFocus] = useState<LineFocus | null>(null);
+  const [frameQuery, setFrameQuery] = useState("");
   const [histTick, setHistTick] = useState(0);
   const historyRef = useRef(createHistory<LoadedProject>());
   const projectRef = useRef<LoadedProject | null>(null);
@@ -118,13 +119,6 @@ export function App() {
     setTheme(next);
     applyTheme(next);
   }
-  const [navCollapsed, setNavCollapsed] = useState(() => {
-    try {
-      return localStorage.getItem("bidcraft.navCollapsed") === "1";
-    } catch {
-      return false;
-    }
-  });
   const [masterTab, setMasterTab] = useState<"units" | "categories" | "vendors" | "resources">("units");
   const [updateOffer, setUpdateOffer] = useState<UpdateOffer | null>(null);
   const [updateBusy, setUpdateBusy] = useState(false);
@@ -842,17 +836,38 @@ export function App() {
     setActivity(id);
   }
 
-  function canView(id: Activity) {
-    if (!session) return false;
-    return (
-      can(session, id === "analysis" || id === "queries" || id === "margins" || id === "finalise" ? "estimate" : id, "view") ||
-      (id === "settings" && session.kind === "owner")
-    );
+  const stage: StageId | "utility" =
+    activity === "dashboard"
+      ? "overview"
+      : activity === "source"
+        ? "source"
+        : activity === "takeoff"
+          ? "measure"
+          : activity === "estimate" || activity === "analysis"
+            ? "price"
+            : activity === "margins" || activity === "buy" || activity === "queries"
+              ? "commercial"
+              : activity === "submit" || activity === "finalise"
+                ? "submit"
+                : "utility";
+
+  function openStage(id: StageId) {
+    if (id === "overview") goTo("dashboard");
+    else if (id === "source") goTo("source");
+    else if (id === "measure") goTo("takeoff");
+    else if (id === "price") goTo("estimate");
+    else if (id === "commercial") {
+      if (activity === "buy" || activity === "queries" || activity === "margins") return;
+      goTo("margins");
+    } else if (activity !== "submit" && activity !== "finalise") goTo("submit");
   }
+
+  const canUndo = histTick >= 0 && historyRef.current.past.length > 0;
+  const submitStep = activity === "submit" ? "summary" : finalisePane === "pack" ? "seal" : finalisePane === "checks" ? "checks" : "summary";
 
   return (
     <div
-      className={`app shell ${navCollapsed ? "nav-collapsed" : ""} ${editLocked ? "readonly" : ""} ${inspectorVisible ? "inspector-open" : "no-inspector"}`}
+      className={`app shell frame ${stage === "utility" ? "utility" : ""} ${editLocked ? "readonly" : ""} ${inspectorVisible ? "inspector-open" : "no-inspector"}`}
       style={inspectorVisible ? ({ ["--inspector-w"]: `${inspectorW.value}px` } as CSSProperties) : undefined}
     >
       <AppBar
@@ -863,6 +878,21 @@ export function App() {
             : ""
         }`}
         user={initials}
+        actions={
+          <>
+            <input
+              className="frame-search"
+              value={frameQuery}
+              placeholder="Search items"
+              aria-label="Search items"
+              onChange={(e) => setFrameQuery(e.target.value)}
+            />
+            <button type="button" disabled={!canUndo} onClick={undo}>
+              Undo
+            </button>
+            <ThemeButton theme={theme} onTheme={chooseTheme} />
+          </>
+        }
         menu={{
           label: "File",
           items: [
@@ -901,8 +931,19 @@ export function App() {
                 ]
               : []),
             {
-              label: "Legal",
+              label: "Library",
               separatorBefore: true,
+              onSelect: () => {
+                setMasterTab("units");
+                goTo("masters");
+              },
+            },
+            {
+              label: "Settings",
+              onSelect: () => goTo("settings"),
+            },
+            {
+              label: "Legal",
               onSelect: () => {
                 setSettingsTab("legal");
                 setSettingsFocus((n) => n + 1);
@@ -912,32 +953,8 @@ export function App() {
           ],
         }}
       />
-      <Sidebar
-        activity={activity}
-        masterOpen={masterTab === "resources"}
-        collapsed={navCollapsed}
-        canView={canView}
-        onNavigate={(id: SidebarTarget) => {
-          if (id === "resources") {
-            setMasterTab("resources");
-            goTo("masters");
-            return;
-          }
-          if (id === "masters") setMasterTab("units");
-          goTo(id);
-        }}
-        onToggle={() => {
-          setNavCollapsed((value) => {
-            const next = !value;
-            try {
-              localStorage.setItem("bidcraft.navCollapsed", next ? "1" : "0");
-            } catch {
-              /* ignore */
-            }
-            return next;
-          });
-        }}
-      />
+      {stage === "utility" ? null : <StageBar active={stage} onPick={openStage} />}
+      {stage === "utility" ? null : <BoqChips project={project} value={billFocus} onChange={setBillFocus} />}
       <div className="shell-banners">
         {updateOffer ? (
           <div className="banner" role="status">
@@ -978,6 +995,47 @@ export function App() {
       </div>
       <main className={`stage ${fillStage ? "stage-fill" : ""}`}>
         <PrintProvider project={project} format={reportFormat}>
+        {stage === "commercial" ? (
+          <Subnav
+            label="Commercial"
+            active={activity}
+            items={[
+              ["margins", "Margins"],
+              ["buy", "Resource prices"],
+              ["queries", "Client queries"],
+            ]}
+            onPick={(id) => goTo(id as Activity)}
+          />
+        ) : null}
+        {stage === "submit" ? (
+          <Subnav
+            label="Submit"
+            active={submitStep}
+            items={[
+              ["summary", "Summary"],
+              ["checks", "Checks"],
+              ["seal", "Seal"],
+            ]}
+            onPick={(id) => {
+              if (id === "summary") goTo("submit");
+              else if (id === "checks") {
+                setFinalisePane("checks");
+                goTo("finalise");
+              } else {
+                setFinalisePane("pack");
+                goTo("finalise");
+              }
+            }}
+          />
+        ) : null}
+        {stage === "utility" ? (
+          <div className="subnav">
+            <button type="button" onClick={() => goTo("estimate")}>
+              Back to job
+            </button>
+          </div>
+        ) : null}
+        <div className="stage-body">
         {activity === "dashboard" ? (
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-dashboard">
             <DashboardView
@@ -1022,6 +1080,7 @@ export function App() {
             lineFocus={lineFocus}
             focusKeys={focusKeys}
             onClearLineFocus={() => setLineFocus(null)}
+            find={frameQuery}
             tools={
               <>
                 <button
@@ -1080,6 +1139,7 @@ export function App() {
             lineFocus={lineFocus}
             focusKeys={focusKeys}
             onClearLineFocus={() => setLineFocus(null)}
+            find={frameQuery}
           />
           </BoqSplit>
         ) : null}
@@ -1124,6 +1184,7 @@ export function App() {
             onChangeLines={setQto}
             locked={editLocked}
             filterColumns={filterableColumns(project)}
+            find={frameQuery}
           />
           </BoqSplit>
         ) : null}
@@ -1259,6 +1320,7 @@ export function App() {
             settingsFocus={settingsFocus}
           />
         ) : null}
+        </div>
         </PrintProvider>
       </main>
       {inspectorVisible ? (
@@ -1345,7 +1407,6 @@ export function App() {
         </button>
         <span className="status-msg">{saveMsg || "Not saved"}</span>
         {licenseBanner(license.session) ? <span>{licenseBanner(license.session)}</span> : null}
-        <ThemeButton theme={theme} onTheme={chooseTheme} />
         <span className={`grand ${green ? "ok" : ""}`}>
           {green ? "GREEN " : ""}
           {formatMoney(total, project.currency)}

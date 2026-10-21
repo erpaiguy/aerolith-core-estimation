@@ -22,8 +22,8 @@ export function SplashShell({
       <main className="stage login-stage">
         <div className="login-hero">
           <div className="login-side-copy">
-            <h1>Several bills. One job.</h1>
-            <p>Estimating for issued BOQs. One resource catalogue. Totals you can seal.</p>
+            <h1>Price the tender from one file.</h1>
+            <p>One job, several bills, totals you can seal.</p>
           </div>
         </div>
         <div className="login-panel">
