@@ -1,5 +1,5 @@
 import { formatMoney, formatPct, moneyClose, configureDisplayFormat, mergeDisplayFormat } from "@aerolith/shared";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { emptyProject, loadCampusSampleProject, loadReferenceProject } from "./loadReference";
 import type { Activity, LoadedProject, QtoLine, WorkingItem } from "./model";
 import { GOLDEN_TOTAL, hasAnalysisBackup, inferParents, newId, stampItem } from "./model";
@@ -72,6 +72,8 @@ import { EstimateView, Inspector, SourceView, SubmitView } from "./views/Workspa
 import { TakeoffInspector, TakeoffView } from "./views/TakeoffView";
 import { RateAnalysisView } from "./views/RateAnalysisView";
 import { usePersistedNumber } from "./ui/useLayoutSize";
+import { createHistory, pushHistory, redoHistory, undoHistory } from "./editHistory";
+import { itemInFocus, type LineFocus } from "./lineFocus";
 
 type Screen = "login" | "owner" | "home" | "import" | "project";
 
@@ -80,6 +82,21 @@ export function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [screen, setScreen] = useState<Screen>("login");
   const [project, setProject] = useState<LoadedProject | null>(null);
+  const [lineFocus, setLineFocus] = useState<LineFocus | null>(null);
+  const [histTick, setHistTick] = useState(0);
+  const historyRef = useRef(createHistory<LoadedProject>());
+  const projectRef = useRef<LoadedProject | null>(null);
+  const undoRef = useRef<() => void>(() => undefined);
+  const redoRef = useRef<() => void>(() => undefined);
+  projectRef.current = project;
+  const focusKeys = useMemo(() => {
+    if (!lineFocus || !project) return null;
+    const keys = new Set<string>();
+    for (const item of project.items) {
+      if (itemInFocus(item, lineFocus, project.itemQuotes)) keys.add(itemKeyOf(item));
+    }
+    return keys;
+  }, [lineFocus, project]);
   const [activity, setActivity] = useState<Activity>("estimate");
   const [finalisePane, setFinalisePane] = useState<FinalisePane>("summary");
   const [settingsTab, setSettingsTab] = useState<"license" | "legal">("license");
@@ -115,6 +132,22 @@ export function App() {
   useEffect(() => {
     if (!updatesAutoEnabled()) return;
     void checkForUpdate().then(setUpdateOffer).catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.altKey || !(event.ctrlKey || event.metaKey)) return;
+      const key = event.key.toLowerCase();
+      const undoKey = key === "z" && !event.shiftKey;
+      const redoKey = key === "y" || (key === "z" && event.shiftKey);
+      if (!undoKey && !redoKey) return;
+      if (!projectRef.current) return;
+      event.preventDefault();
+      if (undoKey) undoRef.current();
+      else redoRef.current();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   useEffect(() => {
@@ -195,8 +228,43 @@ export function App() {
     applyPlatform(nextPlat);
   }
 
+  function clearHistory() {
+    historyRef.current = createHistory();
+    setHistTick((tick) => tick + 1);
+  }
+
+  function noteEdit(current: LoadedProject) {
+    historyRef.current = pushHistory(historyRef.current, current);
+    setHistTick((tick) => tick + 1);
+  }
+
+  function undo() {
+    const current = projectRef.current;
+    if (!current) return;
+    const step = undoHistory(historyRef.current, current);
+    if (!step) return;
+    historyRef.current = step.history;
+    setProject(withResults(step.value));
+    setHistTick((tick) => tick + 1);
+  }
+
+  function redo() {
+    const current = projectRef.current;
+    if (!current) return;
+    const step = redoHistory(historyRef.current, current);
+    if (!step) return;
+    historyRef.current = step.history;
+    setProject(withResults(step.value));
+    setHistTick((tick) => tick + 1);
+  }
+
+  undoRef.current = undo;
+  redoRef.current = redo;
+
   function openProject(next: LoadedProject, path?: string | null) {
     const live = withResults(next);
+    clearHistory();
+    setLineFocus(null);
     setProject(live);
     setActivity("dashboard");
     setSelected(null);
@@ -238,6 +306,8 @@ export function App() {
 
   function signOut() {
     void license.logout().then(() => {
+      clearHistory();
+      setLineFocus(null);
       setSession(null);
       setProject(null);
       setFilePath(null);
@@ -335,6 +405,7 @@ export function App() {
     if (licenseReadOnly) return;
     if (session?.kind === "tenant" && !can(session, permModule, "edit") && kind === "edit") return;
     if (project?.sealedAt && kind === "edit") return;
+    if (project) noteEdit(project);
     setProject(withResults({ ...next, isDemo: false }));
   }
 
@@ -497,6 +568,7 @@ export function App() {
     const row = conflicts.find((c) => c.id === id);
     if (!row) return;
     if (side === "replica") {
+      noteEdit(project);
       setProject(withResults({ ...applyReplicaPick(project, replica, row), isDemo: false }));
     }
     setConflicts(conflicts.filter((c) => c.id !== id));
@@ -725,8 +797,25 @@ export function App() {
   const formulaItem = sel?.kind === "item" ? sel : null;
   const inspectorVisible = showInspector && inspectorOpen;
 
+  function openException(kind: LineFocus) {
+    if (!project) return;
+    const matches = project.items.filter((item) => itemInFocus(item, kind, project.itemQuotes));
+    const inBill = billFocus ? matches.filter((item) => item.billId === billFocus) : matches;
+    const first = inBill[0] ?? matches[0];
+    setLineFocus(kind);
+    if (first && first.billId !== billFocus) setBillFocus(first.billId);
+    if (kind === "missing") {
+      if (first) openRate(itemKeyOf(first));
+      else setActivity("analysis");
+      return;
+    }
+    if (first) setSelected(itemKeyOf(first));
+    setActivity("estimate");
+  }
+
   function goTo(id: Activity) {
     if (!project) return;
+    setLineFocus(null);
     if (id === "takeoff") {
       const items = shownItems.filter((i) => i.kind === "item");
       const keep = selected && items.some((i) => itemKeyOf(i) === selected) ? selected : null;
@@ -782,6 +871,8 @@ export function App() {
             {
               label: "Close",
               onSelect: () => {
+                clearHistory();
+                setLineFocus(null);
                 setProject(null);
                 setFilePath(null);
                 setRateCode(null);
@@ -789,6 +880,17 @@ export function App() {
                 setSaveMsg("");
                 setScreen("home");
               },
+            },
+            {
+              label: "Undo",
+              separatorBefore: true,
+              disabled: histTick < 0 || historyRef.current.past.length === 0,
+              onSelect: undo,
+            },
+            {
+              label: "Redo",
+              disabled: historyRef.current.future.length === 0 || histTick < 0,
+              onSelect: redo,
             },
             ...(showInspector
               ? [
@@ -881,6 +983,7 @@ export function App() {
             <DashboardView
               project={project}
               billId={billFocus}
+              onOpenException={openException}
               license={
                 <LicensePanel
                   session={license.session}
@@ -916,6 +1019,9 @@ export function App() {
             addDisabled={!billFocus}
             bills={!billFocus ? sortedBills(project) : []}
             clientLocked={(id) => billSourceLocked(project, id)}
+            lineFocus={lineFocus}
+            focusKeys={focusKeys}
+            onClearLineFocus={() => setLineFocus(null)}
             tools={
               <>
                 <button
@@ -966,8 +1072,14 @@ export function App() {
             onSelect={openRate}
             onPatch={patchItem}
             onProject={(next) => commit(next)}
-            onBack={() => setActivity("estimate")}
+            onBack={() => {
+              setLineFocus(null);
+              setActivity("estimate");
+            }}
             billId={billFocus}
+            lineFocus={lineFocus}
+            focusKeys={focusKeys}
+            onClearLineFocus={() => setLineFocus(null)}
           />
           </BoqSplit>
         ) : null}
@@ -1134,7 +1246,7 @@ export function App() {
             onPromote={requestPromote}
             onCompareReplica={() => void compareReplica()}
             project={project}
-            onProject={(next) => setProject(withResults(next))}
+            onProject={(next) => commit(next)}
             license={license.session}
             licenseBusy={license.busy}
             onRefreshLicense={() => void license.refresh()}
@@ -1216,11 +1328,21 @@ export function App() {
           {` · ${priced.length} items`}
           {focusBill && billSourceLocked(project, focusBill.id) ? " · Client BOQ locked" : ""}
         </span>
-        <span>{unpriced} unpriced</span>
-        <span>{diffs} qty diffs</span>
-        <span>{missing} missing analysis</span>
+        <button type="button" className="status-link" onClick={() => openException("unpriced")}>
+          {unpriced} unpriced
+        </button>
+        <button type="button" className="status-link" onClick={() => openException("missing")}>
+          {missing} missing analysis
+        </button>
         <span>{project.currency}</span>
-        <span>{`Qty ${displayFormat.qtyDecimals} · Rate ${displayFormat.rateDecimals} · Amt ${displayFormat.amountDecimals}`}</span>
+        <button
+          type="button"
+          className="status-link status-low"
+          title={`Qty ${displayFormat.qtyDecimals} · Rate ${displayFormat.rateDecimals} · Amt ${displayFormat.amountDecimals} decimals`}
+          onClick={() => openException("diff")}
+        >
+          {`${diffs} diffs · ${displayFormat.qtyDecimals}/${displayFormat.rateDecimals}/${displayFormat.amountDecimals}`}
+        </button>
         <span className="status-msg">{saveMsg || "Not saved"}</span>
         {licenseBanner(license.session) ? <span>{licenseBanner(license.session)}</span> : null}
         <ThemeButton theme={theme} onTheme={chooseTheme} />
