@@ -20,6 +20,7 @@ import { Split } from "../ui/Split";
 import { PrintActions } from "../ui/PrintActions";
 import { usePrintHeader } from "../print/context";
 import { jobDocument } from "../print/types";
+import { LINE_FOCUS_LABEL, type LineFocus } from "../lineFocus";
 
 export function RateAnalysisView({
   project,
@@ -31,6 +32,9 @@ export function RateAnalysisView({
   onProject,
   onBack,
   billId = null,
+  lineFocus = null,
+  focusKeys = null,
+  onClearLineFocus,
 }: {
   project: LoadedProject;
   rateCode: string | null;
@@ -41,6 +45,9 @@ export function RateAnalysisView({
   onProject: (next: LoadedProject) => void;
   onBack: () => void;
   billId?: string | null;
+  lineFocus?: LineFocus | null;
+  focusKeys?: Set<string> | null;
+  onClearLineFocus?: () => void;
 }) {
   const extras = filterableColumns(project);
   const [query, setQuery] = useState("");
@@ -48,11 +55,16 @@ export function RateAnalysisView({
   const items = useMemo(() => {
     const allPriced = project.items.filter((i) => i.kind === "item");
     const priced = billId ? allPriced.filter((i) => i.billId === billId) : allPriced;
-    const listed = priced.filter((i) => itemMatchesQuery(i, query) && itemMatchesColumnFilters(i, filters));
+    const listed = priced.filter(
+      (i) =>
+        itemMatchesQuery(i, query) &&
+        itemMatchesColumnFilters(i, filters) &&
+        (!focusKeys || focusKeys.has(itemKeyOf(i))),
+    );
     if (!rateCode || listed.some((i) => itemKeyOf(i) === rateCode)) return listed;
     const current = allPriced.find((i) => itemKeyOf(i) === rateCode);
     return current ? [...listed, current] : listed;
-  }, [project.items, query, filters, rateCode, billId]);
+  }, [project.items, query, filters, rateCode, billId, focusKeys]);
   const index = Math.max(0, items.findIndex((i) => itemKeyOf(i) === rateCode));
   const item = items[index] ?? null;
   const header = usePrintHeader();
@@ -110,6 +122,11 @@ export function RateAnalysisView({
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Filter items"
         />
+        {lineFocus ? (
+          <button type="button" className="line-focus" onClick={onClearLineFocus}>
+            {LINE_FOCUS_LABEL[lineFocus]} · Clear
+          </button>
+        ) : null}
         {extras.map((c) => (
           <input
             key={c.id}

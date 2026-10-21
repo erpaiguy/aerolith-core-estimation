@@ -1067,9 +1067,9 @@ button.accent:active:not(:disabled) {
   flex-wrap: nowrap;
   gap: 0;
   padding: 0 16px;
-  height: 32px;
-  min-height: 32px;
-  max-height: 32px;
+  height: var(--status-h, 36px);
+  min-height: var(--status-h, 36px);
+  max-height: var(--status-h, 36px);
   border-top: 1px solid var(--line);
   background: var(--rail);
   font-size: 11px;
@@ -1095,6 +1095,37 @@ button.accent:active:not(:disabled) {
 }
 .status .grand,
 .status .theme-toggle { flex-shrink: 0; }
+.status button.status-link {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 0 1 auto;
+  height: auto;
+  min-height: 0;
+  margin: 0 14px 0 0;
+  padding: 0 14px 0 0;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+.status button.status-link:hover { color: var(--rail-text); }
+html[data-style] .status button.status-link {
+  height: auto;
+  min-height: 0;
+  padding: 0 14px 0 0;
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+}
 @media (max-width: 1360px) {
   .status .status-low { display: none; }
 }
@@ -2557,7 +2588,8 @@ table.data tr.selected:hover td { background: var(--select); }
   padding: 0;
   list-style: none;
 }
-.dash-flags li {
+.dash-flags li,
+.dash-flags button.dash-flag {
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
@@ -2568,6 +2600,23 @@ table.data tr.selected:hover td { background: var(--select); }
   background: var(--paper-2);
   color: var(--ink-soft);
   font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+}
+html[data-style] .dash-flags button.dash-flag {
+  height: auto;
+  min-height: 28px;
+  border-radius: 999px;
+}
+.dash-flags button.dash-flag:hover { border-color: var(--accent); color: var(--ink); }
+.line-focus {
+  height: auto;
+  min-height: 28px;
+  white-space: nowrap;
+}
+html[data-style] button.line-focus {
+  height: auto;
+  min-height: 28px;
 }
 .dash-flags b {
   color: var(--ink);
@@ -3072,6 +3121,7 @@ html[data-style] .rate-sheet button {
   .rate-editor .kpis { grid-template-columns: 1fr 1fr; }
   .rate-editor .kpi { min-height: 3.4rem; padding-block: 8px; }
 }
+.rate-factor-nav { display: none; }
 @container rateeditor (max-width: 620px) {
   .rate-sheet { min-width: 0; }
   .rate-band {
@@ -3100,10 +3150,30 @@ html[data-style] .rate-sheet button {
     width: var(--factor-col, 72px);
     min-width: var(--factor-col, 72px);
     max-width: var(--factor-col, 72px);
-    overflow: hidden;
+    overflow: clip;
     scrollbar-gutter: auto;
   }
+  .rate-track { transform: translateX(calc(-1 * var(--factor-shift, 0px))); }
+  .rate-factor-nav { display: flex; }
   .rate-editor .scroll { min-height: 200px; }
+}
+.rate-factor-nav {
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 28px;
+  margin: 0 0 4px;
+}
+.rate-factor-nav span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
 }
 @media (max-width: 1100px) {
   .boq-split {

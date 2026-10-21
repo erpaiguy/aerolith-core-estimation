@@ -5,6 +5,7 @@ import { costCategoryTree, type CostCatNode } from "../projectCompute";
 import { effectiveMargin } from "../marginRules";
 import { hasAnalysisBackup } from "../model";
 import { billTotal, quoteMatchesItem, sortedBills } from "../bills";
+import type { LineFocus } from "../lineFocus";
 import type { ReactNode } from "react";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
@@ -16,10 +17,12 @@ export function DashboardView({
   project,
   billId = null,
   license = null,
+  onOpenException,
 }: {
   project: LoadedProject;
   billId?: string | null;
   license?: ReactNode;
+  onOpenException?: (kind: LineFocus) => void;
 }) {
   const bills = sortedBills(project);
   const scoped = useMemo(
@@ -111,17 +114,17 @@ export function DashboardView({
           <b>{formatMoney(total, project.currency)}</b>
         </div>
       </div>
-      <ul className="dash-flags" aria-label="Pricing flags">
-        <li>
+      <div className="dash-flags" role="group" aria-label="Pricing flags">
+        <button type="button" className="dash-flag" onClick={() => onOpenException?.("unpriced")}>
           <b>{unpriced}</b> unpriced
-        </li>
-        <li>
+        </button>
+        <button type="button" className="dash-flag" onClick={() => onOpenException?.("diff")}>
           <b>{diffs}</b> qty diffs
-        </li>
-        <li>
+        </button>
+        <button type="button" className="dash-flag" onClick={() => onOpenException?.("missing")}>
           <b>{missing}</b> missing analysis
-        </li>
-      </ul>
+        </button>
+      </div>
       {bills.length > 1 ? (
         <div className="note boq-grand">
           <h2>Grand summary</h2>

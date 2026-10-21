@@ -8,6 +8,7 @@ export type BarMenuItem = {
   label: string;
   onSelect: () => void;
   separatorBefore?: boolean;
+  disabled?: boolean;
 };
 
 export function AppBar({
@@ -166,7 +167,7 @@ export function BarMenu({ label, items }: { label: string; items: BarMenuItem[] 
               {items.map((item) => (
                 <Fragment key={item.label}>
                   {item.separatorBefore ? <div className="file-menu-sep" role="separator" /> : null}
-                  <button type="button" role="menuitem" onClick={() => run(item.onSelect)}>
+                  <button type="button" role="menuitem" disabled={item.disabled} onClick={() => run(item.onSelect)}>
                     {item.label}
                   </button>
                 </Fragment>

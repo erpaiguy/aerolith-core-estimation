@@ -51,6 +51,8 @@
   --pad-modal: 22px;
   --gap-card: 28px;
   --pad-row: 40px;
+  --control-h: 36px;
+  --status-h: 36px;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -81,14 +83,14 @@ html[data-theme="dark"] {
   --on-accent: #1a120e;
 }
 
-button { height: 36px; border-radius: 8px; font-weight: 500; }
+button { height: var(--control-h, 36px); border-radius: 8px; font-weight: 500; }
 .appbar { background: var(--paper-2); }
 .sidebar { background: var(--paper); border-right: 1px solid var(--line); }
 .sidebar .nav-btn,
 .sidebar-collapse { height: 40px; border-radius: 8px; }
 .module-toolbar { min-height: 64px; background: transparent; border-bottom: 0; }
 .module-toolbar h1.view { font-size: 22px; font-weight: 600; letter-spacing: -0.03em; }
-.status { min-height: 36px; background: var(--paper-2); font-family: var(--sans); font-size: 12px; }
+.status { background: var(--paper-2); font-family: var(--sans); font-size: 12px; }
 html[data-style="minimal"] table.data th,
 html[data-style="minimal"] table.data td { border-right: 0; }
 html[data-style="minimal"] table.data th { background: transparent; letter-spacing: 0.04em; font-weight: 600; }
@@ -116,6 +118,8 @@ html[data-style="spreadsheet"] {
     --nav-collapsed: 52px;
     --appbar-h: 34px;
     --radius: 0px;
+    --control-h: 24px;
+    --status-h: 24px;
     --paper: #e8ebf0;
     --paper-2: #ffffff;
     --ink: #12151a;
@@ -212,7 +216,7 @@ html[data-style="spreadsheet"] .module-toolbar h1.view {
   font-size: 13px; line-height: 24px; letter-spacing: 0; font-weight: 600;
 }
 html[data-style="spreadsheet"] .status {
-  min-height: 24px; height: 24px; font-family: var(--mono); font-size: 11px; background: var(--ribbon); border-top: 1px solid var(--line); padding: 0 8px;
+  font-family: var(--mono); font-size: 11px; background: var(--ribbon); border-top: 1px solid var(--line); padding: 0 8px;
 }
 html[data-style="spreadsheet"] table.data {
   border: 1px solid var(--line); background: var(--paper-2);
@@ -262,6 +266,8 @@ html[data-style="spreadsheet"] .seg button {
 /* modern */
 html[data-style="modern"] {
   --sans: Inter, "Segoe UI", system-ui, sans-serif;
+  --control-h: 36px;
+  --status-h: 36px;
     --nav-w: 220px;
     --appbar-h: 48px;
     --radius: 8px;
@@ -396,6 +402,8 @@ html[data-style="modern"] .status {
 /* cards */
 html[data-style="cards"] {
   --sans: Outfit, Inter, "Segoe UI", system-ui, sans-serif;
+  --control-h: 36px;
+  --status-h: 44px;
     --nav-w: 232px;
     --appbar-h: 60px;
     --radius: 16px;
@@ -483,7 +491,7 @@ html[data-style="cards"] .sidebar {
   border-right: 0;
 }
 html[data-style="cards"] .status {
-  border-top: 0; min-height: 44px;
+  border-top: 0;
 }
 html[data-style="cards"] button,
 html[data-style="cards"] .bar-menu-btn,
@@ -540,6 +548,8 @@ html[data-style="cards"] .home h1 {
 /* enterprise */
 html[data-style="enterprise"] {
   --sans: "IBM Plex Sans", Inter, "Segoe UI", system-ui, sans-serif;
+  --control-h: 36px;
+  --status-h: 32px;
     --nav-w: 228px;
     --appbar-h: 52px;
     --radius: 2px;
@@ -651,7 +661,6 @@ html[data-style="enterprise"] .status {
     color: var(--ink);
     font-family: var(--sans);
     font-size: 12px;
-    min-height: 32px;
 }
 html[data-style="enterprise"] table.data {
   border: 1px solid var(--ink); background: var(--paper-2);
@@ -684,6 +693,12 @@ html[data-style] .rate-editor .kpi {
   background: var(--paper-2);
   border-radius: var(--radius);
   box-shadow: none;
+}
+/* One status height per style, from --status-h. Later min-height rules must not fight it. */
+html[data-style] .status {
+  height: var(--status-h, 36px);
+  min-height: var(--status-h, 36px);
+  max-height: var(--status-h, 36px);
 }
 html[data-style] .menu-select-btn,
 html[data-style] .menu-select-list button {

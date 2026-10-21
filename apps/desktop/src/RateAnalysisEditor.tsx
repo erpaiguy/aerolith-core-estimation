@@ -1,4 +1,4 @@
-import { useRef, type UIEvent, type WheelEvent } from "react";
+import { useRef, useState, type UIEvent, type WheelEvent } from "react";
 import { composeAnalysis, composeResourceLine, resolveAnalysisUnitCost } from "@aerolith/calc";
 import {
   currencyMarker,
@@ -209,6 +209,22 @@ export function RateAnalysisEditor({
   const midTrack = track(MID_IDS);
   const pinTrack = track(PIN_IDS);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [factorSlot, setFactorSlot] = useState(0);
+  const slot = Math.min(factorSlot, MID_IDS.length - 1);
+  const factorShift = MID_IDS.slice(0, slot).reduce((sum, id) => sum + colW(id), 0);
+
+  function editorIsNarrow() {
+    const el = editorRef.current;
+    if (!el) return false;
+    const style = getComputedStyle(el);
+    const pad = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    return el.clientWidth - pad <= 620;
+  }
+
+  function stepFactor(dir: number) {
+    setFactorSlot((current) => Math.max(0, Math.min(MID_IDS.length - 1, Math.min(current, MID_IDS.length - 1) + dir)));
+  }
 
   function syncFactors(left: number) {
     sheetRef.current?.querySelectorAll<HTMLElement>(".rate-mid").forEach((el) => {
@@ -223,13 +239,18 @@ export function RateAnalysisEditor({
   function onFactorWheel(e: WheelEvent<HTMLDivElement>) {
     const dx = e.deltaX !== 0 ? e.deltaX : e.shiftKey ? e.deltaY : 0;
     if (!dx) return;
+    if (editorIsNarrow()) {
+      e.preventDefault();
+      stepFactor(dx > 0 ? 1 : -1);
+      return;
+    }
     const rail = sheetRef.current?.querySelector<HTMLElement>(".rate-mid-head");
     if (!rail) return;
     rail.scrollLeft += dx;
   }
 
   return (
-    <div className="rate-editor">
+    <div className="rate-editor" ref={editorRef}>
       {cyclic ? (
         <p className="hint">Link cycle detected. Remove the loop or unlink this item.</p>
       ) : null}
@@ -378,11 +399,32 @@ export function RateAnalysisEditor({
           <div
             className="rate-sheet"
             ref={sheetRef}
-            style={{ ...tableStyle, ["--factor-col" as string]: `${colW("nos1")}px` }}
+            style={{
+              ...tableStyle,
+              ["--factor-col" as string]: `${colW(MID_IDS[slot])}px`,
+              ["--factor-shift" as string]: `${factorShift}px`,
+            }}
             role="table"
             aria-label="Resource lines"
             onWheel={onFactorWheel}
           >
+            <div className="rate-factor-nav">
+              <button type="button" className="rate-step" aria-label="Previous factor column" disabled={slot === 0} onClick={() => stepFactor(-1)}>
+                Prev
+              </button>
+              <span>
+                {MID_LABELS[slot]} · {slot + 1}/{MID_IDS.length}
+              </span>
+              <button
+                type="button"
+                className="rate-step"
+                aria-label="Next factor column"
+                disabled={slot === MID_IDS.length - 1}
+                onClick={() => stepFactor(1)}
+              >
+                Next
+              </button>
+            </div>
             <div className="rate-band rate-head" role="rowgroup">
               <div className="rate-res rate-h" role="columnheader">
                 <span>Resource</span>
