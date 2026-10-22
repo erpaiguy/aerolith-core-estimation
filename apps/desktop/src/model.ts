@@ -19,6 +19,7 @@ export type Activity =
   | "queries"
   | "buy"
   | "submit"
+  | "finalise"
   | "masters"
   | "dashboard"
   | "settings";
@@ -344,6 +345,8 @@ export interface LoadedProject {
   sourceLockedAt: string | null;
   sealedAt: string | null;
   revision: number;
+  /** Final adjustments, frozen revisions, cover letter, and qualifications. */
+  commercial?: import("./finalise").TenderCommercial;
   catalogVersion?: number;
   importNeedsReview?: boolean;
   isDemo?: boolean;

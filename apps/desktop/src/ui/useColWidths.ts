@@ -40,7 +40,7 @@ export function useColWidths(key: string, defaults: Record<string, number> = {},
       ev.preventDefault();
       ev.stopPropagation();
       const startX = ev.clientX;
-      const th = ev.currentTarget.closest("th");
+      const th = ev.currentTarget.closest("th, .rate-h");
       const measured = th ? Math.round(th.getBoundingClientRect().width) : min;
       const startW = widths[id] ?? defaults[id] ?? measured;
       attachPointerDrag(ev.currentTarget, ev.pointerId, (e) => {

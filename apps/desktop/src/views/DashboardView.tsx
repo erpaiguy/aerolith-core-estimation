@@ -5,6 +5,7 @@ import { costCategoryTree, type CostCatNode } from "../projectCompute";
 import { effectiveMargin } from "../marginRules";
 import { hasAnalysisBackup } from "../model";
 import { billTotal, quoteMatchesItem, sortedBills } from "../bills";
+import type { LineFocus } from "../lineFocus";
 import type { ReactNode } from "react";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
@@ -16,10 +17,12 @@ export function DashboardView({
   project,
   billId = null,
   license = null,
+  onOpenException,
 }: {
   project: LoadedProject;
   billId?: string | null;
   license?: ReactNode;
+  onOpenException?: (kind: LineFocus) => void;
 }) {
   const bills = sortedBills(project);
   const scoped = useMemo(
@@ -68,7 +71,7 @@ export function DashboardView({
   return (
     <div className="dashboard-view">
       <div className="module-toolbar">
-        <h1 className="view">Dashboard</h1>
+        <h1 className="view">Overview</h1>
         <PrintActions
           build={() =>
             jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Dashboard", [
@@ -95,6 +98,7 @@ export function DashboardView({
           }
         />
       </div>
+      <div className="dash-body">
       {license}
       <div className="kpis">
         <div className="kpi">
@@ -110,13 +114,17 @@ export function DashboardView({
           <b>{formatMoney(total, project.currency)}</b>
         </div>
       </div>
-      <p className="dash-flags">
-        {unpriced} unpriced
-        <span>·</span>
-        {diffs} qty diffs
-        <span>·</span>
-        {missing} missing analysis
-      </p>
+      <div className="dash-flags" role="group" aria-label="Pricing flags">
+        <button type="button" className="dash-flag" onClick={() => onOpenException?.("unpriced")}>
+          <b>{unpriced}</b> unpriced
+        </button>
+        <button type="button" className="dash-flag" onClick={() => onOpenException?.("diff")}>
+          <b>{diffs}</b> qty diffs
+        </button>
+        <button type="button" className="dash-flag" onClick={() => onOpenException?.("missing")}>
+          <b>{missing}</b> missing analysis
+        </button>
+      </div>
       {bills.length > 1 ? (
         <div className="note boq-grand">
           <h2>Grand summary</h2>
@@ -181,6 +189,7 @@ export function DashboardView({
           </div>
         </div>
         </Split>
+      </div>
       </div>
     </div>
   );

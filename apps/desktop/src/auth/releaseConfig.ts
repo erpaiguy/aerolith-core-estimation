@@ -42,7 +42,7 @@ type ReleaseFile = {
 
 const file = raw as ReleaseFile;
 
-export const APP_VERSION = "1.1.2";
+export const APP_VERSION = "1.5.0";
 
 export const releaseConfig: ReleaseConfig = {
   appId: file.APP_ID,

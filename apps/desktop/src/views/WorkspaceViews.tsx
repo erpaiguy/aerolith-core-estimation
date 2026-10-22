@@ -15,6 +15,7 @@ import {
 } from "../boqCarry";
 import { CarryModeControl } from "../CarryModeControl";
 import { itemBadges, type BoqColumnDef, type ProjectBill, type WorkingItem } from "../model";
+import { LINE_FOCUS_LABEL, type LineFocus } from "../lineFocus";
 import { itemKeyOf, pivotWorkingByBoq, primaryWorkingTwin, type WorkingQtyRow } from "../bills";
 import { billQtyHeader, formatCompareQty } from "../submissionCompare";
 import { QtyInput } from "../ui/QtyInput";
@@ -265,6 +266,10 @@ export function EstimateView({
   tools,
   bills = [],
   clientLocked,
+  lineFocus = null,
+  focusKeys = null,
+  onClearLineFocus,
+  find,
 }: {
   items: WorkingItem[];
   selected: string | null;
@@ -288,6 +293,10 @@ export function EstimateView({
   tools?: ReactNode;
   bills?: ProjectBill[];
   clientLocked?: (billId: string) => boolean;
+  lineFocus?: LineFocus | null;
+  focusKeys?: Set<string> | null;
+  onClearLineFocus?: () => void;
+  find?: string;
 }) {
   const freezeClient = Boolean(sourceLocked || locked);
   const clientExtras = clientColumns.filter((c) => c.role === "extra");
@@ -297,7 +306,8 @@ export function EstimateView({
   const extraCount = extras.length;
   const qtyCols = pivot ? bills.length + 1 : 2;
   const colCount = 1 + (showBillColumn && !pivot ? 1 : 0) + 1 + extraCount + qtyCols + 6;
-  const [query, setQuery] = useState("");
+  const [localQuery, setLocalQuery] = useState("");
+  const query = find ?? localQuery;
   const [filters, setFilters] = useState<Record<string, string>>({});
   const pivotAll = useMemo(() => (pivot ? pivotWorkingByBoq(items, bills) : null), [pivot, items, bills]);
   const display = useMemo(() => {
@@ -313,7 +323,13 @@ export function EstimateView({
           .filter(
             (r) =>
               r.kind === "item" &&
-              r.twins.some((t) => t && itemMatchesQuery(t, q) && itemMatchesColumnFilters(t, filters)),
+              r.twins.some(
+                (t) =>
+                  t &&
+                  itemMatchesQuery(t, q) &&
+                  itemMatchesColumnFilters(t, filters) &&
+                  (!focusKeys || focusKeys.has(itemKeyOf(t))),
+              ),
           )
           .map((r) => r.key),
       );
@@ -324,7 +340,9 @@ export function EstimateView({
           pending = row;
           continue;
         }
-        if (!q && !active ? true : matched.has(row.key)) {
+        const inFocus =
+          !focusKeys || row.twins.some((twin) => twin && focusKeys.has(itemKeyOf(twin)));
+        if ((!q && !active && !focusKeys ? true : matched.has(row.key)) && inFocus) {
           if (pending) {
             out.push({ type: "pivot", key: pending.key, row: pending });
             pending = null;
@@ -337,10 +355,16 @@ export function EstimateView({
     const q = query.trim();
     const active = Object.values(filters).some((v) => v.trim());
     let filtered = items;
-    if (q || active) {
+    if (q || active || focusKeys) {
       const matched = new Set(
         items
-          .filter((i) => i.kind === "item" && itemMatchesQuery(i, q) && itemMatchesColumnFilters(i, filters))
+          .filter(
+            (i) =>
+              i.kind === "item" &&
+              itemMatchesQuery(i, q) &&
+              itemMatchesColumnFilters(i, filters) &&
+              (!focusKeys || focusKeys.has(itemKeyOf(i))),
+          )
           .map((i) => itemKeyOf(i)),
       );
       const out: WorkingItem[] = [];
@@ -370,7 +394,7 @@ export function EstimateView({
       out.push({ type: "item", key: itemKeyOf(row), item: row });
     }
     return out;
-  }, [pivotAll, items, query, filters, showBillColumn, billLabel]);
+  }, [pivotAll, items, query, filters, showBillColumn, billLabel, focusKeys]);
   const header = (
     <>
       <colgroup>
@@ -783,12 +807,19 @@ export function EstimateView({
           <ResetLayoutButton ids={[pivot ? `working-qty-${bills.length}` : "working-qty", "boq-rail-estimate"]} />
         </div>
         <div className="tb-group tb-find">
+          {lineFocus ? (
+            <button type="button" className="line-focus" onClick={onClearLineFocus}>
+              {LINE_FOCUS_LABEL[lineFocus]} · Clear
+            </button>
+          ) : null}
+          {find == null ? (
           <input
             className="filter"
             placeholder="Filter items"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={localQuery}
+            onChange={(e) => setLocalQuery(e.target.value)}
           />
+          ) : null}
           {extras.map((c) => (
             <input
               key={c.id}

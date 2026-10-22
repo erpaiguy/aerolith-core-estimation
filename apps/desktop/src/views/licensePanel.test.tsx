@@ -46,12 +46,15 @@ describe("license UI", () => {
         onSubmit: () => undefined,
         onSignup: () => undefined,
         onPricing: () => undefined,
+        onRequestReset: async () => ({ ok: true, error: null }),
+        onResetPassword: async () => ({ ok: true, error: null }),
       }),
     );
     expect(html).toContain("Sign in with your Aerolith account");
     expect(html).toContain('type="email"');
     expect(html).toContain('autoComplete="current-password"');
     expect(html).toContain("Start trial");
+    expect(html).toContain("Forgot password?");
     expect(html).not.toContain("PIN");
     expect(html).not.toContain("Workspace");
   });

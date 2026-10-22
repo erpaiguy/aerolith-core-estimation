@@ -1,3 +1,5 @@
+import { invoke } from "@tauri-apps/api/core";
+import { isTauri } from "../nativeAero";
 import { AuthApiClient, type FetchLike } from "./authApiClient";
 import {
   clockTrusted,
@@ -12,6 +14,7 @@ import {
 import type { LicenseVerifyResponse } from "./payload";
 import { releaseConfig, type ReleaseConfig } from "./releaseConfig";
 import { ANNUAL, EXPIRED, LIFETIME, TRIAL, TRIAL_DAYS, normalizePlan } from "./subscriptionPlans";
+import { passwordProblem, readRecoveryProof } from "./passwordReset";
 import { inspectLicenceToken } from "./token";
 
 const SESSION_KEY = "aerolith-estimation.license-session";
@@ -156,6 +159,27 @@ export class LicenseService {
     await this.store.save(this.session);
     this.emit();
     return { ok: true, error: null };
+  }
+
+  async requestPasswordReset(email: string): Promise<{ ok: boolean; error: string | null }> {
+    const trimmed = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      return { ok: false, error: "Enter the email on the Aerolith account." };
+    }
+    return this.api.requestPasswordReset(trimmed);
+  }
+
+  async resetPassword(
+    email: string,
+    proofText: string,
+    password: string,
+    confirm: string,
+  ): Promise<{ ok: boolean; error: string | null }> {
+    const problem = passwordProblem(password, confirm);
+    if (problem) return { ok: false, error: problem };
+    const proof = readRecoveryProof(proofText);
+    if (!proof) return { ok: false, error: "Paste the reset link from the email." };
+    return this.api.resetPassword(email.trim(), proof, password);
   }
 
   async logout(): Promise<void> {
@@ -434,5 +458,11 @@ export class LicenseService {
 
 export function openHttps(url: string): void {
   if (!url.startsWith("https://")) return;
+  if (isTauri()) {
+    void invoke("open_https", { url }).catch(() => {
+      /* The desktop shell rejected the host. */
+    });
+    return;
+  }
   window.open(url, "_blank", "noopener,noreferrer");
 }

@@ -15,6 +15,7 @@ import { DEFAULT_BILL_ID, ensureProjectBills, itemKeyOf } from "./bills";
 import { defaultClientColumns, parseColumnDefs } from "./boqColumns";
 import { parseMarginPresets, parseMarginRules } from "./marginRules";
 import { parseStoredResourceMaster } from "./resourceMaster";
+import { parseCommercial } from "./finalise";
 
 type SqlJsStatic = {
   Database: new (data?: ArrayLike<number>) => {
@@ -276,6 +277,7 @@ export async function projectToAero(project: LoadedProject): Promise<Uint8Array>
   put("source_locked_at", live.sourceLockedAt ?? "");
   put("sealed_at", live.sealedAt ?? "");
   put("revision", String(live.revision ?? 1));
+  put("commercial", JSON.stringify(live.commercial ?? null));
   put("catalog_version", String(live.catalogVersion ?? 1));
   put("resource_master", JSON.stringify(live.resourceMaster ?? null));
   put("import_needs_review", live.importNeedsReview ? "1" : "0");
@@ -1045,6 +1047,7 @@ export async function aeroToProject(bytes: Uint8Array): Promise<LoadedProject> {
     sourceLockedAt: meta.source_locked_at || null,
     sealedAt: meta.sealed_at || null,
     revision: Math.max(1, Math.floor(num(meta.revision) || 1)),
+    commercial: meta.commercial ? parseCommercial(parseJsonValue(meta.commercial)) : undefined,
     catalogVersion: Math.max(1, Math.floor(num(meta.catalog_version) || 1)),
     importNeedsReview: meta.import_needs_review === "1",
     isDemo: meta.is_demo === "1",

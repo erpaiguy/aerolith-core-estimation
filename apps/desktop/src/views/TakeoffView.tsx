@@ -175,6 +175,7 @@ export function TakeoffView({
   locked,
   filterColumns = [],
   billSwitcher,
+  find,
 }: {
   items: WorkingItem[];
   lines: QtoLine[];
@@ -186,8 +187,10 @@ export function TakeoffView({
   locked?: boolean;
   filterColumns?: BoqColumnDef[];
   billSwitcher?: ReactNode;
+  find?: string;
 }) {
-  const [query, setQuery] = useState("");
+  const [localQuery, setLocalQuery] = useState("");
+  const query = find ?? localQuery;
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [cat, setCat] = useState("All");
   const priced = useMemo(() => items.filter((i) => i.kind === "item"), [items]);
@@ -450,13 +453,15 @@ export function TakeoffView({
       <aside className="takeoff-items" aria-label="Bill items">
         <div className="takeoff-items-tools">
           {billSwitcher}
+          {find == null ? (
           <input
             className="takeoff-search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={localQuery}
+            onChange={(e) => setLocalQuery(e.target.value)}
             placeholder="Search items"
             aria-label="Search items"
           />
+          ) : null}
           {filterColumns.map((c) => (
             <input
               key={c.id}

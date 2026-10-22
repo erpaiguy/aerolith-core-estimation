@@ -1,5 +1,5 @@
 import { formatMoney, formatPct, moneyClose, configureDisplayFormat, mergeDisplayFormat } from "@aerolith/shared";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { emptyProject, loadCampusSampleProject, loadReferenceProject } from "./loadReference";
 import type { Activity, LoadedProject, QtoLine, WorkingItem } from "./model";
 import { GOLDEN_TOTAL, hasAnalysisBackup, inferParents, newId, stampItem } from "./model";
@@ -44,11 +44,14 @@ import {
   visibleItems,
 } from "./bills";
 import { BoqSplit } from "./ui/BillSwitcher";
+import { BoqChips, StageBar, Subnav, type StageId } from "./views/FrameChrome";
 import { mergeReportFormat, type ReportFormat, type StoredReportTemplate } from "./reportFormat";
 import type { ReportFormatPack } from "./views/ReportDesigner";
 import { BuyView } from "./views/BuyView";
 import { ConflictQueue } from "./views/ConflictQueue";
 import { DashboardView } from "./views/DashboardView";
+import { FinaliseView } from "./views/FinaliseView";
+import type { FinalisePane, SubmissionIssue } from "./finalise";
 import { MarginsView } from "./views/MarginsView";
 import { HomeView } from "./views/HomeView";
 import { ImportWizard } from "./views/ImportWizard";
@@ -56,7 +59,7 @@ import { LicensePanel } from "./views/LicensePanel";
 import { LoginView } from "./views/LoginView";
 import { SplashShell } from "./views/SplashShell";
 import { PrintProvider } from "./print/context";
-import { Sidebar, type SidebarTarget } from "./views/Sidebar";
+import { AppBar, ThemeButton } from "./views/AppBar";
 import { applyTheme, readTheme, type ThemeName } from "./theme";
 import { checkForUpdate, updatesAutoEnabled, type UpdateOffer } from "./updates";
 import { cloneResourceMaster, pushRateToMaster } from "./resourceMaster";
@@ -69,6 +72,8 @@ import { EstimateView, Inspector, SourceView, SubmitView } from "./views/Workspa
 import { TakeoffInspector, TakeoffView } from "./views/TakeoffView";
 import { RateAnalysisView } from "./views/RateAnalysisView";
 import { usePersistedNumber } from "./ui/useLayoutSize";
+import { createHistory, pushHistory, redoHistory, undoHistory } from "./editHistory";
+import { itemInFocus, type LineFocus } from "./lineFocus";
 
 type Screen = "login" | "owner" | "home" | "import" | "project";
 
@@ -77,7 +82,26 @@ export function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [screen, setScreen] = useState<Screen>("login");
   const [project, setProject] = useState<LoadedProject | null>(null);
+  const [lineFocus, setLineFocus] = useState<LineFocus | null>(null);
+  const [frameQuery, setFrameQuery] = useState("");
+  const [histTick, setHistTick] = useState(0);
+  const historyRef = useRef(createHistory<LoadedProject>());
+  const projectRef = useRef<LoadedProject | null>(null);
+  const undoRef = useRef<() => void>(() => undefined);
+  const redoRef = useRef<() => void>(() => undefined);
+  projectRef.current = project;
+  const focusKeys = useMemo(() => {
+    if (!lineFocus || !project) return null;
+    const keys = new Set<string>();
+    for (const item of project.items) {
+      if (itemInFocus(item, lineFocus, project.itemQuotes)) keys.add(itemKeyOf(item));
+    }
+    return keys;
+  }, [lineFocus, project]);
   const [activity, setActivity] = useState<Activity>("estimate");
+  const [finalisePane, setFinalisePane] = useState<FinalisePane>("summary");
+  const [settingsTab, setSettingsTab] = useState<"license" | "legal">("license");
+  const [settingsFocus, setSettingsFocus] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [qtoLineId, setQtoLineId] = useState<string | null>(null);
   const [rateCode, setRateCode] = useState<string | null>(null);
@@ -91,13 +115,10 @@ export function App() {
   const inspectorW = usePersistedNumber("aerolith-split:inspector", 300, 220, 560);
   const license = useAerolithLicense();
   const [theme, setTheme] = useState<ThemeName>(readTheme);
-  const [navCollapsed, setNavCollapsed] = useState(() => {
-    try {
-      return localStorage.getItem("bidcraft.navCollapsed") === "1";
-    } catch {
-      return false;
-    }
-  });
+  function chooseTheme(next: ThemeName) {
+    setTheme(next);
+    applyTheme(next);
+  }
   const [masterTab, setMasterTab] = useState<"units" | "categories" | "vendors" | "resources">("units");
   const [updateOffer, setUpdateOffer] = useState<UpdateOffer | null>(null);
   const [updateBusy, setUpdateBusy] = useState(false);
@@ -105,6 +126,22 @@ export function App() {
   useEffect(() => {
     if (!updatesAutoEnabled()) return;
     void checkForUpdate().then(setUpdateOffer).catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.altKey || !(event.ctrlKey || event.metaKey)) return;
+      const key = event.key.toLowerCase();
+      const undoKey = key === "z" && !event.shiftKey;
+      const redoKey = key === "y" || (key === "z" && event.shiftKey);
+      if (!undoKey && !redoKey) return;
+      if (!projectRef.current) return;
+      event.preventDefault();
+      if (undoKey) undoRef.current();
+      else redoRef.current();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   useEffect(() => {
@@ -130,7 +167,7 @@ export function App() {
   const licenseLine = license.session.isAuthenticated ? describeLicense(license.session) : "";
   const roleEdit = (mod: string) => can(session, mod, "edit");
   const permModule =
-    activity === "analysis" || activity === "queries" || activity === "margins" ? "estimate" : activity;
+    activity === "analysis" || activity === "queries" || activity === "margins" || activity === "finalise" ? "estimate" : activity;
   const sealed = Boolean(project?.sealedAt);
   const editLocked =
     licenseReadOnly || sealed || (session?.kind === "tenant" && !roleEdit(permModule));
@@ -185,8 +222,43 @@ export function App() {
     applyPlatform(nextPlat);
   }
 
+  function clearHistory() {
+    historyRef.current = createHistory();
+    setHistTick((tick) => tick + 1);
+  }
+
+  function noteEdit(current: LoadedProject) {
+    historyRef.current = pushHistory(historyRef.current, current);
+    setHistTick((tick) => tick + 1);
+  }
+
+  function undo() {
+    const current = projectRef.current;
+    if (!current) return;
+    const step = undoHistory(historyRef.current, current);
+    if (!step) return;
+    historyRef.current = step.history;
+    setProject(withResults(step.value));
+    setHistTick((tick) => tick + 1);
+  }
+
+  function redo() {
+    const current = projectRef.current;
+    if (!current) return;
+    const step = redoHistory(historyRef.current, current);
+    if (!step) return;
+    historyRef.current = step.history;
+    setProject(withResults(step.value));
+    setHistTick((tick) => tick + 1);
+  }
+
+  undoRef.current = undo;
+  redoRef.current = redo;
+
   function openProject(next: LoadedProject, path?: string | null) {
     const live = withResults(next);
+    clearHistory();
+    setLineFocus(null);
     setProject(live);
     setActivity("dashboard");
     setSelected(null);
@@ -228,6 +300,8 @@ export function App() {
 
   function signOut() {
     void license.logout().then(() => {
+      clearHistory();
+      setLineFocus(null);
       setSession(null);
       setProject(null);
       setFilePath(null);
@@ -325,6 +399,7 @@ export function App() {
     if (licenseReadOnly) return;
     if (session?.kind === "tenant" && !can(session, permModule, "edit") && kind === "edit") return;
     if (project?.sealedAt && kind === "edit") return;
+    if (project) noteEdit(project);
     setProject(withResults({ ...next, isDemo: false }));
   }
 
@@ -487,6 +562,7 @@ export function App() {
     const row = conflicts.find((c) => c.id === id);
     if (!row) return;
     if (side === "replica") {
+      noteEdit(project);
       setProject(withResults({ ...applyReplicaPick(project, replica, row), isDemo: false }));
     }
     setConflicts(conflicts.filter((c) => c.id !== id));
@@ -583,6 +659,8 @@ export function App() {
       <LoginView
         busy={license.busy}
         error={license.error}
+        theme={theme}
+        onTheme={chooseTheme}
         onSubmit={(email, password) => {
           void license.login(email, password).then((ok) => {
             if (!ok) return;
@@ -592,6 +670,8 @@ export function App() {
         }}
         onSignup={license.openSignup}
         onPricing={license.openPricing}
+        onRequestReset={(email) => license.requestPasswordReset(email)}
+        onResetPassword={(email, proof, password, confirm) => license.resetPassword(email, proof, password, confirm)}
       />
     );
   }
@@ -604,6 +684,8 @@ export function App() {
     return (
       <OwnerView
         platform={platform}
+        theme={theme}
+        onTheme={chooseTheme}
         onPlatform={applyPlatform}
         onImpersonate={(s) => {
           setSession(s);
@@ -620,6 +702,8 @@ export function App() {
   if (screen === "import") {
     return (
       <ImportWizard
+        theme={theme}
+        onTheme={chooseTheme}
         currency={displayFormat.currency}
         catalog={effectiveCatalog(liveTenant)}
         appendTo={importMode !== "create" ? project : null}
@@ -658,6 +742,8 @@ export function App() {
         onOpenPath={(path) => void openAeroFile(path)}
         accountName={license.session.displayName || license.session.email}
         licenseLine={licenseLine}
+        theme={theme}
+        onTheme={chooseTheme}
         onSignOut={signOut}
         onOwnerPortal={session.kind === "owner" ? () => setScreen("owner") : undefined}
       />
@@ -687,6 +773,7 @@ export function App() {
     activity === "source" ||
     activity === "dashboard" ||
     activity === "margins" ||
+    activity === "finalise" ||
     activity === "masters" ||
     activity === "settings";
   const whoLabel =
@@ -704,8 +791,25 @@ export function App() {
   const formulaItem = sel?.kind === "item" ? sel : null;
   const inspectorVisible = showInspector && inspectorOpen;
 
+  function openException(kind: LineFocus) {
+    if (!project) return;
+    const matches = project.items.filter((item) => itemInFocus(item, kind, project.itemQuotes));
+    const inBill = billFocus ? matches.filter((item) => item.billId === billFocus) : matches;
+    const first = inBill[0] ?? matches[0];
+    setLineFocus(kind);
+    if (first && first.billId !== billFocus) setBillFocus(first.billId);
+    if (kind === "missing") {
+      if (first) openRate(itemKeyOf(first));
+      else setActivity("analysis");
+      return;
+    }
+    if (first) setSelected(itemKeyOf(first));
+    setActivity("estimate");
+  }
+
   function goTo(id: Activity) {
     if (!project) return;
+    setLineFocus(null);
     if (id === "takeoff") {
       const items = shownItems.filter((i) => i.kind === "item");
       const keep = selected && items.some((i) => itemKeyOf(i) === selected) ? selected : null;
@@ -732,72 +836,125 @@ export function App() {
     setActivity(id);
   }
 
-  function canView(id: Activity) {
-    if (!session) return false;
-    return (
-      can(session, id === "analysis" || id === "queries" || id === "margins" ? "estimate" : id, "view") ||
-      (id === "settings" && session.kind === "owner")
-    );
+  const stage: StageId | "utility" =
+    activity === "dashboard"
+      ? "overview"
+      : activity === "source"
+        ? "source"
+        : activity === "takeoff"
+          ? "measure"
+          : activity === "estimate" || activity === "analysis"
+            ? "price"
+            : activity === "margins" || activity === "buy" || activity === "queries"
+              ? "commercial"
+              : activity === "submit" || activity === "finalise"
+                ? "submit"
+                : "utility";
+
+  function openStage(id: StageId) {
+    if (id === "overview") goTo("dashboard");
+    else if (id === "source") goTo("source");
+    else if (id === "measure") goTo("takeoff");
+    else if (id === "price") goTo("estimate");
+    else if (id === "commercial") {
+      if (activity === "buy" || activity === "queries" || activity === "margins") return;
+      goTo("margins");
+    } else if (activity !== "submit" && activity !== "finalise") goTo("submit");
   }
+
+  const canUndo = histTick >= 0 && historyRef.current.past.length > 0;
+  const submitStep = activity === "submit" ? "summary" : finalisePane === "pack" ? "seal" : finalisePane === "checks" ? "checks" : "summary";
 
   return (
     <div
-      className={`app shell ${navCollapsed ? "nav-collapsed" : ""} ${editLocked ? "readonly" : ""} ${inspectorVisible ? "inspector-open" : "no-inspector"}`}
+      className={`app shell frame ${stage === "utility" ? "utility" : ""} ${editLocked ? "readonly" : ""} ${inspectorVisible ? "inspector-open" : "no-inspector"}`}
       style={inspectorVisible ? ({ ["--inspector-w"]: `${inspectorW.value}px` } as CSSProperties) : undefined}
     >
-      <Sidebar
-        activity={activity}
-        masterOpen={masterTab === "resources"}
-        collapsed={navCollapsed}
-        theme={theme}
+      <AppBar
         projectName={project.name}
         revision={`${project.sealedAt ? `sealed r${project.revision}` : `r${project.revision}`}${
           license.session.isAuthenticated
             ? ` · ${licenseReadOnly ? "read-only · " : ""}${planDisplayName(license.session.planCode)}`
             : ""
         }`}
-        total={formatMoney(total, project.currency)}
-        user={`${initials} · ${session.kind === "owner" ? "owner" : session.role.name}`}
-        trial={licenseBanner(license.session)}
-        showInspector={showInspector}
-        inspectorOpen={inspectorOpen}
-        canView={canView}
-        onNavigate={(id: SidebarTarget) => {
-          if (id === "resources") {
-            setMasterTab("resources");
-            goTo("masters");
-            return;
-          }
-          if (id === "masters") setMasterTab("units");
-          goTo(id);
+        user={initials}
+        actions={
+          <>
+            <input
+              className="frame-search"
+              value={frameQuery}
+              placeholder="Search items"
+              aria-label="Search items"
+              onChange={(e) => setFrameQuery(e.target.value)}
+            />
+            <button type="button" disabled={!canUndo} onClick={undo}>
+              Undo
+            </button>
+            <ThemeButton theme={theme} onTheme={chooseTheme} />
+          </>
+        }
+        menu={{
+          label: "File",
+          items: [
+            { label: "Open", onSelect: () => void openAeroFile() },
+            { label: "Save", onSelect: () => void saveAero() },
+            {
+              label: "Close",
+              onSelect: () => {
+                clearHistory();
+                setLineFocus(null);
+                setProject(null);
+                setFilePath(null);
+                setRateCode(null);
+                setQtoLineId(null);
+                setSaveMsg("");
+                setScreen("home");
+              },
+            },
+            {
+              label: "Undo",
+              separatorBefore: true,
+              disabled: histTick < 0 || historyRef.current.past.length === 0,
+              onSelect: undo,
+            },
+            {
+              label: "Redo",
+              disabled: historyRef.current.future.length === 0 || histTick < 0,
+              onSelect: redo,
+            },
+            ...(showInspector
+              ? [
+                  {
+                    label: inspectorOpen ? "Hide inspector" : "Inspector",
+                    onSelect: () => setInspectorOpen((v) => !v),
+                  },
+                ]
+              : []),
+            {
+              label: "Library",
+              separatorBefore: true,
+              onSelect: () => {
+                setMasterTab("units");
+                goTo("masters");
+              },
+            },
+            {
+              label: "Settings",
+              onSelect: () => goTo("settings"),
+            },
+            {
+              label: "Legal",
+              onSelect: () => {
+                setSettingsTab("legal");
+                setSettingsFocus((n) => n + 1);
+                goTo("settings");
+              },
+            },
+          ],
         }}
-        onToggle={() => {
-          setNavCollapsed((value) => {
-            const next = !value;
-            try {
-              localStorage.setItem("bidcraft.navCollapsed", next ? "1" : "0");
-            } catch {
-              /* ignore */
-            }
-            return next;
-          });
-        }}
-        onTheme={(next) => {
-          setTheme(next);
-          applyTheme(next);
-        }}
-        onClose={() => {
-          setProject(null);
-          setFilePath(null);
-          setRateCode(null);
-          setQtoLineId(null);
-          setSaveMsg("");
-          setScreen("home");
-        }}
-        onOpen={() => void openAeroFile()}
-        onSave={() => void saveAero()}
-        onToggleInspector={() => setInspectorOpen((v) => !v)}
       />
+      {stage === "utility" ? null : <StageBar active={stage} onPick={openStage} />}
+      {stage === "utility" ? null : <BoqChips project={project} value={billFocus} onChange={setBillFocus} />}
       <div className="shell-banners">
         {updateOffer ? (
           <div className="banner" role="status">
@@ -838,11 +995,53 @@ export function App() {
       </div>
       <main className={`stage ${fillStage ? "stage-fill" : ""}`}>
         <PrintProvider project={project} format={reportFormat}>
+        {stage === "commercial" ? (
+          <Subnav
+            label="Commercial"
+            active={activity}
+            items={[
+              ["margins", "Margins"],
+              ["buy", "Resource prices"],
+              ["queries", "Client queries"],
+            ]}
+            onPick={(id) => goTo(id as Activity)}
+          />
+        ) : null}
+        {stage === "submit" ? (
+          <Subnav
+            label="Submit"
+            active={submitStep}
+            items={[
+              ["summary", "Summary"],
+              ["checks", "Checks"],
+              ["seal", "Seal"],
+            ]}
+            onPick={(id) => {
+              if (id === "summary") goTo("submit");
+              else if (id === "checks") {
+                setFinalisePane("checks");
+                goTo("finalise");
+              } else {
+                setFinalisePane("pack");
+                goTo("finalise");
+              }
+            }}
+          />
+        ) : null}
+        {stage === "utility" ? (
+          <div className="subnav">
+            <button type="button" onClick={() => goTo("estimate")}>
+              Back to job
+            </button>
+          </div>
+        ) : null}
+        <div className="stage-body">
         {activity === "dashboard" ? (
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-dashboard">
             <DashboardView
               project={project}
               billId={billFocus}
+              onOpenException={openException}
               license={
                 <LicensePanel
                   session={license.session}
@@ -878,6 +1077,10 @@ export function App() {
             addDisabled={!billFocus}
             bills={!billFocus ? sortedBills(project) : []}
             clientLocked={(id) => billSourceLocked(project, id)}
+            lineFocus={lineFocus}
+            focusKeys={focusKeys}
+            onClearLineFocus={() => setLineFocus(null)}
+            find={frameQuery}
             tools={
               <>
                 <button
@@ -928,8 +1131,15 @@ export function App() {
             onSelect={openRate}
             onPatch={patchItem}
             onProject={(next) => commit(next)}
-            onBack={() => setActivity("estimate")}
+            onBack={() => {
+              setLineFocus(null);
+              setActivity("estimate");
+            }}
             billId={billFocus}
+            lineFocus={lineFocus}
+            focusKeys={focusKeys}
+            onClearLineFocus={() => setLineFocus(null)}
+            find={frameQuery}
           />
           </BoqSplit>
         ) : null}
@@ -974,6 +1184,7 @@ export function App() {
             onChangeLines={setQto}
             locked={editLocked}
             filterColumns={filterableColumns(project)}
+            find={frameQuery}
           />
           </BoqSplit>
         ) : null}
@@ -996,6 +1207,24 @@ export function App() {
             <BuyView project={project} locked={editLocked} onProject={(next) => commit(next)} billId={billFocus} />
             </BoqSplit>
           </>
+        ) : null}
+        {activity === "finalise" ? (
+          <FinaliseView
+            project={project}
+            locked={editLocked}
+            pane={finalisePane}
+            onPane={setFinalisePane}
+            onProject={(next) => commit(next)}
+            onJump={(issue: SubmissionIssue) => {
+              if (issue.pane) setFinalisePane(issue.pane);
+              if (issue.itemKey) {
+                setSelected(issue.itemKey);
+                const item = findItemByKey(project.items, issue.itemKey);
+                if (item) setBillFocus(item.billId);
+              }
+              if (issue.activity !== "finalise") setActivity(issue.activity);
+            }}
+          />
         ) : null}
         {activity === "submit" ? (
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-submit">
@@ -1078,7 +1307,7 @@ export function App() {
             onPromote={requestPromote}
             onCompareReplica={() => void compareReplica()}
             project={project}
-            onProject={(next) => setProject(withResults(next))}
+            onProject={(next) => commit(next)}
             license={license.session}
             licenseBusy={license.busy}
             onRefreshLicense={() => void license.refresh()}
@@ -1086,12 +1315,12 @@ export function App() {
             onPricing={license.openPricing}
             onSignOut={signOut}
             theme={theme}
-            onTheme={(next) => {
-              setTheme(next);
-              applyTheme(next);
-            }}
+            onTheme={chooseTheme}
+            initialTab={settingsTab}
+            settingsFocus={settingsFocus}
           />
         ) : null}
+        </div>
         </PrintProvider>
       </main>
       {inspectorVisible ? (
@@ -1155,16 +1384,29 @@ export function App() {
       </aside>
       ) : null}
       <footer className="status" role="status">
-        <span>
+        <span title={focusBill ? `${focusBill.code} ${focusBill.name}` : undefined}>
           Ready
-          {focusBill ? ` · ${focusBill.name}` : ""}
+          {focusBill ? ` · ${focusBill.code}` : ""}
           {` · ${priced.length} items`}
           {focusBill && billSourceLocked(project, focusBill.id) ? " · Client BOQ locked" : ""}
         </span>
-        <span>{unpriced} unpriced</span>
-        <span>{diffs} qty diffs</span>
-        <span>{missing} missing analysis</span>
-        {saveMsg ? <span className="status-msg">{saveMsg}</span> : null}
+        <button type="button" className="status-link" onClick={() => openException("unpriced")}>
+          {unpriced} unpriced
+        </button>
+        <button type="button" className="status-link" onClick={() => openException("missing")}>
+          {missing} missing analysis
+        </button>
+        <span>{project.currency}</span>
+        <button
+          type="button"
+          className="status-link status-low"
+          title={`Qty ${displayFormat.qtyDecimals} · Rate ${displayFormat.rateDecimals} · Amt ${displayFormat.amountDecimals} decimals`}
+          onClick={() => openException("diff")}
+        >
+          {`${diffs} diffs · ${displayFormat.qtyDecimals}/${displayFormat.rateDecimals}/${displayFormat.amountDecimals}`}
+        </button>
+        <span className="status-msg">{saveMsg || "Not saved"}</span>
+        {licenseBanner(license.session) ? <span>{licenseBanner(license.session)}</span> : null}
         <span className={`grand ${green ? "ok" : ""}`}>
           {green ? "GREEN " : ""}
           {formatMoney(total, project.currency)}
