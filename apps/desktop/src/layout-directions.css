@@ -1,0 +1,188 @@
+/*
+  Centre arrangements. data-layout is standard | folio | desk | board.
+  Theme style and light/dark tokens stay in charge of colour, type, radius, and padding.
+*/
+
+html[data-layout="folio"] .stage-body > .module-workspace,
+html[data-layout="folio"] .stage-body > .dashboard-view,
+html[data-layout="folio"] .stage-body > .settings-layout,
+html[data-layout="folio"] .home-frame {
+  width: min(960px, 100%);
+  margin-inline: auto;
+}
+
+html[data-layout="folio"] .home-frame,
+html[data-layout="folio"] .takeoff-layout > .split,
+html[data-layout="folio"] .rate-layout > .split,
+html[data-layout="folio"] .settings-layout > .split,
+html[data-layout="folio"] .margins-body,
+html[data-layout="folio"] .login-stage {
+  display: flex !important;
+  flex-direction: column !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout="folio"] .rate-band,
+html[data-layout="folio"] .takeoff-item,
+html[data-layout="folio"] .kpi,
+html[data-layout="folio"] .note,
+html[data-layout="folio"] .sample-job,
+html[data-layout="folio"] .file-row {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+  padding: var(--pad-card-y, 12px) var(--pad-card-x, 16px);
+}
+
+html[data-layout="folio"] .rate-editor .kpis,
+html[data-layout="folio"] .dashboard-view .kpis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-card, 16px);
+}
+
+html[data-layout="folio"] .rate-mid {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  overflow-x: auto;
+}
+
+html[data-layout="folio"] .rate-track { transform: none; }
+html[data-layout="folio"] .rate-factor-nav { display: none; }
+html[data-layout="folio"] .rate-res.rate-c input.cell { display: block; }
+
+html[data-layout="desk"] .home-frame,
+html[data-layout="desk"] .takeoff-layout > .split,
+html[data-layout="desk"] .rate-layout > .split,
+html[data-layout="desk"] .settings-layout > .split,
+html[data-layout="desk"] .margins-body,
+html[data-layout="desk"] .login-stage,
+html[data-layout="desk"] .print-window {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) !important;
+  width: 100%;
+  max-width: none;
+}
+
+html[data-layout="desk"] .dashboard-view .dash-body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+  gap: var(--gap-card, 16px);
+  align-content: start;
+}
+
+html[data-layout="desk"] .takeoff-items,
+html[data-layout="desk"] .rate-editor,
+html[data-layout="desk"] .settings-pane,
+html[data-layout="desk"] .settings-nav,
+html[data-layout="desk"] .margins-pane,
+html[data-layout="desk"] .home-recent,
+html[data-layout="desk"] .home-samples,
+html[data-layout="desk"] .login-panel,
+html[data-layout="desk"] .login-hero {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+  padding: var(--pad-card-y, 12px) var(--pad-card-x, 16px);
+  min-width: 0;
+}
+
+html[data-layout="board"] .home-frame,
+html[data-layout="board"] .dashboard-view .dash-body,
+html[data-layout="board"] .margins-body,
+html[data-layout="board"] .settings-layout > .split {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: var(--gap-card, 16px);
+  width: 100%;
+  align-content: start;
+}
+
+html[data-layout="board"] .rate-sheet,
+html[data-layout="board"] .dashboard-view .kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--gap-card, 16px);
+}
+
+html[data-layout="board"] .rate-band.rate-head { grid-column: 1 / -1; }
+
+html[data-layout="board"] .rate-band,
+html[data-layout="board"] .sample-job,
+html[data-layout="board"] .file-row,
+html[data-layout="board"] .kpi,
+html[data-layout="board"] .note,
+html[data-layout="board"] .margins-pane {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-2);
+  padding: var(--pad-card-y, 12px) var(--pad-card-x, 16px);
+  min-width: 0;
+}
+
+html[data-layout="board"] .rate-mid {
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+html[data-layout="board"] .rate-track { transform: none; }
+html[data-layout="board"] .rate-factor-nav { display: none; }
+
+.module-toolbar button,
+.subnav button,
+.stage-bar button,
+.boq-chips button,
+.print-window-card button,
+.home-rail button,
+.dialog .actions button,
+.modal .actions button {
+  white-space: nowrap;
+}
+
+.num,
+.grand,
+.kpi b,
+.rate-c.num,
+.status .grand {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+@media (max-width: 1100px) {
+  html[data-layout="folio"] .rate-editor .kpis,
+  html[data-layout="folio"] .dashboard-view .kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  html[data-layout="desk"] .home-frame,
+  html[data-layout="desk"] .takeoff-layout > .split,
+  html[data-layout="desk"] .rate-layout > .split,
+  html[data-layout="desk"] .settings-layout > .split,
+  html[data-layout="desk"] .margins-body,
+  html[data-layout="desk"] .login-stage,
+  html[data-layout="desk"] .dashboard-view .dash-body,
+  html[data-layout="desk"] .print-window {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  html[data-layout="board"] .home-frame,
+  html[data-layout="board"] .dashboard-view .dash-body,
+  html[data-layout="board"] .margins-body,
+  html[data-layout="board"] .settings-layout > .split {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 720px) {
+  html[data-layout="board"] .home-frame,
+  html[data-layout="board"] .dashboard-view .dash-body,
+  html[data-layout="board"] .margins-body {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}

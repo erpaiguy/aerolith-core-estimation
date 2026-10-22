@@ -8,9 +8,12 @@
       try {
         var theme = localStorage.getItem("bidcraft.theme");
         var style = localStorage.getItem("bidcraft.themeStyle");
+        var layout = localStorage.getItem("bidcraft.layout");
         var known = { minimal: 1, spreadsheet: 1, modern: 1, cards: 1, enterprise: 1 };
+        var layouts = { standard: 1, folio: 1, desk: 1, board: 1 };
         document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
         document.documentElement.dataset.style = known[style] ? style : "minimal";
+        document.documentElement.dataset.layout = layouts[layout] ? layout : "standard";
       } catch (e) {}
     </script>
   </head>

@@ -17,12 +17,14 @@ import "@fontsource/ibm-plex-sans/700.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
-import { bootTheme, bootThemeStyle } from "./theme";
+import { bootLayout, bootTheme, bootThemeStyle } from "./theme";
 import "./styles.css";
 import "./theme-direction.css";
+import "./layout-directions.css";
 
 bootTheme();
 bootThemeStyle();
+bootLayout();
 document.title = "Bid Craft";
 
 function isBenignResizeObserver(err: unknown): boolean {

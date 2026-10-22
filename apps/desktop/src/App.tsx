@@ -1384,9 +1384,9 @@ export function App() {
       </aside>
       ) : null}
       <footer className="status" role="status">
-        <span>
+        <span title={focusBill ? `${focusBill.code} ${focusBill.name}` : undefined}>
           Ready
-          {focusBill ? ` · ${focusBill.name}` : ""}
+          {focusBill ? ` · ${focusBill.code}` : ""}
           {` · ${priced.length} items`}
           {focusBill && billSourceLocked(project, focusBill.id) ? " · Client BOQ locked" : ""}
         </span>

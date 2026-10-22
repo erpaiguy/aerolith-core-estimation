@@ -29,7 +29,7 @@ import { LegalBrowser } from "./LegalDocs";
 import { PublisherMark } from "./Brand";
 import { convertMasterRates } from "../resourceMaster";
 import { convertProjectCurrency } from "../projectResourceMaster";
-import { applyTheme, applyThemeStyle, readThemeStyle, THEME_STYLES, type ThemeName, type ThemeStyle } from "../theme";
+import { applyLayout, applyTheme, applyThemeStyle, LAYOUTS, readLayout, readThemeStyle, THEME_STYLES, type LayoutId, type ThemeName, type ThemeStyle } from "../theme";
 import { checkForUpdate, setUpdatesAutoEnabled, updatesAutoEnabled, type UpdateOffer } from "../updates";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
@@ -106,6 +106,7 @@ export function SettingsView({
   const [updateMsg, setUpdateMsg] = useState("");
   const [updateBusy, setUpdateBusy] = useState(false);
   const [themeStyle, setThemeStyle] = useState<ThemeStyle>(readThemeStyle);
+  const [layout, setLayout] = useState<LayoutId>(readLayout);
   if (session.kind !== "tenant") {
     return <p className="hint">Settings belong to a tenant workspace.</p>;
   }
@@ -149,6 +150,10 @@ export function SettingsView({
 
   function chooseStyle(next: ThemeStyle) {
     setThemeStyle(applyThemeStyle(next));
+  }
+
+  function chooseLayout(next: LayoutId) {
+    setLayout(applyLayout(next));
   }
 
   function patchNumbers(patch: Partial<DisplayFormat>) {
@@ -321,8 +326,23 @@ export function SettingsView({
       <div className="settings-section">
         <h2 className="view">Appearance</h2>
         <p className="hint">
-          Theme style sets type, density, and panels. Light and dark apply to the style you choose.
+          Layout sets how the centre panels are arranged. Theme style sets type, density, and colour. Light and dark apply to both.
         </p>
+        <fieldset className="theme-style-picker">
+          <legend>Layout</legend>
+          {LAYOUTS.map((item) => (
+            <label key={item.id} className={layout === item.id ? "on" : ""}>
+              <input
+                type="radio"
+                name="layout"
+                value={item.id}
+                checked={layout === item.id}
+                onChange={() => chooseLayout(item.id)}
+              />
+              {item.label}
+            </label>
+          ))}
+        </fieldset>
         <fieldset className="theme-style-picker">
           <legend>Theme style</legend>
           {THEME_STYLES.map((style) => (

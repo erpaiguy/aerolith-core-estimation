@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyThemeStyle, parseThemeStyle, readThemeStyle, THEME_STYLES } from "./theme";
+import { applyLayout, applyThemeStyle, LAYOUTS, parseLayout, parseThemeStyle, readLayout, readThemeStyle, THEME_STYLES } from "./theme";
 
 describe("theme style", () => {
   it("defaults to clean minimal", () => {
@@ -21,6 +21,24 @@ describe("theme style", () => {
     for (const style of THEME_STYLES) {
       expect(parseThemeStyle(style.id)).toBe(style.id);
       expect(applyThemeStyle(style.id)).toBe(style.id);
+    }
+  });
+});
+
+describe("layout", () => {
+  it("defaults to the 1.4.0 standard arrangement", () => {
+    expect(parseLayout(null)).toBe("standard");
+    expect(parseLayout("excel")).toBe("standard");
+    expect(readLayout()).toBe("standard");
+    expect(LAYOUTS.map((item) => item.label)).toEqual([
+      "1.4.0 standard",
+      "Tender folio",
+      "Split desk",
+      "Section board",
+    ]);
+    for (const item of LAYOUTS) {
+      expect(parseLayout(item.id)).toBe(item.id);
+      expect(applyLayout(item.id)).toBe(item.id);
     }
   });
 });
