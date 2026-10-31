@@ -5,13 +5,13 @@ import { emptyProject, loadCampusSampleProject, loadReferenceProject } from "./l
 import type { Activity, LoadedProject, WorkingItem } from "./model";
 import { GOLDEN_TOTAL, hasAnalysisBackup, inferParents, newId, stampItem } from "./model";
 import { useAerolithLicense } from "./auth/useAerolithLicense";
-import { allowsData, describeLicense, licenseBanner, resolveAccess } from "./auth/licenseState";
-import { planDisplayName } from "./auth/subscriptionPlans";
+import { allowsData, describeLicense, resolveAccess } from "./auth/licenseState";
 import {
   can,
   ensurePlatform,
   logAudit,
   pushRecent,
+  recents,
   savePlatform,
   saveTenantCatalog,
   sessionScope,
@@ -58,6 +58,10 @@ import { LoginView } from "./views/LoginView";
 import { SplashShell } from "./views/SplashShell";
 import { PrintProvider } from "./print/context";
 import { Sidebar, type SidebarTarget } from "./views/Sidebar";
+import { TopBar } from "./views/TopBar";
+import { ReportsView } from "./views/ReportsView";
+import { BuyShell, MastersShell, SourceShell, SubmitShell } from "./views/ModuleShells";
+import { auditWorkspace } from "./dimensionWorkspace";
 import { applyTheme, readTheme, type ThemeName } from "./theme";
 import { checkForUpdate, updatesAutoEnabled, type UpdateOffer } from "./updates";
 import { cloneResourceMaster, pushRateToMaster } from "./resourceMaster";
@@ -109,6 +113,7 @@ export function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
   const [phraseOpen, setPhraseOpen] = useState(false);
+  const [portfolioPane, setPortfolioPane] = useState<"home" | "settings">("home");
 
   useEffect(() => {
     if (!updatesAutoEnabled()) return;
@@ -185,7 +190,11 @@ export function App() {
   const licenseLine = license.session.isAuthenticated ? describeLicense(license.session) : "";
   const roleEdit = (mod: string) => can(session, mod, "edit");
   const permModule =
-    activity === "analysis" || activity === "queries" || activity === "margins" ? "estimate" : activity;
+    activity === "analysis" || activity === "queries" || activity === "margins"
+      ? "estimate"
+      : activity === "reports"
+        ? "dashboard"
+        : activity;
   const sealed = Boolean(project?.sealedAt);
   const editLocked =
     licenseReadOnly || sealed || (session?.kind === "tenant" && !roleEdit(permModule));
@@ -706,25 +715,130 @@ export function App() {
   }
 
   if (screen === "home" || !project) {
+    const homeUser =
+      license.session.displayName ||
+      license.session.email ||
+      (session.kind === "owner" ? "Owner" : session.role.name);
+    const homeNotices = project
+      ? auditWorkspace(project).slice(0, 8).map((issue) => ({ id: issue.id, title: issue.label, detail: issue.detail }))
+      : [];
+    const homeScope = workspaceId ?? sessionScope(session);
     return (
-      <HomeView
-        session={session}
-        canImport={can(session, "import", "import") || can(session, "import", "edit")}
-        onNew={openNew}
-        onOpen={() => void openAeroFile()}
-        onSampleSingle={openReference}
-        onSampleCampus={openCampusSample}
-        onImport={() => {
-          setImportMode("create");
-          setScreen("import");
-        }}
-        onOpenPath={(path) => void openAeroFile(path)}
-        onRestore={readRecovery() ? restoreDraft : undefined}
-        accountName={license.session.displayName || license.session.email}
-        licenseLine={licenseLine}
-        onSignOut={signOut}
-        onOwnerPortal={session.kind === "owner" ? () => setScreen("owner") : undefined}
-      />
+      <div className={`app shell enterprise ${navCollapsed ? "nav-collapsed" : ""}`}>
+        <Sidebar
+          activity={portfolioPane === "settings" ? "settings" : "dashboard"}
+          homeActive={portfolioPane === "home"}
+          masterOpen={false}
+          collapsed={navCollapsed}
+          theme={theme}
+          canView={canView}
+          onNavigate={(id) => {
+            if (id === "settings" && !project) {
+              setPortfolioPane("settings");
+              return;
+            }
+            if (!project || id === "home") return;
+            setScreen("project");
+            if (id === "resources") {
+              setMasterTab("resources");
+              setActivity("masters");
+              return;
+            }
+            setActivity(id);
+          }}
+          onHome={() => {
+            setPortfolioPane("home");
+            setScreen("home");
+          }}
+          onToggle={() => setNavCollapsed((value) => !value)}
+          onTheme={(next) => {
+            setTheme(next);
+            applyTheme(next);
+          }}
+        />
+        <TopBar
+          projectName={project?.name ?? "No open project"}
+          projectValue={project ? "Open job" : "—"}
+          user={homeUser}
+          licenseLine={licenseLine}
+          notices={homeNotices}
+          recents={homeScope ? recents(homeScope) : []}
+          onCommand={() => setPaletteOpen(true)}
+          onPickRecent={(path) => void openAeroFile(path)}
+          onSignOut={signOut}
+          onOwner={session.kind === "owner" ? () => setScreen("owner") : undefined}
+        />
+        <main className="stage stage-fill enterprise-stage">
+          {portfolioPane === "settings" ? (
+            <SettingsView
+              session={session}
+              platform={platform}
+              onPlatform={applyPlatform}
+              onPromote={requestPromote}
+              onCompareReplica={() => void compareReplica()}
+              project={project}
+              onProject={(next) => setProject(withResults(next))}
+              license={license.session}
+              licenseBusy={license.busy}
+              onRefreshLicense={() => void license.refresh()}
+              onAccount={license.openAccount}
+              onPricing={license.openPricing}
+              onSignOut={signOut}
+              theme={theme}
+              onTheme={(next) => {
+                setTheme(next);
+                applyTheme(next);
+              }}
+            />
+          ) : (
+          <HomeView
+            session={session}
+            canImport={can(session, "import", "import") || can(session, "import", "edit")}
+            current={
+              project
+                ? {
+                    name: project.name,
+                    value: formatMoney(
+                      project.items.filter((item) => item.kind === "item").reduce((sum, item) => sum + (item.result?.amount ?? 0), 0),
+                      project.currency,
+                    ),
+                    revision: project.sealedAt ? `Sealed r${project.revision}` : `Revision r${project.revision}`,
+                    status: project.isDemo ? "Sample" : project.sealedAt ? "Sealed" : "Draft",
+                    unpriced: project.items.filter((item) => item.kind === "item" && (!item.result || item.result.rate === 0)).length,
+                    sealed: Boolean(project.sealedAt),
+                  }
+                : null
+            }
+            onNew={openNew}
+            onOpen={() => void openAeroFile()}
+            onSampleSingle={openReference}
+            onSampleCampus={openCampusSample}
+            onImport={() => {
+              setImportMode("create");
+              setScreen("import");
+            }}
+            onOpenPath={(path) => void openAeroFile(path)}
+            onResume={() => {
+              setScreen("project");
+              setActivity("takeoff");
+            }}
+            onRestore={readRecovery() ? restoreDraft : undefined}
+            accountName={license.session.displayName || license.session.email}
+            licenseLine={licenseLine}
+          />
+          )}
+        </main>
+        <CommandPalette
+          open={paletteOpen}
+          commands={[
+            { id: "new", label: "New project", run: openNew },
+            { id: "open", label: "Open .aero", run: () => void openAeroFile() },
+            { id: "sample", label: "Open single-BOQ sample", run: openReference },
+            { id: "campus", label: "Open campus sample", run: openCampusSample },
+          ]}
+          onClose={() => setPaletteOpen(false)}
+        />
+      </div>
     );
   }
 
@@ -752,6 +866,7 @@ export function App() {
     activity === "dashboard" ||
     activity === "margins" ||
     activity === "masters" ||
+    activity === "reports" ||
     activity === "settings";
   const whoLabel =
     license.session.displayName ||
@@ -759,12 +874,10 @@ export function App() {
     (session.kind === "owner"
       ? "Owner"
       : (session.tenant.users.find((u) => u.id === session.userId)?.name ?? session.role.name));
-  const initials = whoLabel
-    .split(/\s+/)
-    .map((p) => p[0] ?? "")
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const jobNotices = auditWorkspace(project)
+    .slice(0, 8)
+    .map((issue) => ({ id: issue.id, title: issue.label, detail: issue.detail }));
+  const recentScope = workspaceId ?? sessionScope(session);
   const formulaItem = sel?.kind === "item" ? sel : null;
   const inspectorVisible = showInspector && inspectorOpen;
 
@@ -803,6 +916,8 @@ export function App() {
     { id: "buy", label: "Buy", run: () => goTo("buy") },
     { id: "submit", label: "Submit", run: () => goTo("submit") },
     { id: "masters", label: "Masters", run: () => goTo("masters") },
+    { id: "reports", label: "Reports", run: () => goTo("reports") },
+    { id: "home", label: "Home", run: () => setScreen("home") },
     { id: "settings", label: "Settings", run: () => goTo("settings") },
     { id: "split", label: "Split take-off and estimate", run: () => { setLayoutMode("split"); goTo(activity === "takeoff" ? "takeoff" : "estimate"); } },
     { id: "audit", label: "Problems", hint: "Unused groups, broken links, unpriced rows", run: () => { setAuditOpen(true); goTo("estimate"); } },
@@ -814,14 +929,14 @@ export function App() {
   function canView(id: Activity) {
     if (!session) return false;
     return (
-      can(session, id === "analysis" || id === "queries" || id === "margins" ? "estimate" : id, "view") ||
+      can(session, id === "analysis" || id === "queries" || id === "margins" ? "estimate" : id === "reports" ? "dashboard" : id, "view") ||
       (id === "settings" && session.kind === "owner")
     );
   }
 
   return (
     <div
-      className={`app shell ${navCollapsed ? "nav-collapsed" : ""} ${editLocked ? "readonly" : ""} ${inspectorVisible ? "inspector-open" : "no-inspector"}`}
+      className={`app shell enterprise ${navCollapsed ? "nav-collapsed" : ""} ${editLocked ? "readonly" : ""} ${inspectorVisible ? "inspector-open" : "no-inspector"}`}
       style={inspectorVisible ? ({ ["--inspector-w"]: `${inspectorW.value}px` } as CSSProperties) : undefined}
     >
       <Sidebar
@@ -829,19 +944,16 @@ export function App() {
         masterOpen={masterTab === "resources"}
         collapsed={navCollapsed}
         theme={theme}
-        projectName={project.name}
-        revision={`${project.sealedAt ? `sealed r${project.revision}` : `r${project.revision}`}${
-          license.session.isAuthenticated
-            ? ` · ${licenseReadOnly ? "read-only · " : ""}${planDisplayName(license.session.planCode)}`
-            : ""
-        }`}
-        total={formatMoney(total, project.currency)}
-        user={`${initials} · ${session.kind === "owner" ? "owner" : session.role.name}`}
-        trial={licenseBanner(license.session)}
-        showInspector={showInspector}
-        inspectorOpen={inspectorOpen}
         canView={canView}
+        onHome={() => {
+          setPortfolioPane("home");
+          setScreen("home");
+        }}
         onNavigate={(id: SidebarTarget) => {
+          if (id === "home") {
+            setScreen("home");
+            return;
+          }
           if (id === "resources") {
             setMasterTab("resources");
             goTo("masters");
@@ -876,6 +988,18 @@ export function App() {
         onOpen={() => void openAeroFile()}
         onSave={() => void saveAero()}
         onToggleInspector={() => setInspectorOpen((v) => !v)}
+      />
+      <TopBar
+        projectName={project.name}
+        projectValue={formatMoney(total, project.currency)}
+        user={whoLabel}
+        licenseLine={licenseLine}
+        notices={jobNotices}
+        recents={recentScope ? recents(recentScope) : []}
+        onCommand={() => setPaletteOpen(true)}
+        onPickRecent={(path) => void openAeroFile(path)}
+        onSignOut={signOut}
+        onOwner={session.kind === "owner" ? () => setScreen("owner") : undefined}
       />
       <div className="shell-banners">
         {updateOffer ? (
@@ -915,7 +1039,7 @@ export function App() {
           <div className="banner">Owner impersonation is active. This tenant can see it in Settings → Audit.</div>
         ) : null}
       </div>
-      <main className={`stage ${fillStage ? "stage-fill" : ""}`}>
+      <main className={`stage ${fillStage ? "stage-fill" : ""} ${activity === "takeoff" || activity === "estimate" ? "pane-dense" : "enterprise-stage"}`}>
         <PrintProvider project={project} format={reportFormat}>
         {activity === "dashboard" ? (
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-dashboard">
@@ -1033,6 +1157,19 @@ export function App() {
           </BoqSplit>
         ) : null}
         {activity === "source" ? (
+          <SourceShell
+            project={project}
+            billId={billFocus}
+            onBill={setBillFocus}
+            onImport={
+              editLocked
+                ? undefined
+                : () => {
+                    setImportMode("append");
+                    setScreen("import");
+                  }
+            }
+          >
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-source">
           <SourceView
             project={project}
@@ -1050,12 +1187,13 @@ export function App() {
             }
           />
           </BoqSplit>
+          </SourceShell>
         ) : null}
         {activity === "queries" ? (
           <TenderQueriesView project={project} locked={editLocked} onProject={(next) => commit(next)} />
         ) : null}
         {activity === "buy" ? (
-          <>
+          <BuyShell project={project}>
             {conflicts.length ? (
               <ConflictQueue
                 conflicts={conflicts}
@@ -1069,9 +1207,10 @@ export function App() {
             <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-buy">
             <BuyView project={project} locked={editLocked} onProject={(next) => commit(next)} billId={billFocus} />
             </BoqSplit>
-          </>
+          </BuyShell>
         ) : null}
         {activity === "submit" ? (
+          <SubmitShell project={project}>
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-submit">
           <SubmitView
             project={project}
@@ -1093,8 +1232,21 @@ export function App() {
             onBillChange={setBillFocus}
           />
           </BoqSplit>
+          </SubmitShell>
+        ) : null}
+        {activity === "reports" ? (
+          <ReportsView
+            project={project}
+            total={total}
+            templates={(liveTenant?.reportTemplates ?? []).map((template) => ({
+              id: String(template.id ?? template.name),
+              name: template.name,
+            }))}
+            onSettings={() => setActivity("settings")}
+          />
         ) : null}
         {activity === "masters" ? (
+          <MastersShell project={project} tab={masterTab} onTab={setMasterTab}>
           <MastersView
             project={project}
             catalog={effectiveCatalog(liveTenant)}
@@ -1143,6 +1295,7 @@ export function App() {
               commit(copyGlobalMaster(project, liveTenant.resourceMaster ?? []));
             }}
           />
+          </MastersShell>
         ) : null}
         {activity === "settings" && session ? (
           <SettingsView

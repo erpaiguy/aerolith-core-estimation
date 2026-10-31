@@ -4,12 +4,13 @@ import { MODULES } from "./platform/types";
 
 describe("module tab names", () => {
   it("uses the workspace names on every ribbon activity", () => {
-    expect(ACTIVITY_LABELS.source).toBe("Client BOQ");
-    expect(ACTIVITY_LABELS.estimate).toBe("Working BOQ");
+    expect(ACTIVITY_LABELS.source).toBe("Source");
+    expect(ACTIVITY_LABELS.estimate).toBe("Estimate");
     expect(ACTIVITY_LABELS.analysis).toBe("Rate Analysis");
-    expect(ACTIVITY_LABELS.buy).toBe("Resource Prices");
+    expect(ACTIVITY_LABELS.buy).toBe("Buy");
     expect(ACTIVITY_LABELS.queries).toBe("Client Queries");
-    expect(ACTIVITY_LABELS.submit).toBe("Submission BOQ");
+    expect(ACTIVITY_LABELS.submit).toBe("Submit");
+    expect(ACTIVITY_LABELS.reports).toBe("Reports");
     expect(ACTIVITY_LABELS.masters).toBe("Masters");
     expect(ACTIVITY_LABELS.settings).toBe("Settings");
     expect(RIBBON_ORDER).toHaveLength(Object.keys(ACTIVITY_LABELS).length);

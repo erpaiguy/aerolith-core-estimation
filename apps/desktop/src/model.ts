@@ -21,6 +21,7 @@ export type Activity =
   | "submit"
   | "masters"
   | "dashboard"
+  | "reports"
   | "settings";
 
 export type MarginTargetKind = "job" | "bill" | "section" | "category" | "item";
