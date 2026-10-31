@@ -40,6 +40,16 @@ That script loads Visual Studio 2022 Build Tools before compiling. A plain `taur
 
 That opens **Bid Craft** as a Windows window (the installed app identifier stays `com.aerolith.core`). **Save .aero** and **Open .aero** use native dialogs and write under `Documents\Aerolith\Projects` unless you pick another folder. Browser preview (`npm run dev`) still downloads `.aero`. Settings includes currency (default QAR), decimal precision, and in-app updates.
 
+## Version 2.0
+
+Take-off and Estimate share a workspace: drawings and dimension groups on the left, the workbook on the right. Drag a group onto a quantity to keep that cell linked to the drawing. Source, Buy, Submit, and Masters stay in the sidebar. The calc kernel is unchanged: rate analysis, then cost, then the 47.5% margin stack (OH 10% + profit 30% + logistics 2.5% + contingency 5%).
+
+Installed desktop apps update from Settings, or automatically when that check is on. They read one stable file:
+
+`https://github.com/erpaiguy/aerolith-core-releases/releases/download/v1.0.0/estimation-latest.json`
+
+A signed 2.0.1 manifest on that URL is what offers the update. Merge is not required. Publish from branch `cursor/bid-craft-v2.0-4380`: Actions → **Publish Estimation release** → **Run workflow** → **Use workflow from** that branch. `workflow_dispatch` builds the workflow file and code on the selected branch. If the GitHub signing secrets are not set yet, the publish workflow uploads an unsigned draft and leaves that file alone. The one-time key steps are in [docs/UPDATER_V2.md](docs/UPDATER_V2.md). Release notes are in [CHANGELOG.md](CHANGELOG.md).
+
 ## What this slice includes
 
 - Calc kernel (rate analysis → cost → 47.5% margin stack → submission + tender adjustments)

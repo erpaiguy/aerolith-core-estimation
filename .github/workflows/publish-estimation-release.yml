@@ -7,15 +7,22 @@
 # Updater signing uses two more repository secrets, which are never committed:
 #   TAURI_SIGNING_PRIVATE_KEY          contents of the minisign .key file
 #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD password for that key
-# The matching public key lives in apps/desktop/src-tauri/tauri.conf.json.
+# The matching public key lives in apps/desktop/src-tauri/tauri.conf.json
+# (key id 0D2A07F09EBF1044). See docs/UPDATER_V2.md.
 #
-# After this workflow is on the default branch, run it once:
-# Actions → "Publish Estimation release" → Run workflow.
-# That replaces Estimation-Setup.exe on the existing v1.0.0 release
-# (next to Cutlist-Setup.exe) and adds Estimation-Setup.exe.sig plus
-# estimation-latest.json. overwrite_files replaces only an asset with the
-# same name. The tag URL stays stable so the in-app updater endpoint does
-# not move. Do not commit the token or the private key.
+# If the signing secrets are present, this replaces Estimation-Setup.exe,
+# Estimation-Setup.exe.sig, and estimation-latest.json on the stable tag
+# v1.0.0. Installed apps already point at that manifest, so a signed 2.0.1
+# manifest is what offers the update.
+#
+# If the signing secrets are empty, this uploads an unsigned installer as a
+# draft release tagged v2.0.1-draft and does not touch estimation-latest.json.
+#
+# Merge is not required. Run this from branch cursor/bid-craft-v2.0-4380:
+# Actions → "Publish Estimation release" → Run workflow →
+# Use workflow from: cursor/bid-craft-v2.0-4380 → Run workflow.
+# workflow_dispatch uses the workflow file and the checkout from that branch.
+# Do not commit the token or the private key.
 
 name: Publish Estimation release
 
@@ -29,7 +36,8 @@ jobs:
   publish-setup:
     runs-on: windows-latest
     steps:
-      - name: Require release and signing secrets
+      - name: Decide signed release or unsigned draft
+        id: mode
         env:
           AEROLITH_RELEASES_TOKEN: ${{ secrets.AEROLITH_RELEASES_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -39,11 +47,14 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($env:AEROLITH_RELEASES_TOKEN)) {
             throw "Repository secret AEROLITH_RELEASES_TOKEN is empty. Add a fine-grained PAT with Contents: Read and write on erpaiguy/aerolith-core-releases only, then re-run. Do not commit the token."
           }
-          if ([string]::IsNullOrWhiteSpace($env:TAURI_SIGNING_PRIVATE_KEY)) {
-            throw "Repository secret TAURI_SIGNING_PRIVATE_KEY is empty. Generate a minisign key with 'npm run tauri signer generate' in apps/desktop, store the .key file contents in this secret, and put only the public key in tauri.conf.json. Do not commit the private key."
-          }
-          if ([string]::IsNullOrWhiteSpace($env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD)) {
-            throw "Repository secret TAURI_SIGNING_PRIVATE_KEY_PASSWORD is empty. Set it to the password chosen when the updater key was generated. Do not commit the password."
+          $signed = -not [string]::IsNullOrWhiteSpace($env:TAURI_SIGNING_PRIVATE_KEY) -and -not [string]::IsNullOrWhiteSpace($env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD)
+          if ($signed) {
+            "signed=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            Write-Host "Signing secrets are present. This run will publish a signed updater manifest on tag v1.0.0."
+          } else {
+            "signed=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            Write-Host "Signing secrets are absent. This run will upload an unsigned draft on v2.0.1-draft and will not replace estimation-latest.json."
+            Write-Host "Installed apps will not update until you add TAURI_SIGNING_PRIVATE_KEY and TAURI_SIGNING_PRIVATE_KEY_PASSWORD and run this workflow again. See docs/UPDATER_V2.md."
           }
 
       - uses: actions/checkout@v4
@@ -68,13 +79,20 @@ jobs:
         run: npm ci
 
       - name: Build signed Tauri NSIS installer
+        if: steps.mode.outputs.signed == 'true'
         working-directory: apps/desktop
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: npm run tauri -- build --bundles nsis
 
-      - name: Stage installer, signature, and updater manifest
+      - name: Build unsigned Tauri NSIS installer
+        if: steps.mode.outputs.signed != 'true'
+        working-directory: apps/desktop
+        run: npm run tauri -- build --bundles nsis --config "{\"bundle\":{\"createUpdaterArtifacts\":false}}"
+
+      - name: Stage signed installer, signature, and updater manifest
+        if: steps.mode.outputs.signed == 'true'
         shell: pwsh
         run: |
           $conf = Get-Content -Raw "apps/desktop/src-tauri/tauri.conf.json" | ConvertFrom-Json
@@ -83,9 +101,6 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($product) -or [string]::IsNullOrWhiteSpace($version)) {
             throw "tauri.conf.json is missing productName or version."
           }
-          # tauri-bundler: {productName}_{version}_{arch}-setup.exe
-          # under <projectOut>/bundle/nsis/. windows-latest is x86_64, so arch is x64.
-          # createUpdaterArtifacts writes the minisign signature beside that installer.
           $installer = Join-Path "apps/desktop/src-tauri/target/release/bundle/nsis" "${product}_${version}_x64-setup.exe"
           $signature = "$installer.sig"
           if (-not (Test-Path -LiteralPath $installer) -or -not (Test-Path -LiteralPath $signature)) {
@@ -104,10 +119,12 @@ jobs:
           if ([string]::IsNullOrWhiteSpace($sig)) {
             throw "dist/Estimation-Setup.exe.sig is empty."
           }
+          $notesPath = "apps/desktop/release-notes/$version.txt"
+          $notes = if (Test-Path -LiteralPath $notesPath) { (Get-Content -Raw -LiteralPath $notesPath).Trim() } else { "Bid Craft $version" }
           $download = "https://github.com/erpaiguy/aerolith-core-releases/releases/download/v1.0.0/Estimation-Setup.exe"
           $manifest = [ordered]@{
             version = $version
-            notes = "Bid Craft $version"
+            notes = $notes
             pub_date = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
             platforms = [ordered]@{
               "windows-x86_64" = [ordered]@{
@@ -122,9 +139,29 @@ jobs:
           if ($item.Length -lt 1) {
             throw "dist/Estimation-Setup.exe is empty."
           }
-          Write-Host "Staged $($item.FullName) ($($item.Length) bytes), signature, and estimation-latest.json for app version $version"
+          Write-Host "Staged signed $($item.FullName) ($($item.Length) bytes) for app version $version"
 
-      - name: Upload release assets to aerolith-core-releases
+      - name: Stage unsigned draft installer
+        if: steps.mode.outputs.signed != 'true'
+        shell: pwsh
+        run: |
+          $conf = Get-Content -Raw "apps/desktop/src-tauri/tauri.conf.json" | ConvertFrom-Json
+          $product = [string]$conf.productName
+          $version = [string]$conf.version
+          $installer = Join-Path "apps/desktop/src-tauri/target/release/bundle/nsis" "${product}_${version}_x64-setup.exe"
+          if (-not (Test-Path -LiteralPath $installer)) {
+            $bundle = "apps/desktop/src-tauri/target/release/bundle"
+            if (Test-Path $bundle) {
+              Get-ChildItem -Recurse -File $bundle | ForEach-Object { Write-Host $_.FullName }
+            }
+            throw "Unsigned NSIS installer was not produced at $installer"
+          }
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Copy-Item -LiteralPath $installer -Destination "dist/Estimation-Setup.exe" -Force
+          Write-Host "Staged unsigned draft. estimation-latest.json was not written."
+
+      - name: Upload signed release assets to aerolith-core-releases
+        if: steps.mode.outputs.signed == 'true'
         uses: softprops/action-gh-release@v3
         with:
           repository: erpaiguy/aerolith-core-releases
@@ -136,3 +173,35 @@ jobs:
             dist/estimation-latest.json
           fail_on_unmatched_files: true
           overwrite_files: true
+
+      - name: Upload unsigned draft installer
+        if: steps.mode.outputs.signed != 'true'
+        uses: softprops/action-gh-release@v3
+        with:
+          repository: erpaiguy/aerolith-core-releases
+          tag_name: v2.0.1-draft
+          name: Bid Craft 2.0.1 unsigned draft
+          draft: true
+          token: ${{ secrets.AEROLITH_RELEASES_TOKEN }}
+          body: |
+            Unsigned Windows installer for Bid Craft 2.0.1.
+            This draft is not an updater manifest. Installed apps ignore it.
+            Add the minisign signing secrets and re-run Publish Estimation release from branch cursor/bid-craft-v2.0-4380 to replace estimation-latest.json on tag v1.0.0. Merge is not required.
+          files: |
+            dist/Estimation-Setup.exe
+          fail_on_unmatched_files: true
+          overwrite_files: true
+
+      - name: Summarize updater status
+        if: always()
+        shell: pwsh
+        run: |
+          $signed = "${{ steps.mode.outputs.signed }}"
+          @"
+          ## Bid Craft updater
+          - Signing secrets used: $signed
+          - Signed runs replace ``estimation-latest.json`` on tag ``v1.0.0`` (the URL already baked into installed apps).
+          - Unsigned runs upload a draft tag ``v2.0.1-draft`` and leave the manifest alone.
+          - Merge is not required. This run uses the workflow file and code from the branch selected for workflow_dispatch. For 2.0.1 that branch is ``cursor/bid-craft-v2.0-4380``.
+          - Remaining human steps: see docs/UPDATER_V2.md.
+          "@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append

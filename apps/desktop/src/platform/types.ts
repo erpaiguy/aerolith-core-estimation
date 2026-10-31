@@ -117,11 +117,11 @@ export interface PlatformState {
 }
 
 export const MODULES: { id: ModuleId; label: string }[] = [
-  { id: "source", label: "Client BOQ" },
+  { id: "source", label: "Source" },
   { id: "takeoff", label: "Take-off" },
-  { id: "estimate", label: "Working BOQ" },
-  { id: "buy", label: "Resource Prices" },
-  { id: "submit", label: "Submission BOQ" },
+  { id: "estimate", label: "Estimate" },
+  { id: "buy", label: "Buy" },
+  { id: "submit", label: "Submit" },
   { id: "masters", label: "Masters" },
   { id: "dashboard", label: "Dashboard" },
   { id: "settings", label: "Settings" },

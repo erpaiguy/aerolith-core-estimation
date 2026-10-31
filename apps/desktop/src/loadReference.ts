@@ -16,6 +16,7 @@ import { BUILTIN_QUOTE_FIELDS, inferParents, stampItem } from "./model";
 import { billById, defaultBill, DEFAULT_BILL_ID, itemKeyOf, nextBill } from "./bills";
 import { cloneResourceMaster, masterToProjectResource, type ResourceMasterRow } from "./resourceMaster";
 import { defaultClientColumns } from "./boqColumns";
+import { freshWorkspace } from "./dimensionWorkspace";
 import { SAMPLE_LOCKED_AT, seedReferenceWorkflow } from "./sampleSeed";
 import { appGlobalCatalog, snapshotFromCatalog, type TenantCatalog } from "./tenantCatalog";
 export { loadCampusSampleProject } from "./loadCampusSample";
@@ -237,6 +238,7 @@ export function emptyProject(
         workingBoqCode: `${DEFAULT_BILL_ID}::1a`,
       },
     ],
+    ...freshWorkspace(),
     resourceQuotes: [],
     itemQuotes: [],
     enquiries: [],

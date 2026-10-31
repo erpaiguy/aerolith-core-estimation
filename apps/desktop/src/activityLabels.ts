@@ -2,16 +2,17 @@ import type { Activity } from "./model";
 
 /** User-facing module names. Internal activity ids stay unchanged. */
 export const ACTIVITY_LABELS: Record<Activity, string> = {
-  dashboard: "Dashboard",
-  source: "Client BOQ",
+  dashboard: "Job summary",
+  source: "Source",
   takeoff: "Take-off",
-  estimate: "Working BOQ",
+  estimate: "Estimate",
   analysis: "Rate Analysis",
   margins: "Margins",
   queries: "Client Queries",
-  buy: "Resource Prices",
-  submit: "Submission BOQ",
+  buy: "Buy",
+  submit: "Submit",
   masters: "Masters",
+  reports: "Reports",
   settings: "Settings",
 };
 
@@ -26,6 +27,7 @@ export const RIBBON_ORDER: Activity[] = [
   "buy",
   "submit",
   "masters",
+  "reports",
   "settings",
 ];
 

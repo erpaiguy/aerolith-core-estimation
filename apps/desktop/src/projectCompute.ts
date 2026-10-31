@@ -19,6 +19,7 @@ import {
   usesWorkingAsSource as billUsesWorkingAsSource,
 } from "./bills";
 import { effectiveMargin, marginStackKey } from "./marginRules";
+import { postQuantities, refreshBasedOn } from "./dimensionWorkspace";
 import {
   hasAnalysisBackup,
   newId,
@@ -40,14 +41,7 @@ export function applyQtoPosting(project: LoadedProject): LoadedProject {
       dims: l.dims,
     })),
   );
-  return {
-    ...project,
-    items: project.items.map((i) => {
-      if (i.kind !== "item") return i;
-      const qty = sums.get(itemKeyOf(i)) ?? sums.get(i.boqCode) ?? 0;
-      return { ...i, ourQty: qty };
-    }),
-  };
+  return postQuantities(project, sums);
 }
 
 export function usesWorkingAsSource(project: LoadedProject, billId?: string): boolean {
@@ -450,6 +444,7 @@ export function withResults(project: LoadedProject): LoadedProject {
     }));
     posted = { ...posted, clientNodes };
   }
+  posted = refreshBasedOn(posted);
   posted = syncResourcesFromAnalysis(posted);
   posted = ensureQuoteBackups(posted);
   const quotedItems = new Set(

@@ -1,0 +1,3 @@
+Bid Craft 2.0.0
+
+Take-off and Estimate now share one workspace: a drawing with dimension groups beside the estimate workbook. Drag a group onto a quantity or description, and the quantity stays linked to the drawing. Rate phrases can be based on a library build-up. The margin stack is unchanged (overhead 10%, profit 30%, logistics 2.5%, contingency 5%). Existing .aero projects open as before.

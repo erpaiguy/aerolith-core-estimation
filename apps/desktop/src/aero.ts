@@ -10,7 +10,7 @@ import type {
   QueryAttachment,
   QueryColumnDef,
 } from "./model";
-import { stampItem } from "./model";
+import { stampItem, type AnalysisLine, type DimensionGroup, type DimensionMark, type DrawingSheet, type RateBuildUp } from "./model";
 import { DEFAULT_BILL_ID, ensureProjectBills, itemKeyOf } from "./bills";
 import { defaultClientColumns, parseColumnDefs } from "./boqColumns";
 import { parseMarginPresets, parseMarginRules } from "./marginRules";
@@ -248,19 +248,83 @@ function loadQueryLog(db: { exec(sql: string): Array<{ columns: string[]; values
   return { queryItems, queryLists };
 }
 
+function loadWorkspaceTables(db: { exec(sql: string): Array<{ columns: string[]; values: unknown[][] }> }): {
+  drawings: DrawingSheet[];
+  dimensionGroups: DimensionGroup[];
+  dimensionMarks: DimensionMark[];
+  rateLibrary: RateBuildUp[];
+} {
+  const drawings: DrawingSheet[] = tryRows(db, "SELECT * FROM drawings ORDER BY sort_order").map((r) => ({
+    id: str(r.uuid),
+    name: str(r.name) || "Drawing",
+    code: str(r.code),
+  }));
+  const dimensionGroups: DimensionGroup[] = tryRows(db, "SELECT * FROM dimension_groups ORDER BY sort_order").map((r) => {
+    const kind = str(r.kind);
+    return {
+      id: str(r.uuid),
+      drawingId: str(r.drawing_uuid),
+      name: str(r.name) || "Group",
+      kind: kind === "length" || kind === "count" ? kind : "area",
+      color: str(r.color) || "#c65a28",
+      zone: str(r.zone),
+      unit: str(r.unit),
+      factor: r.factor == null || r.factor === "" ? 1 : num(r.factor),
+      cutout: num(r.cutout) === 1,
+      parentId: nullable(r.parent_uuid),
+    };
+  });
+  const dimensionMarks: DimensionMark[] = tryRows(db, "SELECT * FROM dimension_marks ORDER BY sort_order").map((r) => ({
+    id: str(r.uuid),
+    groupId: str(r.group_uuid),
+    label: str(r.label),
+    length: r.length == null ? null : num(r.length),
+    width: r.width == null ? null : num(r.width),
+    count: r.count == null ? null : num(r.count),
+    deduct: num(r.deduct) === 1,
+    overrideQty: r.override_qty == null || r.override_qty === "" ? null : num(r.override_qty),
+    x: num(r.x),
+    y: num(r.y),
+    w: num(r.w),
+    h: num(r.h),
+    note: str(r.note),
+  }));
+  const rateLibrary: RateBuildUp[] = tryRows(db, "SELECT * FROM rate_library ORDER BY sort_order").map((r) => {
+    let lines: AnalysisLine[] = [];
+    const raw = nullable(r.lines_json);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw) as AnalysisLine[];
+        if (Array.isArray(parsed)) lines = parsed;
+      } catch {
+        lines = [];
+      }
+    }
+    return {
+      id: str(r.uuid),
+      code: str(r.code),
+      phrase: str(r.phrase),
+      unit: str(r.unit),
+      basedOnId: nullable(r.based_on),
+      lines,
+    };
+  });
+  return { drawings, dimensionGroups, dimensionMarks, rateLibrary };
+}
+
 export async function projectToAero(project: LoadedProject): Promise<Uint8Array> {
   const live = ensureProjectBills(project);
   const SQL = await sqlEngine();
   const db = new SQL.Database();
   db.exec(schemaSql);
-  db.exec("PRAGMA user_version = 4");
+  db.exec("PRAGMA user_version = 5");
 
   const meta = db.prepare("INSERT INTO _meta (key, value) VALUES (?, ?)");
   const put = (k: string, v: string) => {
     meta.run([k, v]);
     meta.reset();
   };
-  put("schema_version", "4");
+  put("schema_version", "5");
   put("app", "aerolith-core");
   put("name", live.name);
   put("location_note", live.locationNote);
@@ -311,8 +375,8 @@ export async function projectToAero(project: LoadedProject): Promise<Uint8Array>
     `INSERT INTO working_boq_items
       (id, parent_id, node_kind, uuid, bill_id, boq_code, client_link_code, sl_no, boq_category, work_category, sub_work_category,
        group1, group2, group3, description, client_qty, our_qty, unit, direct_cost, price_mode, analysis_origin,
-       linked_boq_code, extra_json, carry_mode, sort_order)
-     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+       linked_boq_code, extra_json, carry_mode, qty_link, qty_link_locked, based_on, sort_order)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
   );
   const idOf = (it: (typeof live.items)[number], parentCode: string | null) => {
     if (!parentCode) return null;
@@ -345,6 +409,9 @@ export async function projectToAero(project: LoadedProject): Promise<Uint8Array>
       it.linkedBoqCode ?? null,
       it.extra && Object.keys(it.extra).length ? JSON.stringify(it.extra) : null,
       it.carryMode && it.carryMode !== "normal" ? it.carryMode : null,
+      it.qtyLink ?? null,
+      it.qtyLinkLocked ? 1 : 0,
+      it.basedOnId ?? null,
       i,
     ]);
     w.reset();
@@ -455,6 +522,79 @@ export async function projectToAero(project: LoadedProject): Promise<Uint8Array>
     q.reset();
   }
   q.free();
+
+  const drawingStmt = db.prepare("INSERT INTO drawings (uuid, name, code, sort_order) VALUES (?,?,?,?)");
+  (live.drawings ?? []).forEach((drawing, i) => {
+    drawingStmt.run([drawing.id, drawing.name, drawing.code, i]);
+    drawingStmt.reset();
+  });
+  drawingStmt.free();
+
+  const groupStmt = db.prepare(
+    `INSERT INTO dimension_groups
+      (uuid, drawing_uuid, name, kind, color, zone, unit, factor, cutout, parent_uuid, sort_order)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+  );
+  (live.dimensionGroups ?? []).forEach((group, i) => {
+    groupStmt.run([
+      group.id,
+      group.drawingId,
+      group.name,
+      group.kind,
+      group.color,
+      group.zone,
+      group.unit,
+      group.factor,
+      group.cutout ? 1 : 0,
+      group.parentId,
+      i,
+    ]);
+    groupStmt.reset();
+  });
+  groupStmt.free();
+
+  const markStmt = db.prepare(
+    `INSERT INTO dimension_marks
+      (uuid, group_uuid, label, length, width, count, deduct, override_qty, x, y, w, h, note, sort_order)
+     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+  );
+  (live.dimensionMarks ?? []).forEach((mark, i) => {
+    markStmt.run([
+      mark.id,
+      mark.groupId,
+      mark.label,
+      mark.length,
+      mark.width,
+      mark.count,
+      mark.deduct ? 1 : 0,
+      mark.overrideQty,
+      mark.x,
+      mark.y,
+      mark.w,
+      mark.h,
+      mark.note,
+      i,
+    ]);
+    markStmt.reset();
+  });
+  markStmt.free();
+
+  const rateStmt = db.prepare(
+    "INSERT INTO rate_library (uuid, code, phrase, unit, based_on, lines_json, sort_order) VALUES (?,?,?,?,?,?,?)",
+  );
+  (live.rateLibrary ?? []).forEach((entry, i) => {
+    rateStmt.run([
+      entry.id,
+      entry.code,
+      entry.phrase,
+      entry.unit,
+      entry.basedOnId,
+      JSON.stringify(entry.lines ?? []),
+      i,
+    ]);
+    rateStmt.reset();
+  });
+  rateStmt.free();
 
   const rq = db.prepare(
     `INSERT INTO resource_quotes
@@ -890,6 +1030,9 @@ export async function aeroToProject(bytes: Uint8Array): Promise<LoadedProject> {
       includes: includesByCode.get(key) ?? includesByCode.get(boqCode) ?? [],
       extra: parseJsonMap(r.extra_json) ?? {},
       carryMode: normalizeBoqCarry(r.carry_mode),
+      qtyLink: nullable(r.qty_link),
+      qtyLinkLocked: num(r.qty_link_locked) === 1,
+      basedOnId: nullable(r.based_on),
       lines: linesByCode.get(key) ?? linesByCode.get(boqCode) ?? [],
       parentCode: null,
     });
@@ -989,6 +1132,7 @@ export async function aeroToProject(bytes: Uint8Array): Promise<LoadedProject> {
       },
       workingBoqCode: nullable(r.working_boq_code),
     })),
+    ...loadWorkspaceTables(db),
     resourceQuotes: tryRows(db, "SELECT * FROM resource_quotes").map((r, i) => ({
       id: nullable(r.uuid) || `rq-${i + 1}`,
       projectResourceCode: str(r.project_resource_code),
