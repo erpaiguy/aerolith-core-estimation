@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { recents, sessionScope, type Session } from "../platform/store";
 import { PublisherMark } from "./Brand";
 import { isSoloTenant, tenantProjectsHint } from "../platform/tenant";
 import { AppBar, ThemeButton, type BarMenuItem } from "./AppBar";
+import { HelpSheet } from "./HelpSheet";
 import type { ThemeName } from "../theme";
 
 export function HomeView({
@@ -59,17 +61,32 @@ export function HomeView({
   const trialLine = licenseLine
     ? `${licenseLine} Jobs stay in this workspace.`
     : "Jobs stay in this workspace.";
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [helpSection, setHelpSection] = useState("flow");
   const fileItems: BarMenuItem[] = [
-    { label: "New tender", onSelect: onNew },
-    { label: "Open .aero", onSelect: onOpen },
-    ...(canImport ? [{ label: "Import bill", onSelect: onImport }] : []),
-    ...(onOwnerPortal ? [{ label: "Owner portal", separatorBefore: true, onSelect: onOwnerPortal }] : []),
-    { label: "Sign out", separatorBefore: !onOwnerPortal, onSelect: onSignOut },
+    { label: "New tender", hint: "Start an empty job in this workspace.", onSelect: onNew },
+    { label: "Open .aero", hint: "Open a job saved on this computer.", onSelect: onOpen },
+    ...(canImport ? [{ label: "Import bill", hint: "Start from a spreadsheet, document, or scan.", onSelect: onImport }] : []),
+    ...(onOwnerPortal ? [{ label: "Owner portal", hint: "Vendor tools for this installation.", separatorBefore: true, onSelect: onOwnerPortal }] : []),
+    { label: "Sign out", hint: "Leave this workspace on this computer.", separatorBefore: !onOwnerPortal, onSelect: onSignOut },
   ];
 
   return (
     <div className="app shell home-shell">
-      <AppBar showIdle user={who} menu={{ label: "File", items: fileItems }} />
+      <AppBar
+        showIdle
+        user={who}
+        menus={[
+          { label: "File", items: fileItems },
+          {
+            label: "Help",
+            items: [
+              { label: "How a tender moves", hint: "What each menu is for once a job is open.", onSelect: () => { setHelpSection("flow"); setHelpOpen(true); } },
+              { label: "How the totals are built", hint: "Direct cost, margin, and the working total.", onSelect: () => { setHelpSection("numbers"); setHelpOpen(true); } },
+            ],
+          },
+        ]}
+      />
       <main className="stage">
         <div className="home-frame">
           <nav className="home-rail" aria-label="Jobs">
@@ -140,6 +157,7 @@ export function HomeView({
         <PublisherMark tone={theme === "dark" ? "dark" : "light"} compact />
         <ThemeButton theme={theme} onTheme={onTheme} />
       </footer>
+      <HelpSheet open={helpOpen} section={helpSection} onClose={() => setHelpOpen(false)} />
     </div>
   );
 }

@@ -30,19 +30,16 @@ export function LicensePanel({
     ? expiry.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
     : "Not set";
   const days = trialDaysRemaining(session, now);
-  const who = session.displayName || session.email || "Signed in";
+  const signedIn = session.isAuthenticated;
+  const who = signedIn ? session.displayName || session.email || "Signed in" : "Signed out";
+  const hint = signedIn ? session.email ?? "Signed in" : "Signed out. Sign in to continue.";
 
   return (
     <section className="license-panel" aria-label="Account and license">
       <div className="note">
-        <p className="license-kicker">Your account</p>
         <h2>{who}</h2>
-        <p className="hint">{session.email ?? "Signed in"}</p>
-        <p>
-          <span className="license-kicker">License status</span>
-          <br />
-          {session.statusMessage ?? describeLicense(session, now)}
-        </p>
+        <p className="hint">{hint}</p>
+        <p>{session.statusMessage ?? describeLicense(session, now)}</p>
         <div className="license-actions">
           <button type="button" onClick={onAccount}>
             Account
@@ -55,7 +52,6 @@ export function LicensePanel({
         </div>
       </div>
       <div className="note">
-        <p className="license-kicker">License</p>
         <h2>{planDisplayName(session.planCode)}</h2>
         <p className="hint">{planSummary(session.planCode)}</p>
         <p>

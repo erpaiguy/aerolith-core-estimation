@@ -7,8 +7,16 @@ import { applyTheme, readTheme, type ThemeName } from "../theme";
 export type BarMenuItem = {
   label: string;
   onSelect: () => void;
+  hint?: string;
   separatorBefore?: boolean;
   disabled?: boolean;
+  active?: boolean;
+};
+
+export type BarMenu = {
+  label: string;
+  items: BarMenuItem[];
+  active?: boolean;
 };
 
 export function AppBar({
@@ -16,32 +24,50 @@ export function AppBar({
   revision,
   user,
   menu,
+  menus,
+  guide,
   actions,
   showIdle = false,
 }: {
   projectName?: string | null;
   revision?: string | null;
   user?: string | null;
-  menu?: { label: string; items: BarMenuItem[] } | null;
+  menu?: BarMenu | null;
+  menus?: BarMenu[] | null;
+  guide?: string | null;
   actions?: ReactNode;
   showIdle?: boolean;
 }) {
   const tone = useSurfaceTone();
+  const barMenus = menus ?? (menu ? [menu] : []);
   return (
     <header className="appbar">
-      <BrandLockup size="sm" tone={tone} />
-      {menu ? <BarMenu label={menu.label} items={menu.items} /> : null}
-      {projectName ? (
-        <div className="appbar-project">
-          <strong title={projectName}>{projectName}</strong>
-          {revision ? <span>{revision}</span> : null}
-        </div>
-      ) : showIdle ? (
-        <p className="appbar-idle">No tender open</p>
+      <div className="appbar-main">
+        <BrandLockup size="sm" tone={tone} />
+        {projectName ? (
+          <div className="appbar-project">
+            <strong title={projectName}>{projectName}</strong>
+            {revision ? <span>{revision}</span> : null}
+          </div>
+        ) : showIdle ? (
+          <p className="appbar-idle">No tender open</p>
+        ) : null}
+        <div className="appbar-sp" />
+        {actions}
+        {user ? <span className="appbar-user">{user}</span> : null}
+      </div>
+      {barMenus.length ? (
+        <nav className="appbar-menus" aria-label="Menus">
+          {barMenus.map((entry) => (
+            <BarMenu key={entry.label} label={entry.label} items={entry.items} active={entry.active} />
+          ))}
+        </nav>
       ) : null}
-      <div className="appbar-sp" />
-      {actions}
-      {user ? <span className="appbar-user">{user}</span> : null}
+      {guide ? (
+        <p className="appbar-guide" id="workspace-guide">
+          {guide}
+        </p>
+      ) : null}
     </header>
   );
 }
@@ -74,7 +100,7 @@ export function useThemeControl(theme?: ThemeName, onTheme?: (theme: ThemeName) 
   return { theme: current, choose };
 }
 
-export function BarMenu({ label, items }: { label: string; items: BarMenuItem[] }) {
+export function BarMenu({ label, items, active = false }: { label: string; items: BarMenuItem[]; active?: boolean }) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -85,7 +111,7 @@ export function BarMenu({ label, items }: { label: string; items: BarMenuItem[] 
     const place = () => {
       const rect = btnRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const width = 220;
+      const width = 320;
       const left = Math.min(rect.left, Math.max(8, window.innerWidth - width - 8));
       setPos({ top: rect.bottom + 4, left });
     };
@@ -132,16 +158,22 @@ export function BarMenu({ label, items }: { label: string; items: BarMenuItem[] 
       }
     };
     const close = () => setOpen(false);
+    const onOther = (event: Event) => {
+      if ((event as CustomEvent<string>).detail !== label) setOpen(false);
+    };
     window.addEventListener("pointerdown", onDoc, true);
     window.addEventListener("keydown", onKey, true);
     window.addEventListener("resize", close);
+    window.addEventListener("bidcraft-menu-open", onOther);
+    window.dispatchEvent(new CustomEvent("bidcraft-menu-open", { detail: label }));
     return () => {
       window.clearTimeout(focusTimer);
       window.removeEventListener("pointerdown", onDoc, true);
       window.removeEventListener("keydown", onKey, true);
       window.removeEventListener("resize", close);
+      window.removeEventListener("bidcraft-menu-open", onOther);
     };
-  }, [open]);
+  }, [open, label]);
 
   function run(action: () => void) {
     setOpen(false);
@@ -153,9 +185,10 @@ export function BarMenu({ label, items }: { label: string; items: BarMenuItem[] 
       <button
         ref={btnRef}
         type="button"
-        className="bar-menu-btn"
+        className={active ? "bar-menu-btn is-current" : "bar-menu-btn"}
         aria-haspopup="menu"
         aria-expanded={open}
+        aria-current={active ? "page" : undefined}
         aria-label={label}
         onClick={() => setOpen((value) => !value)}
       >
@@ -167,8 +200,15 @@ export function BarMenu({ label, items }: { label: string; items: BarMenuItem[] 
               {items.map((item) => (
                 <Fragment key={item.label}>
                   {item.separatorBefore ? <div className="file-menu-sep" role="separator" /> : null}
-                  <button type="button" role="menuitem" disabled={item.disabled} onClick={() => run(item.onSelect)}>
-                    {item.label}
+                  <button
+                    type="button"
+                    role="menuitem"
+                    disabled={item.disabled}
+                    aria-current={item.active ? "true" : undefined}
+                    onClick={() => run(item.onSelect)}
+                  >
+                    <span>{item.label}</span>
+                    {item.hint ? <small>{item.hint}</small> : null}
                   </button>
                 </Fragment>
               ))}
