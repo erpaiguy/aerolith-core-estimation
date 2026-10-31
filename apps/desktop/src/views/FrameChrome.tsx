@@ -12,6 +12,25 @@ export const STAGES = [
 
 export type StageId = (typeof STAGES)[number][0];
 
+export function stageGuide(stage: StageId | "utility", scope: string): string {
+  switch (stage) {
+    case "overview":
+      return `Overview of ${scope}. Direct cost is resources before margin. The working total adds overhead, profit, logistics, and contingency.`;
+    case "source":
+      return `Source is the client bill for ${scope}. Lock a building when the issued quantities must stay as received.`;
+    case "measure":
+      return `Measure turns site dimensions into Our qty on ${scope}. Those quantities land on the working bill.`;
+    case "price":
+      return `Price builds each rate, then writes it onto the working bill for ${scope}.`;
+    case "commercial":
+      return `Commercial sets the margin, the resource prices behind the rates, and the questions still open with the client. Scope: ${scope}.`;
+    case "submit":
+      return `Submit reads the bill for ${scope}, checks what would block a seal, then locks a revision you can send.`;
+    default:
+      return "Library and settings sit beside the job. They change this tender only when you apply them.";
+  }
+}
+
 export function StageBar({ active, onPick }: { active: StageId | null; onPick: (id: StageId) => void }) {
   return (
     <nav className="stage-bar" aria-label="Stages">
@@ -65,17 +84,30 @@ export function Subnav({
   onPick,
 }: {
   label: string;
-  items: Array<[string, string]>;
+  items: Array<readonly [string, string, string?]>;
   active: string;
   onPick: (id: string) => void;
 }) {
+  const current = items.find(([id]) => id === active);
+  const hint = current?.[2];
   return (
-    <div className="subnav" role="tablist" aria-label={label}>
-      {items.map(([id, text]) => (
-        <button key={id} type="button" role="tab" aria-selected={active === id} className={active === id ? "on" : ""} onClick={() => onPick(id)}>
-          {text}
-        </button>
-      ))}
+    <div className="subnav-wrap">
+      <div className="subnav" role="tablist" aria-label={label}>
+        {items.map(([id, text, itemHint]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={active === id}
+            className={active === id ? "on" : ""}
+            title={itemHint}
+            onClick={() => onPick(id)}
+          >
+            {text}
+          </button>
+        ))}
+      </div>
+      {hint ? <p className="subnav-hint">{hint}</p> : null}
     </div>
   );
 }

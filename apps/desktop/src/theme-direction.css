@@ -2,40 +2,40 @@
   Bid Craft theme styles. Clean minimal is the default.
   Settings stores the choice on bidcraft.themeStyle and sets data-style.
   Light and dark (data-theme) apply with every style.
-  Licenses: Inter, Outfit, IBM Plex Sans, and IBM Plex Mono are OFL-1.1
-  via @fontsource. Icons: @phosphor-icons/react MIT.
-  Copper accent and the brand-kit wordmark stay on the kit artwork.
+  UI face: Atkinson Hyperlegible (OFL). Figures: Fragment Mono (OFL).
+  Icons: @phosphor-icons/react MIT. The brand-kit wordmark stays on the kit artwork.
   Each style sets its own grid, card, panel, and toolbar padding below.
 */
 
 :root {
-  --sans: Inter, "Segoe UI", system-ui, sans-serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "Fragment Mono", ui-monospace, monospace;
   --nav-w: 240px;
   --nav-collapsed: 64px;
   --appbar-h: 56px;
   --radius: 10px;
-  --paper: #fbfaf8;
-  --paper-2: #ffffff;
-  --ink: #1a1c1f;
-  --ink-soft: #5e646c;
-  --line: #ece8e1;
-  --rail: #fbfaf8;
-  --rail-text: #1a1c1f;
-  --rail-muted: #5e646c;
-  --rail-hover: #f3f0ea;
-  --rail-on: #f8efe9;
-  --ribbon: #ffffff;
-  --hover: #f6f3ee;
-  --select: #f8efe9;
-  --xl: #f3f0ea;
-  --navy: #1a1c1f;
-  --navy-2: #3a3f46;
-  --shadow: 0 1px 2px rgba(26, 28, 31, 0.05);
-  --accent: #c65a28;
-  --blue: #c65a28;
-  --accent-2: #9a4318;
-  --money: #9a4318;
-  --gold: #c65a28;
+  --paper: #e4eef3;
+  --paper-2: #f5f9fb;
+  --ink: #102433;
+  --ink-soft: #2c4558;
+  --line: #c5d4e0;
+  --rail: #d7e5ef;
+  --rail-text: #102433;
+  --rail-muted: #2c4558;
+  --rail-hover: #c9dbe8;
+  --rail-on: #d7f0e6;
+  --ribbon: #f5f9fb;
+  --hover: #e3eef5;
+  --select: #d7f0e6;
+  --xl: #d7e5ef;
+  --navy: #102433;
+  --navy-2: #1d4e73;
+  --shadow: 0 10px 24px rgba(16, 36, 51, 0.12);
+  --accent: #0e6b56;
+  --blue: #0e6b56;
+  --accent-2: #0a4f40;
+  --money: #0e6b56;
+  --gold: #0e6b56;
   --on-accent: #ffffff;
   --pad-grid-y: 12px;
   --pad-grid-x: 14px;
@@ -58,29 +58,29 @@
 }
 
 html[data-theme="dark"] {
-  --paper: #14161a;
-  --paper-2: #1c1f24;
-  --ink: #f4f2ee;
-  --ink-soft: #a7adb4;
-  --line: #2c3138;
-  --rail: #101216;
-  --rail-text: #f4f2ee;
-  --rail-muted: #a7adb4;
+  --paper: #0e1822;
+  --paper-2: #152433;
+  --ink: #e7f1f7;
+  --ink-soft: #b7c9d6;
+  --line: #2c4356;
+  --rail: #0c1520;
+  --rail-text: #e7f1f7;
+  --rail-muted: #b7c9d6;
   --rail-hover: rgba(255, 255, 255, 0.06);
-  --rail-on: rgba(224, 122, 69, 0.18);
-  --ribbon: #181b20;
-  --hover: #24282e;
-  --select: #3a2a22;
-  --xl: #1c1f24;
-  --navy: #f4f2ee;
-  --navy-2: #c8ccd1;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --accent: #e07a45;
-  --blue: #e07a45;
-  --accent-2: #c65a28;
-  --money: #e07a45;
-  --gold: #e07a45;
-  --on-accent: #1a120e;
+  --rail-on: rgba(61, 190, 154, 0.2);
+  --ribbon: #152433;
+  --hover: #1c3144;
+  --select: #16382f;
+  --xl: #12202c;
+  --navy: #e7f1f7;
+  --navy-2: #8fb4cc;
+  --shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  --accent: #3dbe9a;
+  --blue: #3dbe9a;
+  --accent-2: #2a9a7c;
+  --money: #8ee0c4;
+  --gold: #3dbe9a;
+  --on-accent: #06241c;
 }
 
 button { height: var(--control-h, 36px); border-radius: 8px; font-weight: 500; }
@@ -113,7 +113,7 @@ html[data-style="minimal"] .dashboard-view .note { border: 0; background: transp
 
 /* spreadsheet */
 html[data-style="spreadsheet"] {
-  --sans: "IBM Plex Sans", Inter, "Segoe UI", system-ui, sans-serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
     --nav-w: 196px;
     --nav-collapsed: 52px;
     --appbar-h: 34px;
@@ -137,11 +137,11 @@ html[data-style="spreadsheet"] {
     --navy: #12151a;
     --navy-2: #3c4450;
     --shadow: none;
-    --accent: #c65a28;
-    --blue: #c65a28;
-    --accent-2: #9a4318;
-    --money: #9a4318;
-    --gold: #c65a28;
+    --accent: #0e6b56;
+    --blue: #0e6b56;
+    --accent-2: #0a4f40;
+    --money: #0a4f40;
+    --gold: #0e6b56;
     --on-accent: #ffffff;
     --pad-grid-y: 2px;
     --pad-grid-x: 6px;
@@ -175,11 +175,11 @@ html[data-theme="dark"][data-style="spreadsheet"] {
     --hover: #222833;
     --select: #3d2a22;
     --xl: #171b21;
-    --accent: #e07a45;
-    --blue: #e07a45;
-    --accent-2: #c65a28;
-    --money: #e07a45;
-    --gold: #e07a45;
+    --accent: #3dbe9a;
+    --blue: #3dbe9a;
+    --accent-2: #0e6b56;
+    --money: #3dbe9a;
+    --gold: #3dbe9a;
     --on-accent: #1a120e;
 }
 html[data-style="spreadsheet"] button,
@@ -188,7 +188,7 @@ html[data-style="spreadsheet"] .theme-toggle {
   height: 24px; border-radius: 0; font-size: 12px; padding: 0 8px;
 }
 html[data-style="spreadsheet"] .appbar {
-  height: 34px; min-height: 34px; background: var(--ribbon); border-bottom: 1px solid var(--line); padding: 0 8px;
+  height: auto; min-height: 34px; background: var(--ribbon); border-bottom: 1px solid var(--line); padding: 0 8px;
 }
 html[data-style="spreadsheet"] .appbar .brand-logo {
   height: 22px;
@@ -265,7 +265,7 @@ html[data-style="spreadsheet"] .seg button {
 
 /* modern */
 html[data-style="modern"] {
-  --sans: Inter, "Segoe UI", system-ui, sans-serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --control-h: 36px;
   --status-h: 36px;
     --nav-w: 220px;
@@ -288,11 +288,11 @@ html[data-style="modern"] {
     --navy: #0a0a0a;
     --navy-2: #444444;
     --shadow: none;
-    --accent: #c65a28;
-    --blue: #c65a28;
-    --accent-2: #9a4318;
-    --money: #9a4318;
-    --gold: #c65a28;
+    --accent: #0e6b56;
+    --blue: #0e6b56;
+    --accent-2: #0a4f40;
+    --money: #0a4f40;
+    --gold: #0e6b56;
     --on-accent: #ffffff;
     --pad-grid-y: 10px;
     --pad-grid-x: 12px;
@@ -321,19 +321,19 @@ html[data-theme="dark"][data-style="modern"] {
     --rail-text: #ededed;
     --rail-muted: #a1a1a1;
     --rail-hover: rgba(255, 255, 255, 0.06);
-    --rail-on: rgba(224, 122, 69, 0.16);
+    --rail-on: rgba(61, 190, 154, 0.2);
     --ribbon: #090909;
     --hover: #171717;
-    --select: rgba(224, 122, 69, 0.16);
+    --select: rgba(61, 190, 154, 0.2);
     --xl: #111111;
     --navy: #ededed;
     --navy-2: #a1a1a1;
     --shadow: none;
-    --accent: #e07a45;
-    --blue: #e07a45;
-    --accent-2: #c65a28;
-    --money: #e07a45;
-    --gold: #e07a45;
+    --accent: #3dbe9a;
+    --blue: #3dbe9a;
+    --accent-2: #0e6b56;
+    --money: #3dbe9a;
+    --gold: #3dbe9a;
     --on-accent: #1a120e;
     --overlay: rgba(0, 0, 0, 0.72);
 }
@@ -401,7 +401,7 @@ html[data-style="modern"] .status {
 
 /* cards */
 html[data-style="cards"] {
-  --sans: Outfit, Inter, "Segoe UI", system-ui, sans-serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --control-h: 36px;
   --status-h: 44px;
     --nav-w: 232px;
@@ -424,11 +424,11 @@ html[data-style="cards"] {
     --navy: #2c241e;
     --navy-2: #6f655c;
     --shadow: 0 10px 28px rgba(70, 46, 28, 0.08);
-    --accent: #c65a28;
-    --blue: #c65a28;
-    --accent-2: #9a4318;
-    --money: #9a4318;
-    --gold: #c65a28;
+    --accent: #0e6b56;
+    --blue: #0e6b56;
+    --accent-2: #0a4f40;
+    --money: #0a4f40;
+    --gold: #0e6b56;
     --on-accent: #ffffff;
     --pad-grid-y: 14px;
     --pad-grid-x: 18px;
@@ -463,11 +463,11 @@ html[data-theme="dark"][data-style="cards"] {
     --select: #4a3024;
     --xl: #3c3128;
     --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
-    --accent: #e07a45;
-    --blue: #e07a45;
-    --accent-2: #c65a28;
-    --money: #e07a45;
-    --gold: #e07a45;
+    --accent: #3dbe9a;
+    --blue: #3dbe9a;
+    --accent-2: #0e6b56;
+    --money: #3dbe9a;
+    --gold: #3dbe9a;
     --on-accent: #2a160f;
 }
 html[data-style="cards"] .shell {
@@ -547,7 +547,7 @@ html[data-style="cards"] .home h1 {
 
 /* enterprise */
 html[data-style="enterprise"] {
-  --sans: "IBM Plex Sans", Inter, "Segoe UI", system-ui, sans-serif;
+  --sans: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --control-h: 36px;
   --status-h: 32px;
     --nav-w: 228px;
@@ -570,11 +570,11 @@ html[data-style="enterprise"] {
     --navy: #101114;
     --navy-2: #2a3038;
     --shadow: none;
-    --accent: #c65a28;
-    --blue: #c65a28;
-    --accent-2: #9a4318;
-    --money: #9a4318;
-    --gold: #c65a28;
+    --accent: #0e6b56;
+    --blue: #0e6b56;
+    --accent-2: #0a4f40;
+    --money: #0a4f40;
+    --gold: #0e6b56;
     --on-accent: #ffffff;
     --pad-grid-y: 6px;
     --pad-grid-x: 10px;
@@ -608,11 +608,11 @@ html[data-theme="dark"][data-style="enterprise"] {
     --hover: #22262e;
     --select: #3d2a22;
     --xl: #1a1d24;
-    --accent: #e07a45;
-    --blue: #e07a45;
-    --accent-2: #c65a28;
-    --money: #e07a45;
-    --gold: #e07a45;
+    --accent: #3dbe9a;
+    --blue: #3dbe9a;
+    --accent-2: #0e6b56;
+    --money: #3dbe9a;
+    --gold: #3dbe9a;
     --on-accent: #1a120e;
 }
 html[data-style="enterprise"] button,
@@ -631,7 +631,7 @@ html[data-style="enterprise"] .file-row {
 html[data-style="enterprise"] .appbar {
   background: var(--ribbon);
     border-bottom: 2px solid var(--ink);
-    height: 52px;
+    height: auto;
     min-height: 52px;
 }
 html[data-style="enterprise"] .sidebar {
@@ -699,6 +699,20 @@ html[data-style] .status {
   height: var(--status-h, 36px);
   min-height: var(--status-h, 36px);
   max-height: var(--status-h, 36px);
+}
+@media (max-width: 720px) {
+  .status,
+  html[data-style] .status {
+    height: auto;
+    max-height: none;
+    min-height: var(--status-h, 36px);
+    flex-wrap: wrap;
+    align-content: center;
+    row-gap: 4px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    overflow: visible;
+  }
 }
 html[data-style] .menu-select-btn,
 html[data-style] .menu-select-list button {

@@ -45,7 +45,7 @@ import {
   type DisplayFormat,
 } from "@aerolith/shared";
 
-type SettingsTab =
+export type SettingsTab =
   | "license"
   | "appearance"
   | "legal"

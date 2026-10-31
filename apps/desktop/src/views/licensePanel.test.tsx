@@ -36,6 +36,23 @@ describe("license UI", () => {
     expect(html).toContain("Buy or renew");
     expect(html).toContain("Refresh license");
     expect(html).toContain("Account");
+    expect(html).not.toContain("Your account");
+    expect(html).not.toContain("License status");
+  });
+
+  it("says signed out when the session is empty", () => {
+    const html = renderToStaticMarkup(
+      createElement(LicensePanel, {
+        session: emptySession(),
+        onAccount: () => undefined,
+        onPricing: () => undefined,
+      }),
+    );
+    expect(html).toContain("Signed out");
+    expect(html).toContain("Sign in to continue.");
+    expect(html).not.toContain("Signed in");
+    expect(html).not.toContain("Your account");
+    expect(html).not.toContain(">License<");
   });
 
   it("asks for an Aerolith email instead of a workspace PIN", () => {
