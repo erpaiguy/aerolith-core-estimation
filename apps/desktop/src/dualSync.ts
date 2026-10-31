@@ -121,7 +121,7 @@ export async function openDockedPane(pane: "takeoff" | "estimate"): Promise<void
     if (isTauri()) {
       const { WebviewWindow } = await import("@tauri-apps/api/webviewWindow");
       const label = `bidcraft-${pane}`;
-      const existing = await WebviewWindow.getByLabel(label);
+      const existing = (await WebviewWindow.getAll()).find((webview) => webview.label === label) ?? null;
       if (existing) {
         await existing.setFocus();
         return;

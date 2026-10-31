@@ -12,10 +12,11 @@
     "dialog:allow-ask",
     "updater:default",
     "process:default",
+    "core:webview:default",
     "core:webview:allow-create-webview-window",
-    "core:webview:allow-webview-close",
-    "core:webview:allow-get-by-label",
+    "core:webview:allow-get-all-webviews",
     "core:webview:allow-set-webview-focus",
+    "core:webview:allow-webview-close",
     "core:window:allow-set-focus"
   ]
 }
