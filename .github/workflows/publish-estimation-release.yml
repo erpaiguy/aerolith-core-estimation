@@ -18,8 +18,10 @@
 # If the signing secrets are empty, this uploads an unsigned installer as a
 # draft release tagged v2.0.0-draft and does not touch estimation-latest.json.
 #
-# After this workflow is on the default branch, run it once:
-# Actions → "Publish Estimation release" → Run workflow.
+# Merge is not required. Run this from branch cursor/bid-craft-v2.0-4380:
+# Actions → "Publish Estimation release" → Run workflow →
+# Use workflow from: cursor/bid-craft-v2.0-4380 → Run workflow.
+# workflow_dispatch uses the workflow file and the checkout from that branch.
 # Do not commit the token or the private key.
 
 name: Publish Estimation release
@@ -184,7 +186,7 @@ jobs:
           body: |
             Unsigned Windows installer for Bid Craft 2.0.0.
             This draft is not an updater manifest. Installed apps ignore it.
-            Add the minisign signing secrets and re-run Publish Estimation release to replace estimation-latest.json on tag v1.0.0.
+            Add the minisign signing secrets and re-run Publish Estimation release from branch cursor/bid-craft-v2.0-4380 to replace estimation-latest.json on tag v1.0.0. Merge is not required.
           files: |
             dist/Estimation-Setup.exe
           fail_on_unmatched_files: true
@@ -200,5 +202,6 @@ jobs:
           - Signing secrets used: $signed
           - Signed runs replace ``estimation-latest.json`` on tag ``v1.0.0`` (the URL already baked into installed apps).
           - Unsigned runs upload a draft tag ``v2.0.0-draft`` and leave the manifest alone.
+          - Merge is not required. This run uses the workflow file and code from the branch selected for workflow_dispatch. For 2.0.0 that branch is ``cursor/bid-craft-v2.0-4380``.
           - Remaining human steps: see docs/UPDATER_V2.md.
           "@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append

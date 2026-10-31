@@ -19,12 +19,13 @@ Tauri writes the NSIS installer as `{productName}_{version}_{arch}-setup.exe` un
 
 When those signing secrets are empty, the workflow builds with updater artifacts off and uploads only `Estimation-Setup.exe` as a draft on `v2.0.0-draft`. Installed apps keep their current manifest until a signed run replaces it. Details and the one-time key steps are in `docs/UPDATER_V2.md`.
 
-## Run once after this workflow is on `main`
+## Run from the 2.0 branch
 
-`workflow_dispatch` runs from the default branch. After merge:
+Merge is not required. `workflow_dispatch` uses the workflow file and the code from the branch selected in the Actions dropdown.
 
 1. GitHub → **Actions** → **Publish Estimation release** → **Run workflow**.
-2. Confirm `Estimation-Setup.exe`, `Estimation-Setup.exe.sig`, and `estimation-latest.json` are on [v1.0.0](https://github.com/erpaiguy/aerolith-core-releases/releases/tag/v1.0.0).
+2. Set **Use workflow from** to `cursor/bid-craft-v2.0-4380`, then **Run workflow**.
+3. Confirm `Estimation-Setup.exe`, `Estimation-Setup.exe.sig`, and `estimation-latest.json` are on [v1.0.0](https://github.com/erpaiguy/aerolith-core-releases/releases/tag/v1.0.0) when the signing secrets are present. An unsigned run uploads a draft on `v2.0.0-draft` and leaves the manifest in place.
 
 Do not commit the token or the updater private key. The public key in `tauri.conf.json` (key id `0D2A07F09EBF1044`) must be the pair of `TAURI_SIGNING_PRIVATE_KEY` before the first signed release, or installed apps will reject the update. If that private key was never stored, follow `docs/UPDATER_V2.md` and generate a new pair on the developer machine.
 
