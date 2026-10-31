@@ -1,5 +1,9 @@
 const AUTO_KEY = "bidcraft.autoUpdate";
 
+/** Stable manifest URL. Installed 1.x and 2.x apps both read this file; publish a signed 2.0.0 manifest here. */
+export const UPDATE_CHANNEL_URL =
+  "https://github.com/erpaiguy/aerolith-core-releases/releases/download/v1.0.0/estimation-latest.json";
+
 export type UpdateOffer = {
   version: string;
   notes: string;

@@ -29,7 +29,7 @@ import { PublisherMark } from "./Brand";
 import { convertMasterRates } from "../resourceMaster";
 import { convertProjectCurrency } from "../projectResourceMaster";
 import { applyTheme, type ThemeName } from "../theme";
-import { checkForUpdate, setUpdatesAutoEnabled, updatesAutoEnabled, type UpdateOffer } from "../updates";
+import { UPDATE_CHANNEL_URL, checkForUpdate, setUpdatesAutoEnabled, updatesAutoEnabled, type UpdateOffer } from "../updates";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
 import {
@@ -394,8 +394,10 @@ export function SettingsView({
       <div className="settings-section">
         <h2 className="view">Updates</h2>
         <p className="hint">
-          Bid Craft checks the published installer when this desktop app starts. Download, install, and relaunch stay inside the app.
+          Bid Craft {APP_VERSION} checks the release channel when this desktop app starts. Download, install, and relaunch stay inside the app.
+          Already-installed copies move to 2.0.0 when a signed installer and <code>estimation-latest.json</code> are published on that channel.
         </p>
+        <p className="hint">{UPDATE_CHANNEL_URL}</p>
         <label className="check-row">
           <input
             type="checkbox"

@@ -55,8 +55,11 @@ CREATE TABLE IF NOT EXISTS working_boq_items (
   price_mode TEXT,
   analysis_origin TEXT,
   linked_boq_code TEXT,
-      extra_json TEXT,
+       extra_json TEXT,
       carry_mode TEXT,
+      qty_link TEXT,
+      qty_link_locked INTEGER NOT NULL DEFAULT 0,
+      based_on TEXT,
       sort_order INTEGER NOT NULL
 );
 
@@ -249,6 +252,58 @@ CREATE TABLE IF NOT EXISTS rate_analysis_includes (
   snapshot_json TEXT
 );
 
+CREATE TABLE IF NOT EXISTS drawings (
+  id INTEGER PRIMARY KEY,
+  uuid TEXT NOT NULL,
+  name TEXT NOT NULL,
+  code TEXT,
+  sort_order INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS dimension_groups (
+  id INTEGER PRIMARY KEY,
+  uuid TEXT NOT NULL,
+  drawing_uuid TEXT,
+  name TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  color TEXT,
+  zone TEXT,
+  unit TEXT,
+  factor REAL,
+  cutout INTEGER NOT NULL DEFAULT 0,
+  parent_uuid TEXT,
+  sort_order INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS dimension_marks (
+  id INTEGER PRIMARY KEY,
+  uuid TEXT NOT NULL,
+  group_uuid TEXT NOT NULL,
+  label TEXT,
+  length REAL,
+  width REAL,
+  count REAL,
+  deduct INTEGER NOT NULL DEFAULT 0,
+  override_qty REAL,
+  x REAL,
+  y REAL,
+  w REAL,
+  h REAL,
+  note TEXT,
+  sort_order INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS rate_library (
+  id INTEGER PRIMARY KEY,
+  uuid TEXT NOT NULL,
+  code TEXT NOT NULL,
+  phrase TEXT NOT NULL,
+  unit TEXT,
+  based_on TEXT,
+  lines_json TEXT,
+  sort_order INTEGER NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_working_boq_code ON working_boq_items(boq_code);
 CREATE INDEX IF NOT EXISTS idx_working_bill ON working_boq_items(bill_id);
 CREATE INDEX IF NOT EXISTS idx_working_uuid ON working_boq_items(uuid);
@@ -264,3 +319,6 @@ CREATE INDEX IF NOT EXISTS idx_quote_reply ON quote_replies(uuid);
 CREATE INDEX IF NOT EXISTS idx_tender_query_item ON tender_query_items(uuid);
 CREATE INDEX IF NOT EXISTS idx_tender_query_reply ON tender_query_replies(item_uuid);
 CREATE INDEX IF NOT EXISTS idx_tender_query_list ON tender_query_list_lines(list_uuid);
+CREATE INDEX IF NOT EXISTS idx_dim_group_drawing ON dimension_groups(drawing_uuid);
+CREATE INDEX IF NOT EXISTS idx_dim_mark_group ON dimension_marks(group_uuid);
+CREATE INDEX IF NOT EXISTS idx_rate_library_code ON rate_library(code);

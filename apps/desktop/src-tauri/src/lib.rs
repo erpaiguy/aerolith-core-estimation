@@ -18,7 +18,6 @@ fn write_aero(path: String, data: Vec<u8>) -> Result<String, String> {
             let _ = std::fs::rename(&bak, &path);
             e.to_string()
         })?;
-        let _ = std::fs::remove_file(&bak);
     } else {
         std::fs::rename(&tmp, &path).map_err(|e| e.to_string())?;
     }
@@ -281,6 +280,18 @@ mod tests {
         assert!(written.to_lowercase().ends_with(".aero"));
         assert_eq!(std::fs::read(&written).unwrap(), b"aerolith-sqlite");
         let _ = std::fs::remove_file(written);
+    }
+
+    #[test]
+    fn keeps_one_generation_backup() {
+        let path = temp_aero();
+        let written = write_aero(path, b"first".to_vec()).unwrap();
+        let again = write_aero(written.clone(), b"second".to_vec()).unwrap();
+        let bak = std::path::Path::new(&again).with_extension("aero.bak");
+        assert_eq!(std::fs::read(&again).unwrap(), b"second");
+        assert_eq!(std::fs::read(&bak).unwrap(), b"first");
+        let _ = std::fs::remove_file(&again);
+        let _ = std::fs::remove_file(&bak);
     }
 
     #[test]

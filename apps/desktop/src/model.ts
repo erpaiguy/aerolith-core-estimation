@@ -103,6 +103,12 @@ export interface WorkingItem {
   extra?: Record<string, string>;
   /** How this item's rate analysis is carried onto Working / Submission BOQ. */
   carryMode?: BoqCarryMode;
+  /** Link expression such as `G:grp-slab` or `G:grp-slab*2`. Empty means the quantity is posted from bill lines. */
+  qtyLink?: string | null;
+  /** When set, drawing edits do not overwrite our qty. */
+  qtyLinkLocked?: boolean;
+  /** Rate-library build-up this item follows until its analysis lines are edited. */
+  basedOnId?: string | null;
   result?: ItemResult;
 }
 
@@ -311,6 +317,50 @@ export interface TenderQueryList {
   attachments: QueryAttachment[];
 }
 
+export interface DrawingSheet {
+  id: string;
+  name: string;
+  code: string;
+}
+
+export interface DimensionGroup {
+  id: string;
+  drawingId: string;
+  name: string;
+  kind: "area" | "length" | "count";
+  color: string;
+  zone: string;
+  unit: string;
+  factor: number;
+  cutout: boolean;
+  parentId: string | null;
+}
+
+export interface DimensionMark {
+  id: string;
+  groupId: string;
+  label: string;
+  length: number | null;
+  width: number | null;
+  count: number | null;
+  deduct: boolean;
+  overrideQty: number | null;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  note: string;
+}
+
+export interface RateBuildUp {
+  id: string;
+  code: string;
+  phrase: string;
+  unit: string;
+  basedOnId: string | null;
+  lines: AnalysisLine[];
+}
+
 export interface LoadedProject {
   name: string;
   locationNote: string;
@@ -333,6 +383,12 @@ export interface LoadedProject {
   categories: CategoryRow[];
   vendors: VendorRow[];
   qtoLines: QtoLine[];
+  /** Drawing sheets for the take-off viewer. Missing on jobs saved before 2.0. */
+  drawings?: DrawingSheet[];
+  dimensionGroups?: DimensionGroup[];
+  dimensionMarks?: DimensionMark[];
+  /** Phrase / rate build-ups. Applying one sets an item's Based On link. */
+  rateLibrary?: RateBuildUp[];
   resourceQuotes: ResourceQuote[];
   itemQuotes: ItemQuote[];
   enquiries: EnquiryPack[];
@@ -368,6 +424,9 @@ export function stampItem(item: Omit<WorkingItem, "id" | "clientLinkCode" | "bil
     extra: item.extra ?? {},
     analysisOrigin: item.analysisOrigin ?? "own",
     linkedBoqCode: item.linkedBoqCode ?? null,
+    qtyLink: item.qtyLink ?? null,
+    qtyLinkLocked: item.qtyLinkLocked ?? false,
+    basedOnId: item.basedOnId ?? null,
   };
 }
 

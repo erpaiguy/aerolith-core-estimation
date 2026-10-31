@@ -20,5 +20,15 @@ export { resolveAnalysisUnitCost, resolveBoqUnitCost, resolveProjectBoqCosts, wo
 export type { ResolvableItem, ResolveResult } from "./resolve.ts";
 export { qtoQty, postedQtyByItem, FORMULA_KEYS } from "./qto.ts";
 export type { FormulaKey, QtoDims } from "./qto.ts";
+export {
+  evaluateLink,
+  groupQuantity,
+  groupQuantityMap,
+  isDrillGroup,
+  markQuantity,
+  readQuantityLink,
+  referencedGroupIds,
+} from "./links.ts";
+export type { GroupInput, GroupKind, LinkCellState, LinkRead, MarkInput } from "./links.ts";
 export { rollupResourceTotals } from "./rollup.ts";
 export type { RollupLine } from "./rollup.ts";

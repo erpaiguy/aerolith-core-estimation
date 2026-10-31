@@ -1,3 +1,4 @@
+import { dockedPane } from "../dualSync";
 import { recents, sessionScope, type Session } from "../platform/store";
 import { BrandLockup, PublisherMark, useSurfaceTone } from "./Brand";
 import { isSoloTenant, tenantProjectsHint } from "../platform/tenant";
@@ -13,6 +14,7 @@ export function HomeView({
   onSampleCampus,
   onImport,
   onOpenPath,
+  onRestore,
   onSignOut,
   onOwnerPortal,
 }: {
@@ -23,6 +25,7 @@ export function HomeView({
   onNew: () => void;
   onOpen: () => void;
   onOpenPath?: (path: string) => void;
+  onRestore?: () => void;
   onSampleSingle: () => void;
   onSampleCampus: () => void;
   onImport: () => void;
@@ -72,6 +75,11 @@ export function HomeView({
         <button type="button" onClick={onOpen}>
           Open .aero
         </button>
+        {onRestore ? (
+          <button type="button" onClick={onRestore}>
+            Restore draft
+          </button>
+        ) : null}
         {canImport ? (
           <button type="button" onClick={onImport}>
             Import bill
@@ -91,6 +99,9 @@ export function HomeView({
       <div className="home">
         <h1>Open</h1>
         <p className="home-sub">{trialLine}</p>
+        {dockedPane() ? (
+          <p className="hint">This window follows the main Bid Craft workspace. Open a job there and this view stays in step.</p>
+        ) : null}
         {recent.length === 0 ? (
           <p className="hint">
             No saved jobs yet. Save a .aero under{" "}

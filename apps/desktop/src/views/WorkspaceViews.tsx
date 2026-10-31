@@ -1,5 +1,6 @@
 import { formatMoney, formatQty, getDisplayFormat, roundTo } from "@aerolith/shared";
-import { useMemo, useState, type MouseEvent, type ReactNode } from "react";
+import { useMemo, useState, type DragEvent, type MouseEvent, type ReactNode } from "react";
+import type { LinkCellState } from "@aerolith/calc";
 import {
   extraValue,
   itemMatchesColumnFilters,
@@ -67,6 +68,29 @@ function CostField({
 }
 
 export { SourceView, SubmitView } from "./DocumentRenderer";
+
+function LinkGlyph({ state, title }: { state: LinkCellState; title: string }) {
+  if (state === "typed") return null;
+  const label =
+    state === "linked" ? "Linked" : state === "drill" ? "Drill-down" : state === "broken" ? "Broken link" : "Locked";
+  return (
+    <span className={`link-glyph link-${state}`} title={title} aria-label={`${label}. ${title}`}>
+      {state === "linked" ? "⌁" : state === "drill" ? "▾" : state === "broken" ? "!" : "▣"}
+    </span>
+  );
+}
+
+function sectionAmount(section: WorkingItem, rows: WorkingItem[]): number {
+  const start = rows.findIndex((row) => row.id === section.id);
+  if (start < 0) return 0;
+  let sum = 0;
+  for (let i = start + 1; i < rows.length; i += 1) {
+    const row = rows[i]!;
+    if (row.kind === "section" || row.billId !== section.billId) break;
+    sum += row.result?.amount ?? 0;
+  }
+  return sum;
+}
 
 export function Inspector({
   item,
@@ -265,6 +289,11 @@ export function EstimateView({
   tools,
   bills = [],
   clientLocked,
+  linkFor,
+  onShowSource,
+  onToggleLock,
+  onDropGroup,
+  hotKeys,
 }: {
   items: WorkingItem[];
   selected: string | null;
@@ -288,6 +317,16 @@ export function EstimateView({
   tools?: ReactNode;
   bills?: ProjectBill[];
   clientLocked?: (billId: string) => boolean;
+  linkFor?: (item: WorkingItem) => {
+    qtyState: LinkCellState;
+    qtyTitle: string;
+    rateState: LinkCellState;
+    rateTitle: string;
+  };
+  onShowSource?: (key: string) => void;
+  onToggleLock?: (key: string) => void;
+  onDropGroup?: (key: string, field: "description" | "quantity", event: DragEvent<HTMLElement>) => void;
+  hotKeys?: Set<string>;
 }) {
   const freezeClient = Boolean(sourceLocked || locked);
   const clientExtras = clientColumns.filter((c) => c.role === "extra");
@@ -652,6 +691,7 @@ export function EstimateView({
               disabled={locked}
               onChange={(e) => onPatch(itemKeyOf(row), { description: e.target.value })}
             />
+            <span className="section-total">{formatMoney(sectionAmount(row, items), currency)}</span>
           </td>
           <td />
           <td>
@@ -665,15 +705,26 @@ export function EstimateView({
     const key = itemKeyOf(row);
     const quoted = Boolean(quotedCodes?.has(key) || quotedCodes?.has(row.boqCode));
     const badges = itemBadges(row, quoted);
+    const link = linkFor?.(row);
     return (
       <tr
         key={row.id}
-        className={`${selected === key ? "selected" : ""} ${row.ourQty !== row.clientQty ? "diff" : ""}`}
+        className={`${selected === key ? "selected" : ""} ${hotKeys?.has(key) ? "link-hot" : ""} ${row.ourQty !== row.clientQty ? "diff" : ""}`}
         onClick={() => onSelect(key)}
       >
         <td>{row.boqCode}</td>
         {showBillColumn ? <td>{billLabel?.(row.billId) ?? row.billId}</td> : null}
-        <td>
+        <td
+          onDragOver={(e) => {
+            if (onDropGroup && e.dataTransfer.types.includes("text/plain")) e.preventDefault();
+          }}
+          onDrop={(e) => {
+            if (!onDropGroup) return;
+            e.preventDefault();
+            e.stopPropagation();
+            onDropGroup(key, "description", e);
+          }}
+        >
           <input
             className="cell"
             value={row.description}
@@ -692,7 +743,47 @@ export function EstimateView({
             onValue={(n) => onPatch(itemKeyOf(row), { clientQty: n ?? 0 })}
           />
         </td>
-        <td className="num">{formatQty(row.ourQty)}</td>
+        <td
+          className={`num link-cell link-${link?.qtyState ?? "typed"}`}
+          onDragOver={(e) => {
+            if (onDropGroup && e.dataTransfer.types.includes("text/plain")) e.preventDefault();
+          }}
+          onDrop={(e) => {
+            if (!onDropGroup) return;
+            e.preventDefault();
+            e.stopPropagation();
+            onDropGroup(key, "quantity", e);
+          }}
+        >
+          <LinkGlyph state={link?.qtyState ?? "typed"} title={link?.qtyTitle ?? "Typed quantity"} />
+          <span title={link?.qtyTitle}>{formatQty(row.ourQty)}</span>
+          {link && link.qtyState !== "typed" ? (
+            <span className="link-actions">
+              <button
+                type="button"
+                className="link-jump"
+                title={link.qtyTitle}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShowSource?.(key);
+                }}
+              >
+                Show source
+              </button>
+              <button
+                type="button"
+                className="link-jump"
+                title={row.qtyLinkLocked ? "Unlock quantity" : "Lock quantity"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleLock?.(key);
+                }}
+              >
+                {row.qtyLinkLocked ? "Unlock" : "Lock"}
+              </button>
+            </span>
+          ) : null}
+        </td>
         <td>
           <input
             className="cell"
@@ -711,7 +802,20 @@ export function EstimateView({
             stopRowClick
           />
         </td>
-        <td className="num">{formatWorkingRate(row, currency)}</td>
+        <td className={`num link-cell link-${link?.rateState ?? "typed"}`} title={link?.rateTitle}>
+          <LinkGlyph state={link?.rateState ?? "typed"} title={link?.rateTitle ?? ""} />
+          <button
+            type="button"
+            className="link-rate"
+            title={link?.rateTitle || "Open rate analysis"}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenRate(key);
+            }}
+          >
+            {formatWorkingRate(row, currency)}
+          </button>
+        </td>
         <td className="num">{formatWorkingAmount(row, currency)}</td>
         <td>
           <div className="badge-row">

@@ -7,7 +7,7 @@ import type { ThemeName } from "../theme";
 export type SidebarTarget = Activity | "resources";
 
 const GROUPS: Array<{ label: string; items: SidebarTarget[] }> = [
-  { label: "Estimate", items: ["dashboard", "source", "takeoff", "estimate", "analysis", "margins"] },
+  { label: "Workspace", items: ["takeoff", "estimate", "source", "analysis", "margins", "dashboard"] },
   { label: "Commercial", items: ["queries", "buy", "submit"] },
   { label: "Library", items: ["masters", "resources", "settings"] },
 ];

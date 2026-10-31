@@ -1,7 +1,8 @@
 import { formatMoney, formatPct, moneyClose, configureDisplayFormat, mergeDisplayFormat } from "@aerolith/shared";
 import { useEffect, useState, type CSSProperties } from "react";
+import { dockedPane, useWorkspaceSync } from "./dualSync";
 import { emptyProject, loadCampusSampleProject, loadReferenceProject } from "./loadReference";
-import type { Activity, LoadedProject, QtoLine, WorkingItem } from "./model";
+import type { Activity, LoadedProject, WorkingItem } from "./model";
 import { GOLDEN_TOTAL, hasAnalysisBackup, inferParents, newId, stampItem } from "./model";
 import { useAerolithLicense } from "./auth/useAerolithLicense";
 import { allowsData, describeLicense, licenseBanner, resolveAccess } from "./auth/licenseState";
@@ -27,7 +28,7 @@ import {
   promotionFromProject,
 } from "./tenantCatalog";
 import { filterableColumns } from "./boqColumns";
-import { applyQtoPosting, applyReplicaPick, diffReplica, uid, withResults } from "./projectCompute";
+import { applyReplicaPick, diffReplica, uid, withResults } from "./projectCompute";
 import { effectiveMarginPct } from "./marginRules";
 import {
   DEFAULT_BILL_ID,
@@ -65,8 +66,10 @@ import { MastersView } from "./views/MastersView";
 import { OwnerView } from "./views/OwnerView";
 import { SettingsView } from "./views/SettingsView";
 import { TenderQueriesView } from "./views/TenderQueriesView";
-import { EstimateView, Inspector, SourceView, SubmitView } from "./views/WorkspaceViews";
-import { TakeoffInspector, TakeoffView } from "./views/TakeoffView";
+import { Inspector, SourceView, SubmitView } from "./views/WorkspaceViews";
+import { DualWorkspace } from "./views/DualWorkspace";
+import { CommandPalette, type CommandItem } from "./views/CommandPalette";
+import { TakeoffInspector } from "./views/TakeoffView";
 import { RateAnalysisView } from "./views/RateAnalysisView";
 import { usePersistedNumber } from "./ui/useLayoutSize";
 
@@ -101,11 +104,63 @@ export function App() {
   const [masterTab, setMasterTab] = useState<"units" | "categories" | "vendors" | "resources">("units");
   const [updateOffer, setUpdateOffer] = useState<UpdateOffer | null>(null);
   const [updateBusy, setUpdateBusy] = useState(false);
+  const [groupId, setGroupId] = useState<string | null>(null);
+  const [layoutMode, setLayoutMode] = useState<"split" | "focus">("split");
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [auditOpen, setAuditOpen] = useState(false);
+  const [phraseOpen, setPhraseOpen] = useState(false);
 
   useEffect(() => {
     if (!updatesAutoEnabled()) return;
     void checkForUpdate().then(setUpdateOffer).catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setPaletteOpen((open) => !open);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useWorkspaceSync({ project, selected, groupId, activity, billFocus }, (msg) => {
+    setProject(withResults(msg.project));
+    setSelected(msg.selected);
+    setGroupId(msg.groupId);
+    setBillFocus(msg.billFocus);
+    setScreen("project");
+    const pane = dockedPane();
+    if (pane) {
+      setActivity(pane);
+      return;
+    }
+    setActivity((current) => {
+      if (current !== "takeoff" && current !== "estimate") return current;
+      return msg.activity === "takeoff" || msg.activity === "estimate" ? msg.activity : current;
+    });
+  });
+
+  useEffect(() => {
+    if (!project || project.isDemo || dockedPane()) return;
+    const handle = window.setTimeout(() => {
+      void (async () => {
+        if (filePath) {
+          const native = await import("./nativeAero");
+          if (!native.isTauri()) return;
+          const { projectToAero } = await import("./aero");
+          await native.writeAeroBytes(filePath, await projectToAero(project));
+          setSaveMsg("Auto-saved");
+          clearRecovery();
+          return;
+        }
+        writeRecovery(project);
+      })().catch(() => undefined);
+    }, 1600);
+    return () => window.clearTimeout(handle);
+  }, [project, filePath]);
 
   useEffect(() => {
     void ensurePlatform()
@@ -204,6 +259,13 @@ export function App() {
     }
   }
 
+  function restoreDraft() {
+    const draft = readRecovery();
+    if (!draft) return;
+    openProject(draft);
+    setActivity("estimate");
+  }
+
   function openNew() {
     openProject(
       emptyProject(
@@ -274,6 +336,7 @@ export function App() {
         const scope = workspaceId ?? sessionScope(session);
         if (scope) pushRecent(project.name, saved, scope);
         setSaveMsg(`Saved ${saved}`);
+        clearRecovery();
         return;
       }
       const { projectToAero, downloadAero } = await import("./aero");
@@ -282,6 +345,7 @@ export function App() {
         const picked = await native.saveAeroWithBrowserPicker(bytes, project.name);
         if (picked) {
           setSaveMsg(`Saved ${picked}`);
+          clearRecovery();
           return;
         }
       } catch (err) {
@@ -289,6 +353,7 @@ export function App() {
         throw err;
       }
       downloadAero(bytes, project.name);
+      clearRecovery();
       setSaveMsg("Saved .aero to your downloads folder (browser preview).");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Could not save .aero";
@@ -336,6 +401,9 @@ export function App() {
     }
     if (patch.lines != null && patch.priceMode == null) {
       nextPatch.priceMode = "analysis";
+    }
+    if (patch.lines != null && patch.basedOnId === undefined) {
+      nextPatch.basedOnId = null;
     }
     if (patch.clientQty != null && billSourceLocked(project, findItemByKey(project.items, code)?.billId ?? "")) {
       const { clientQty: _c, ...rest } = nextPatch;
@@ -475,11 +543,6 @@ export function App() {
       const line = project.qtoLines.find((l) => l.id === id);
       return line?.workingBoqCode === code ? null : id;
     });
-  }
-
-  function setQto(lines: QtoLine[]) {
-    if (!project || editLocked) return;
-    commit(applyQtoPosting({ ...project, qtoLines: lines }));
   }
 
   function resolveConflict(id: string, side: "local" | "replica") {
@@ -656,6 +719,7 @@ export function App() {
           setScreen("import");
         }}
         onOpenPath={(path) => void openAeroFile(path)}
+        onRestore={readRecovery() ? restoreDraft : undefined}
         accountName={license.session.displayName || license.session.email}
         licenseLine={licenseLine}
         onSignOut={signOut}
@@ -731,6 +795,21 @@ export function App() {
     }
     setActivity(id);
   }
+
+  const commands: CommandItem[] = [
+    { id: "takeoff", label: "Take-off", hint: "Drawing and groups", run: () => goTo("takeoff") },
+    { id: "estimate", label: "Estimate", hint: "Workbook", run: () => goTo("estimate") },
+    { id: "source", label: "Source", run: () => goTo("source") },
+    { id: "buy", label: "Buy", run: () => goTo("buy") },
+    { id: "submit", label: "Submit", run: () => goTo("submit") },
+    { id: "masters", label: "Masters", run: () => goTo("masters") },
+    { id: "settings", label: "Settings", run: () => goTo("settings") },
+    { id: "split", label: "Split take-off and estimate", run: () => { setLayoutMode("split"); goTo(activity === "takeoff" ? "takeoff" : "estimate"); } },
+    { id: "audit", label: "Problems", hint: "Unused groups, broken links, unpriced rows", run: () => { setAuditOpen(true); goTo("estimate"); } },
+    { id: "phrases", label: "Rate phrases", run: () => { setPhraseOpen(true); goTo("estimate"); } },
+    { id: "save", label: "Save .aero", run: () => void saveAero() },
+    { id: "updates", label: "Check for updates", run: () => { goTo("settings"); } },
+  ];
 
   function canView(id: Activity) {
     if (!session) return false;
@@ -856,66 +935,76 @@ export function App() {
             />
           </BoqSplit>
         ) : null}
-        {activity === "estimate" ? (
-          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-estimate">
-          <EstimateView
-            items={shownItems}
-            selected={selected}
-            onSelect={setSelected}
-            onOpenRate={openRate}
-            currency={project.currency}
-            onPatch={patchItem}
-            onAdd={addItem}
-            onAddSection={addSection}
-            onRemove={removeItem}
-            locked={editLocked}
-            sourceLocked={billFocus ? billSourceLocked(project, billFocus) : false}
-            quotedCodes={new Set(project.itemQuotes.filter((q) => q.selected).map((q) => q.boqCode))}
-            clientColumns={project.clientColumns}
-            workingColumns={project.workingColumns}
-            showBillColumn={false}
-            billLabel={(id) => billById(project, id)?.name ?? id}
-            addDisabled={!billFocus}
-            bills={!billFocus ? sortedBills(project) : []}
-            clientLocked={(id) => billSourceLocked(project, id)}
-            tools={
-              <>
-                <button
-                  type="button"
-                  disabled={editLocked}
-                  onClick={() => {
-                    setImportMode("append");
-                    setScreen("import");
-                  }}
-                >
-                  Add BOQ
-                </button>
-                <button
-                  type="button"
-                  disabled={editLocked}
-                  onClick={() => {
-                    setImportMode("amend");
-                    setScreen("import");
-                  }}
-                >
-                  Amend BOQ
-                </button>
-              </>
-            }
-            onAddColumn={(col) => commit({ ...project, workingColumns: [...project.workingColumns, col] })}
-            onRemoveColumn={(id) =>
-              commit({
-                ...project,
-                workingColumns: project.workingColumns.filter((c) => c.id !== id),
-                items: project.items.map((i) => {
-                  if (!i.extra || !(id in i.extra)) return i;
-                  const extra = { ...i.extra };
-                  delete extra[id];
-                  return { ...i, extra };
-                }),
-              })
-            }
-          />
+        {activity === "estimate" || activity === "takeoff" ? (
+          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-workspace">
+            <DualWorkspace
+              project={project}
+              items={shownItems}
+              activity={activity === "takeoff" ? "takeoff" : "estimate"}
+              layoutMode={layoutMode}
+              selected={selected}
+              groupId={groupId}
+              billFocus={billFocus}
+              locked={editLocked}
+              sourceLocked={billFocus ? billSourceLocked(project, billFocus) : false}
+              auditOpen={auditOpen}
+              phraseOpen={phraseOpen}
+              onAudit={setAuditOpen}
+              onPhrase={setPhraseOpen}
+              onLayout={setLayoutMode}
+              onActivity={setActivity}
+              onSelect={setSelected}
+              onSelectGroup={setGroupId}
+              onSelectLine={setQtoLineId}
+              selectedLineId={qtoLineId}
+              onProject={(next) => commit(next)}
+              onPatch={patchItem}
+              onAdd={addItem}
+              onAddSection={addSection}
+              onRemove={removeItem}
+              onOpenRate={openRate}
+              quotedCodes={new Set(project.itemQuotes.filter((q) => q.selected).map((q) => q.boqCode))}
+              clientColumns={project.clientColumns}
+              workingColumns={project.workingColumns}
+              filterColumns={filterableColumns(project)}
+              onAddColumn={(col) => commit({ ...project, workingColumns: [...project.workingColumns, col] })}
+              onRemoveColumn={(id) =>
+                commit({
+                  ...project,
+                  workingColumns: project.workingColumns.filter((c) => c.id !== id),
+                  items: project.items.map((i) => {
+                    if (!i.extra || !(id in i.extra)) return i;
+                    const extra = { ...i.extra };
+                    delete extra[id];
+                    return { ...i, extra };
+                  }),
+                })
+              }
+              tools={
+                <>
+                  <button
+                    type="button"
+                    disabled={editLocked}
+                    onClick={() => {
+                      setImportMode("append");
+                      setScreen("import");
+                    }}
+                  >
+                    Add BOQ
+                  </button>
+                  <button
+                    type="button"
+                    disabled={editLocked}
+                    onClick={() => {
+                      setImportMode("amend");
+                      setScreen("import");
+                    }}
+                  >
+                    Amend BOQ
+                  </button>
+                </>
+              }
+            />
           </BoqSplit>
         ) : null}
         {activity === "analysis" ? (
@@ -959,21 +1048,6 @@ export function App() {
                     setScreen("import");
                   }
             }
-          />
-          </BoqSplit>
-        ) : null}
-        {activity === "takeoff" ? (
-          <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-takeoff">
-          <TakeoffView
-            items={shownItems}
-            lines={project.qtoLines}
-            onSelect={setSelected}
-            selected={selected}
-            selectedLineId={qtoLineId}
-            onSelectLine={setQtoLineId}
-            onChangeLines={setQto}
-            locked={editLocked}
-            filterColumns={filterableColumns(project)}
           />
           </BoqSplit>
         ) : null}
@@ -1150,10 +1224,11 @@ export function App() {
           Qty policy: client bill + tender adjustments. Margin{" "}
           {formatPct(effectiveMarginPct(project, formulaItem))} on cost (once)
           {(project.marginRules ?? []).some((r) => r.enabled) ? " · scoped rules on Margins" : ""}. Client qty is immutable after
-          the Client BOQ is locked. Our qty posts from take-off.
+          the Client BOQ is locked. Our qty posts from bill lines, or from a dimension group when the cell is linked.
         </div>
       </aside>
       ) : null}
+      <CommandPalette open={paletteOpen} commands={commands} onClose={() => setPaletteOpen(false)} />
       <footer className="status" role="status">
         <span>
           Ready
@@ -1172,6 +1247,36 @@ export function App() {
       </footer>
     </div>
   );
+}
+
+const RECOVERY_KEY = "bidcraft.recovery.v2";
+
+function writeRecovery(project: LoadedProject): void {
+  try {
+    localStorage.setItem(RECOVERY_KEY, JSON.stringify({ project }));
+  } catch {
+    /* the browser refused the draft */
+  }
+}
+
+function readRecovery(): LoadedProject | null {
+  try {
+    const raw = localStorage.getItem(RECOVERY_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { project?: LoadedProject };
+    if (!parsed.project || typeof parsed.project.name !== "string" || !Array.isArray(parsed.project.items)) return null;
+    return parsed.project;
+  } catch {
+    return null;
+  }
+}
+
+function clearRecovery(): void {
+  try {
+    localStorage.removeItem(RECOVERY_KEY);
+  } catch {
+    /* ignore */
+  }
 }
 
 function workspaceSession(platform: PlatformState): Session {
