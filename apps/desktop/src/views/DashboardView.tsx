@@ -55,23 +55,24 @@ export function DashboardView({
   const tree = useMemo(() => costCategoryTree(project, billId), [project, billId]);
   const catMax = Math.max(1, ...tree.map((n) => n.amount));
   const waterfall = [
-    { label: "Direct cost", value: cost, pct: total ? cost / total : 1 },
-    { label: "Overhead", value: factors.overheadPct, pct: cost ? factors.overheadPct / cost : m.overheadPct },
-    { label: "Profit", value: factors.profitPct, pct: cost ? factors.profitPct / cost : m.profitPct },
-    { label: "Logistics", value: factors.logisticsPct, pct: cost ? factors.logisticsPct / cost : m.logisticsPct },
-    { label: "Contingency", value: factors.contingencyPct, pct: cost ? factors.contingencyPct / cost : m.contingencyPct },
+    { label: "Direct cost", tone: "cost", value: cost, pct: total ? cost / total : 0 },
+    { label: "Overhead", tone: "overhead", value: factors.overheadPct, pct: cost ? factors.overheadPct / cost : m.overheadPct },
+    { label: "Profit", tone: "profit", value: factors.profitPct, pct: cost ? factors.profitPct / cost : m.profitPct },
+    { label: "Logistics", tone: "logistics", value: factors.logisticsPct, pct: cost ? factors.logisticsPct / cost : m.logisticsPct },
+    { label: "Contingency", tone: "contingency", value: factors.contingencyPct, pct: cost ? factors.contingencyPct / cost : m.contingencyPct },
   ];
   const waterMax = Math.max(1, ...waterfall.map((w) => w.value), total);
-  const jobTotal = Math.max(
-    1,
-    project.items.filter((i) => i.kind === "item").reduce((s, i) => s + (i.result?.amount ?? 0), 0),
-  );
+  const jobAmount = project.items.filter((i) => i.kind === "item").reduce((s, i) => s + (i.result?.amount ?? 0), 0);
+  const jobScale = Math.max(jobAmount, 1);
 
   const header = usePrintHeader();
   return (
     <div className="dashboard-view">
       <div className="module-toolbar">
-        <h1 className="view">Overview</h1>
+        <div className="view-title">
+          <h1 className="view">Overview</h1>
+          <p className="view-lead">Where this job stands before you change a quantity or a rate.</p>
+        </div>
         <PrintActions
           build={() =>
             jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Dashboard", [
@@ -100,20 +101,30 @@ export function DashboardView({
       </div>
       <div className="dash-body">
       {license}
-      <div className="kpis">
-        <div className="kpi">
-          <span>Cost</span>
-          <b>{formatMoney(cost, project.currency)}</b>
-        </div>
-        <div className="kpi">
-          <span>Margin {formatPct(cost ? marginAmt / cost : totalMarginPct(m))}</span>
-          <b>{formatMoney(marginAmt, project.currency)}</b>
-        </div>
-        <div className="kpi kpi-total">
-          <span>{billId ? "This BOQ" : "Working total"}</span>
-          <b>{formatMoney(total, project.currency)}</b>
-        </div>
-      </div>
+      <section className="figure-ledger" aria-label="Job figures">
+        <article>
+          <div>
+            <h2>Direct cost</h2>
+            <p>Resources on the analysed items, before margin.</p>
+          </div>
+          <strong>{formatMoney(cost, project.currency)}</strong>
+        </article>
+        <article>
+          <div>
+            <h2>Margin {formatPct(cost ? marginAmt / cost : totalMarginPct(m))}</h2>
+            <p>Overhead, profit, logistics, and contingency from the rules on Commercial.</p>
+          </div>
+          <strong>{formatMoney(marginAmt, project.currency)}</strong>
+        </article>
+        <article className="is-total">
+          <div>
+            <h2>{billId ? "This building" : "Working total"}</h2>
+            <p>Direct cost plus margin. This is the figure the submission is describing.</p>
+          </div>
+          <strong>{formatMoney(total, project.currency)}</strong>
+        </article>
+      </section>
+      <p className="dash-read">These counts are the work still open. Choose one to open those lines.</p>
       <div className="dash-flags" role="group" aria-label="Pricing flags">
         <button type="button" className="dash-flag" onClick={() => onOpenException?.("unpriced")}>
           <b>{unpriced}</b> unpriced
@@ -126,68 +137,72 @@ export function DashboardView({
         </button>
       </div>
       {bills.length > 1 ? (
-        <div className="note boq-grand">
+        <section className="note boq-grand chart-block">
           <h2>Grand summary</h2>
+          <p className="chart-lead">Each building against the whole job. Bars share one track. Amounts share one column. A faded row is outside the building you have open.</p>
+          <div className="bar-chart">
           {bills.map((b) => (
             <div className={`bar-row ${billId && billId !== b.id ? "dim" : ""}`} key={b.id}>
               <span>
                 {b.code} {b.name}
               </span>
               <div className="bar">
-                <i style={{ width: `${(billTotal(project.items, b.id) / jobTotal) * 100}%` }} />
+                <i className="cost" style={{ width: `${(billTotal(project.items, b.id) / jobScale) * 100}%` }} />
               </div>
               <strong>{formatMoney(billTotal(project.items, b.id), project.currency)}</strong>
             </div>
           ))}
-          <div className="bar-row">
+          <div className="bar-row is-total">
             <span>Working total</span>
             <div className="bar">
-              <i className="total" style={{ width: "100%" }} />
+              <i className="total" style={{ width: jobAmount > 0 ? "100%" : "0%" }} />
             </div>
-            <strong>
-              {formatMoney(
-                project.items.filter((i) => i.kind === "item").reduce((s, i) => s + (i.result?.amount ?? 0), 0),
-                project.currency,
-              )}
-            </strong>
+            <strong>{formatMoney(jobAmount, project.currency)}</strong>
           </div>
-        </div>
+          </div>
+        </section>
       ) : null}
       <div className="dash-grid">
         <Split id="dashboard" axis="x" defaultSize={560} min={280} max={900}>
-        <div className="note">
+        <section className="note chart-block">
           <h2>Cost by category</h2>
+          <p className="chart-lead">Open a category to see the groups inside it. The amount column stays put while the name indents.</p>
           {tree.length === 0 ? (
-            <p>No resource rollup yet. Open Rate Analysis and Resource Prices.</p>
+            <p>No resource rollup yet. Build rates on Price, then set resource prices on Commercial.</p>
           ) : (
-            tree.map((node) => (
+            <div className="bar-chart">
+            {tree.map((node) => (
               <CostBranch key={node.key} node={node} depth={0} barMax={catMax} currency={project.currency} />
-            ))
+            ))}
+            </div>
           )}
-        </div>
-        <div className="note">
+        </section>
+        <section className="note chart-block">
           <h2>Margin waterfall</h2>
+          <p className="chart-lead">Each bar is that amount against the larger of direct cost and the working total. The track ends on the same line in every row.</p>
+          <div className="bar-chart">
           {waterfall.map((w) => (
             <div className="bar-row" key={w.label}>
               <span>
                 {w.label} <em>{formatPct(w.pct)}</em>
               </span>
               <div className="bar">
-                <i style={{ width: `${(w.value / waterMax) * 100}%` }} />
+                <i className={w.tone} style={{ width: `${(w.value / waterMax) * 100}%` }} />
               </div>
               <strong>{formatMoney(w.value, project.currency)}</strong>
             </div>
           ))}
-          <div className="bar-row">
+          <div className="bar-row is-total">
             <span>
-              Working total <em>100%</em>
+              Working total <em>{formatPct(total > 0 ? total / waterMax : 0)}</em>
             </span>
             <div className="bar">
               <i className="total" style={{ width: `${(total / waterMax) * 100}%` }} />
             </div>
             <strong>{formatMoney(total, project.currency)}</strong>
           </div>
-        </div>
+          </div>
+        </section>
         </Split>
       </div>
       </div>
@@ -212,10 +227,7 @@ function CostBranch({
   return (
     <details className={`dash-cat depth-${depth}`}>
       <summary className="bar-row">
-        <span title={DEPTH_LABEL[depth] ?? "Group"}>
-          <i className="dash-lvl">{DEPTH_LABEL[depth] ?? "Group"}</i>
-          {node.label}
-        </span>
+        <span title={DEPTH_LABEL[depth] ?? "Group"}>{node.label}</span>
         <div className="bar">
           <i style={{ width: `${(node.amount / Math.max(1, barMax)) * 100}%` }} />
         </div>

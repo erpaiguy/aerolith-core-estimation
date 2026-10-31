@@ -44,7 +44,7 @@ import {
   visibleItems,
 } from "./bills";
 import { BoqSplit } from "./ui/BillSwitcher";
-import { BoqChips, StageBar, Subnav, type StageId } from "./views/FrameChrome";
+import { stageGuide, Subnav, type StageId } from "./views/FrameChrome";
 import { mergeReportFormat, type ReportFormat, type StoredReportTemplate } from "./reportFormat";
 import type { ReportFormatPack } from "./views/ReportDesigner";
 import { BuyView } from "./views/BuyView";
@@ -66,7 +66,9 @@ import { cloneResourceMaster, pushRateToMaster } from "./resourceMaster";
 import { copyGlobalMaster, projectWithMaster } from "./projectResourceMaster";
 import { MastersView } from "./views/MastersView";
 import { OwnerView } from "./views/OwnerView";
-import { SettingsView } from "./views/SettingsView";
+import { SettingsView, type SettingsTab } from "./views/SettingsView";
+import { HelpSheet } from "./views/HelpSheet";
+import { scopeLabel, workspaceMenus } from "./views/workspaceMenus";
 import { TenderQueriesView } from "./views/TenderQueriesView";
 import { EstimateView, Inspector, SourceView, SubmitView } from "./views/WorkspaceViews";
 import { TakeoffInspector, TakeoffView } from "./views/TakeoffView";
@@ -100,8 +102,10 @@ export function App() {
   }, [lineFocus, project]);
   const [activity, setActivity] = useState<Activity>("estimate");
   const [finalisePane, setFinalisePane] = useState<FinalisePane>("summary");
-  const [settingsTab, setSettingsTab] = useState<"license" | "legal">("license");
+  const [settingsTab, setSettingsTab] = useState<SettingsTab>("license");
   const [settingsFocus, setSettingsFocus] = useState(0);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [helpSection, setHelpSection] = useState("flow");
   const [selected, setSelected] = useState<string | null>(null);
   const [qtoLineId, setQtoLineId] = useState<string | null>(null);
   const [rateCode, setRateCode] = useState<string | null>(null);
@@ -851,18 +855,75 @@ export function App() {
                 ? "submit"
                 : "utility";
 
-  function openStage(id: StageId) {
-    if (id === "overview") goTo("dashboard");
-    else if (id === "source") goTo("source");
-    else if (id === "measure") goTo("takeoff");
-    else if (id === "price") goTo("estimate");
-    else if (id === "commercial") {
-      if (activity === "buy" || activity === "queries" || activity === "margins") return;
-      goTo("margins");
-    } else if (activity !== "submit" && activity !== "finalise") goTo("submit");
+  const canUndo = histTick >= 0 && historyRef.current.past.length > 0;
+  const jobScope = scopeLabel(project, billFocus);
+
+  function openSettings(tab: SettingsTab) {
+    setSettingsTab(tab);
+    setSettingsFocus((n) => n + 1);
+    goTo("settings");
   }
 
-  const canUndo = histTick >= 0 && historyRef.current.past.length > 0;
+  function openHelp(section: string) {
+    setHelpSection(section);
+    setHelpOpen(true);
+  }
+
+  const menus = workspaceMenus({
+    stage,
+    activity,
+    finalisePane,
+    project,
+    billFocus,
+    editLocked,
+    canUndo,
+    canRedo: historyRef.current.future.length > 0 && histTick >= 0,
+    showInspector,
+    inspectorOpen,
+    onOpen: () => void openAeroFile(),
+    onSave: () => void saveAero(),
+    onClose: () => {
+      clearHistory();
+      setLineFocus(null);
+      setProject(null);
+      setFilePath(null);
+      setRateCode(null);
+      setQtoLineId(null);
+      setSaveMsg("");
+      setScreen("home");
+    },
+    onUndo: undo,
+    onRedo: redo,
+    onToggleInspector: () => setInspectorOpen((v) => !v),
+    onGo: goTo,
+    onException: openException,
+    onBill: setBillFocus,
+    onAddBoq: () => {
+      setImportMode("append");
+      setScreen("import");
+    },
+    onAmendBoq: () => {
+      setImportMode("amend");
+      setScreen("import");
+    },
+    onSubmitStep: (id) => {
+      if (id === "summary") goTo("submit");
+      else if (id === "checks") {
+        setFinalisePane("checks");
+        goTo("finalise");
+      } else {
+        setFinalisePane("pack");
+        goTo("finalise");
+      }
+    },
+    onSettings: openSettings,
+    onLibrary: () => {
+      setMasterTab("units");
+      goTo("masters");
+    },
+    onHelp: openHelp,
+  });
+
   const submitStep = activity === "submit" ? "summary" : finalisePane === "pack" ? "seal" : finalisePane === "checks" ? "checks" : "summary";
 
   return (
@@ -878,6 +939,8 @@ export function App() {
             : ""
         }`}
         user={initials}
+        menus={menus}
+        guide={stageGuide(stage, jobScope)}
         actions={
           <>
             <input
@@ -893,68 +956,7 @@ export function App() {
             <ThemeButton theme={theme} onTheme={chooseTheme} />
           </>
         }
-        menu={{
-          label: "File",
-          items: [
-            { label: "Open", onSelect: () => void openAeroFile() },
-            { label: "Save", onSelect: () => void saveAero() },
-            {
-              label: "Close",
-              onSelect: () => {
-                clearHistory();
-                setLineFocus(null);
-                setProject(null);
-                setFilePath(null);
-                setRateCode(null);
-                setQtoLineId(null);
-                setSaveMsg("");
-                setScreen("home");
-              },
-            },
-            {
-              label: "Undo",
-              separatorBefore: true,
-              disabled: histTick < 0 || historyRef.current.past.length === 0,
-              onSelect: undo,
-            },
-            {
-              label: "Redo",
-              disabled: historyRef.current.future.length === 0 || histTick < 0,
-              onSelect: redo,
-            },
-            ...(showInspector
-              ? [
-                  {
-                    label: inspectorOpen ? "Hide inspector" : "Inspector",
-                    onSelect: () => setInspectorOpen((v) => !v),
-                  },
-                ]
-              : []),
-            {
-              label: "Library",
-              separatorBefore: true,
-              onSelect: () => {
-                setMasterTab("units");
-                goTo("masters");
-              },
-            },
-            {
-              label: "Settings",
-              onSelect: () => goTo("settings"),
-            },
-            {
-              label: "Legal",
-              onSelect: () => {
-                setSettingsTab("legal");
-                setSettingsFocus((n) => n + 1);
-                goTo("settings");
-              },
-            },
-          ],
-        }}
       />
-      {stage === "utility" ? null : <StageBar active={stage} onPick={openStage} />}
-      {stage === "utility" ? null : <BoqChips project={project} value={billFocus} onChange={setBillFocus} />}
       <div className="shell-banners">
         {updateOffer ? (
           <div className="banner" role="status">
@@ -993,16 +995,27 @@ export function App() {
           <div className="banner">Owner impersonation is active. This tenant can see it in Settings → Audit.</div>
         ) : null}
       </div>
-      <main className={`stage ${fillStage ? "stage-fill" : ""}`}>
+      <main className={`stage ${fillStage ? "stage-fill" : ""}`} aria-describedby="workspace-guide">
         <PrintProvider project={project} format={reportFormat}>
+        {stage === "price" ? (
+          <Subnav
+            label="Price"
+            active={activity}
+            items={[
+              ["estimate", "Working BOQ", "Your quantities and rates, written against the client bill."],
+              ["analysis", "Rate analysis", "Build the rate for the selected item from resources."],
+            ]}
+            onPick={(id) => goTo(id as Activity)}
+          />
+        ) : null}
         {stage === "commercial" ? (
           <Subnav
             label="Commercial"
             active={activity}
             items={[
-              ["margins", "Margins"],
-              ["buy", "Resource prices"],
-              ["queries", "Client queries"],
+              ["margins", "Margins", "Overhead, profit, logistics, and contingency for this job or this building."],
+              ["buy", "Resource prices", "The rate book behind every analysis. A change here reprices the resources that use it."],
+              ["queries", "Client queries", "Questions still open with the client, and the replies that should change the bill."],
             ]}
             onPick={(id) => goTo(id as Activity)}
           />
@@ -1012,9 +1025,9 @@ export function App() {
             label="Submit"
             active={submitStep}
             items={[
-              ["summary", "Summary"],
-              ["checks", "Checks"],
-              ["seal", "Seal"],
+              ["summary", "Summary", "The submission bill as it will be read."],
+              ["checks", "Checks", "What still blocks a clean seal."],
+              ["seal", "Seal", "Lock this revision so the packet can be sent."],
             ]}
             onPick={(id) => {
               if (id === "summary") goTo("submit");
@@ -1412,6 +1425,7 @@ export function App() {
           {formatMoney(total, project.currency)}
         </span>
       </footer>
+      <HelpSheet open={helpOpen} section={helpSection} onClose={() => setHelpOpen(false)} />
     </div>
   );
 }
