@@ -395,7 +395,7 @@ export function SettingsView({
         <h2 className="view">Updates</h2>
         <p className="hint">
           Bid Craft {APP_VERSION} checks the release channel when this desktop app starts. Download, install, and relaunch stay inside the app.
-          Already-installed copies move to 2.0.0 when a signed installer and <code>estimation-latest.json</code> are published on that channel.
+          Already-installed copies move to 2.0.1 when a signed installer and <code>estimation-latest.json</code> are published on that channel.
         </p>
         <p className="hint">{UPDATE_CHANNEL_URL}</p>
         <label className="check-row">

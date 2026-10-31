@@ -19,12 +19,12 @@ Merge is not required. Bid Craft 2.0 stays on branch `cursor/bid-craft-v2.0-4380
 3. **Use workflow from** → branch `cursor/bid-craft-v2.0-4380`.
 4. **Run workflow**.
 
-`workflow_dispatch` uses the workflow file and the code from the branch you select. `actions/checkout` then builds that same commit. Choosing `main` would build the copy of the workflow on `main`, which is not 2.0.0. Leave the pull request open.
+`workflow_dispatch` uses the workflow file and the code from the branch you select. `actions/checkout` then builds that same commit. Choosing `main` would build the copy of the workflow on `main`, which is not 2.0.1. Leave the pull request open.
 
 | Secrets present | Result |
 | --- | --- |
-| `AEROLITH_RELEASES_TOKEN` and both signing secrets | Signed `Estimation-Setup.exe`, `.sig`, and `estimation-latest.json` replace those three assets on tag `v1.0.0`. Installed apps can update to 2.0.0. |
-| Token present, signing secrets empty | Unsigned installer is uploaded as a **draft** release tagged `v2.0.0-draft`. `estimation-latest.json` is left alone, so installed apps do not see an update they cannot verify. |
+| `AEROLITH_RELEASES_TOKEN` and both signing secrets | Signed `Estimation-Setup.exe`, `.sig`, and `estimation-latest.json` replace those three assets on tag `v1.0.0`. Installed apps can update to 2.0.1. |
+| Token present, signing secrets empty | Unsigned installer is uploaded as a **draft** release tagged `v2.0.1-draft`. `estimation-latest.json` is left alone, so installed apps do not see an update they cannot verify. |
 | Token empty | The workflow stops. Nothing is published. |
 
 ## One-time signing setup (Windows, only if the private key was never stored)
@@ -43,7 +43,7 @@ Skip this if GitHub already has `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_P
    - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: the password you chose
    - `AEROLITH_RELEASES_TOKEN`: fine-grained PAT with Contents read/write on `erpaiguy/aerolith-core-releases` only
 4. Reinstall is required for copies that were built with a different public key. Copies built with the key already in this repo will accept updates signed by its pair.
-5. Run **Publish Estimation release** from branch `cursor/bid-craft-v2.0-4380` (see above). Confirm `Estimation-Setup.exe`, `Estimation-Setup.exe.sig`, and `estimation-latest.json` (version `2.0.0`) are on the `v1.0.0` release. Open an installed 1.x Bid Craft and use Settings → Updates → Check now.
+5. Run **Publish Estimation release** from branch `cursor/bid-craft-v2.0-4380` (see above). Confirm `Estimation-Setup.exe`, `Estimation-Setup.exe.sig`, and `estimation-latest.json` (version `2.0.1`) are on the `v1.0.0` release. Open an installed 1.x Bid Craft and use Settings → Updates → Check now.
 
 ## Human checklist before the first signed 2.0 update works
 
@@ -52,5 +52,5 @@ Skip this if GitHub already has `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_P
 - [ ] `AEROLITH_RELEASES_TOKEN` is set
 - [ ] Merge is not required. Leave the pull request open
 - [ ] Actions → Publish Estimation release → Run workflow → choose branch `cursor/bid-craft-v2.0-4380` → Run workflow (`workflow_dispatch` uses the workflow file and code from that branch)
-- [ ] `estimation-latest.json` on tag `v1.0.0` shows `"version": "2.0.0"` and a `windows-x86_64` signature
-- [ ] An installed copy offers 2.0.0 from Settings → Updates
+- [ ] `estimation-latest.json` on tag `v1.0.0` shows `"version": "2.0.1"` and a `windows-x86_64` signature
+- [ ] An installed copy offers 2.0.1 from Settings → Updates

@@ -1,0 +1,3 @@
+Bid Craft 2.0.1
+
+Enterprise Home, Source, Buy, Submit, Masters, and Reports, with Take-off and Estimate kept as the dense dual workspace. Quantity links, the margin stack, and existing .aero projects are unchanged. Installed copies update from the same release channel.

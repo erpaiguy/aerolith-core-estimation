@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1
+
+- App version 2.0.1 so installed copies can update from 2.0.0 through `estimation-latest.json` on the existing release tag.
+- Includes the enterprise shell and the Take-off / Estimate dual workspace already on this branch.
+
 ## 2.0.0
 
 Bid Craft keeps the same app id (`com.aerolith.core`), the same calc kernel, and the same `.aero` projects. This release makes Take-off and Estimate the primary workspace.
