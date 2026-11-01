@@ -2,7 +2,7 @@ import type { Activity } from "./model";
 
 /** User-facing module names. Internal activity ids stay unchanged. */
 export const ACTIVITY_LABELS: Record<Activity, string> = {
-  dashboard: "Job summary",
+  dashboard: "Overview",
   source: "Source",
   takeoff: "Take-off",
   estimate: "Estimate",

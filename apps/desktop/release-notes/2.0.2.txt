@@ -1,0 +1,3 @@
+Bid Craft 2.0.2
+
+Estima-style shell with a dark navigation rail, light canvas, and orange accents. Theme switching is removed. Home project files, overview KPIs, procurement summary, finalize margins, report library preview, and Help center match the enterprise layout. Calc kernel, quantity links, and .aero projects are unchanged. Installed copies update from the same release channel once a signed 2.0.2 manifest is published.

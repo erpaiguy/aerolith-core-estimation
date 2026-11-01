@@ -5,7 +5,7 @@ import { costCategoryTree } from "../projectCompute";
 import { effectiveMargin } from "../marginRules";
 import type { LoadedProject } from "../model";
 import { downloadXlsx, tableToXlsx } from "../simpleSheet";
-import { ChartFrame, DataCard, ModuleChrome, StatusPill } from "../ui/enterprise";
+import { ChartFrame, ModuleChrome, StatusPill } from "../ui/enterprise";
 import { PrintActions } from "../ui/PrintActions";
 import { usePrintHeader } from "../print/context";
 import { jobDocument } from "../print/types";
@@ -15,19 +15,19 @@ type SuiteId = "working" | "category" | "submission";
 const SUITES: Array<{ id: SuiteId; name: string; detail: string; columns: string[] }> = [
   {
     id: "working",
-    name: "Working summary",
+    name: "Executive summary",
     detail: "Direct cost through the margin stack to the working total.",
     columns: ["Step", "Amount"],
   },
   {
     id: "category",
-    name: "Cost by category",
+    name: "Material / cost list",
     detail: "Direct cost grouped by resource category.",
     columns: ["Category", "Amount"],
   },
   {
     id: "submission",
-    name: "Submission",
+    name: "Tender submission",
     detail: "Priced rows against rows that still have no rate.",
     columns: ["State", "Rows"],
   },
@@ -56,42 +56,36 @@ export function ReportsView({
     <div className="enterprise-module reports-hub">
       <ModuleChrome
         kicker="Reports"
-        title="Suite library"
-        detail="Pick a suite, read the chart, then print or download a spreadsheet. Letterhead stays in Settings."
+        title="Report library"
+        detail="Pick a template, preview the chart, then export PDF, Excel, or keep the letterhead in Settings."
         pill={<StatusPill tone="draft">{project.currency}</StatusPill>}
       >
         <button type="button" onClick={onSettings}>
           Edit letterhead
         </button>
       </ModuleChrome>
-      <div className="card-grid">
-        {SUITES.map((item) => (
-          <DataCard
-            key={item.id}
-            title={item.name}
-            status={item.id === suite ? "Open" : "Suite"}
-            tone={item.id === suite ? "sealed" : "draft"}
-            lines={[item.detail, item.columns.join(" · "), "Bid Craft"]}
-            action={item.id === suite ? "Selected" : "Open suite"}
-            selected={item.id === suite}
-            onOpen={() => setSuite(item.id)}
-          />
-        ))}
-        {templates.map((template) => (
-          <DataCard
-            key={template.id}
-            title={template.name}
-            status="Template"
-            tone="saved"
-            lines={["Saved letterhead", "Uses the submission suite", "Bid Craft"]}
-            action="Preview as submission"
-            onOpen={() => setSuite("submission")}
-          />
-        ))}
-      </div>
-      <div className="reports-preview">
-        <ChartFrame title={chosen.name} bars={bars} format={(value) => formatMoney(value, project.currency)} />
-        <aside>
+      <div className="reports-library">
+        <aside className="report-list" aria-label="Report templates">
+          {SUITES.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={item.id === suite ? "on" : ""}
+              onClick={() => setSuite(item.id)}
+            >
+              <strong>{item.name}</strong>
+              <small>{item.detail}</small>
+            </button>
+          ))}
+          {templates.map((template) => (
+            <button key={template.id} type="button" onClick={() => setSuite("submission")}>
+              <strong>{template.name}</strong>
+              <small>Saved letterhead · submission suite</small>
+            </button>
+          ))}
+        </aside>
+        <div className="report-preview-pane">
+          <ChartFrame title={chosen.name} bars={bars} format={(value) => formatMoney(value, project.currency)} />
           <h2>Columns</h2>
           <ul>
             {chosen.columns.map((column) => (
@@ -126,48 +120,53 @@ export function ReportsView({
                 )
               }
             >
-              Download .xlsx
+              Export Excel
             </button>
             {suite === "submission" ? (
               <button type="button" onClick={() => downloadSubmissionCsv(project, header.format, total)}>
-                Download submission .csv
+                Export CSV
               </button>
             ) : null}
           </div>
-        </aside>
+        </div>
       </div>
     </div>
   );
 }
 
-function suiteBars(project: LoadedProject, suite: SuiteId, total: number): Array<{ label: string; value: number }> {
-  const items = project.items.filter((item) => item.kind === "item");
+function suiteBars(project: LoadedProject, suite: SuiteId, total: number) {
   if (suite === "category") {
-    return costCategoryTree(project, null).map((node) => ({ label: node.label, value: node.amount }));
+    return costCategoryTree(project).map((node) => ({ label: node.label, value: node.amount }));
   }
   if (suite === "submission") {
+    const items = project.items.filter((item) => item.kind === "item");
     const unpriced = items.filter((item) => !item.result || item.result.rate === 0).length;
     return [
-      { label: "Priced rows", value: items.length - unpriced },
-      { label: "Unpriced rows", value: unpriced },
+      { label: "Priced", value: items.length - unpriced },
+      { label: "Unpriced", value: unpriced },
     ];
   }
-  const cost = items.reduce((sum, item) => sum + (item.result?.costAmount ?? 0), 0);
-  const factors = { overhead: 0, profit: 0, logistics: 0, contingency: 0 };
+  const items = project.items.filter((item) => item.kind === "item");
+  let cost = 0;
+  let overhead = 0;
+  let profit = 0;
+  let logistics = 0;
+  let contingency = 0;
   for (const item of items) {
+    const c = item.result?.costAmount ?? 0;
     const stack = effectiveMargin(project, item);
-    const line = item.result?.costAmount ?? 0;
-    factors.overhead += line * stack.overheadPct;
-    factors.profit += line * stack.profitPct;
-    factors.logistics += line * stack.logisticsPct;
-    factors.contingency += line * stack.contingencyPct;
+    cost += c;
+    overhead += c * stack.overheadPct;
+    profit += c * stack.profitPct;
+    logistics += c * stack.logisticsPct;
+    contingency += c * stack.contingencyPct;
   }
   return [
     { label: "Direct cost", value: cost },
-    { label: "Overhead", value: factors.overhead },
-    { label: "Profit", value: factors.profit },
-    { label: "Logistics", value: factors.logistics },
-    { label: "Contingency", value: factors.contingency },
+    { label: "Overhead", value: overhead },
+    { label: "Profit", value: profit },
+    { label: "Logistics", value: logistics },
+    { label: "Contingency", value: contingency },
     { label: "Working total", value: total },
   ];
 }

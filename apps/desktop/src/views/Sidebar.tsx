@@ -1,17 +1,18 @@
 import type { ReactNode } from "react";
 import type { Activity } from "../model";
 import { ACTIVITY_LABELS } from "../activityLabels";
-import { BrandLockup, BrandMark, useSurfaceTone } from "./Brand";
-import type { ThemeName } from "../theme";
+import { BrandLockup, BrandMark } from "./Brand";
 
-export type SidebarTarget = Activity | "resources" | "home";
+export type SidebarTarget = Activity | "resources" | "home" | "help";
 
 const PRIMARY: SidebarTarget[] = ["home", "source", "takeoff", "estimate", "buy", "submit", "masters", "reports", "settings"];
-const MORE: SidebarTarget[] = ["analysis", "margins", "queries", "dashboard", "resources"];
+const MORE: SidebarTarget[] = ["dashboard", "analysis", "margins", "queries", "resources", "help"];
 
 function labelOf(id: SidebarTarget): string {
   if (id === "home") return "Home";
   if (id === "resources") return "Resource master";
+  if (id === "help") return "Help";
+  if (id === "dashboard") return "Overview";
   return ACTIVITY_LABELS[id];
 }
 
@@ -33,6 +34,13 @@ function Icon({ id }: { id: SidebarTarget }) {
     reports: <path d="M3 12.5V8M6.5 12.5V4.5M10 12.5V6.5M13.5 12.5V3" {...stroke} />,
     resources: <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" {...stroke} />,
     settings: <path d="M8 5.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6zM8 2.2v1.4M8 12.4v1.4M2.2 8h1.4M12.4 8h1.4M3.8 3.8l1 1M11.2 11.2l1 1M12.2 3.8l-1 1M4.8 11.2l-1 1" {...stroke} />,
+    help: (
+      <>
+        <circle cx="8" cy="8" r="5.5" {...stroke} />
+        <path d="M6.4 6.2a1.7 1.7 0 1 1 2.4 1.5c-.5.3-.8.6-.8 1.2" {...stroke} />
+        <path d="M8 11.4h.01" {...stroke} />
+      </>
+    ),
   };
   return <svg {...common}>{paths[id]}</svg>;
 }
@@ -40,20 +48,20 @@ function Icon({ id }: { id: SidebarTarget }) {
 export function Sidebar({
   activity,
   homeActive = false,
+  helpActive = false,
   masterOpen,
   collapsed,
-  theme,
   canView,
   onNavigate,
   onHome,
   onToggle,
-  onTheme,
+  user,
 }: {
   activity: Activity;
   homeActive?: boolean;
+  helpActive?: boolean;
   masterOpen: boolean;
   collapsed: boolean;
-  theme: ThemeName;
   projectName?: string;
   revision?: string;
   total?: string;
@@ -65,21 +73,20 @@ export function Sidebar({
   onNavigate: (id: SidebarTarget) => void;
   onHome?: () => void;
   onToggle: () => void;
-  onTheme: (theme: ThemeName) => void;
   onClose?: () => void;
   onOpen?: () => void;
   onSave?: () => void;
   onToggleInspector?: () => void;
 }) {
-  const tone = useSurfaceTone();
   function isOn(id: SidebarTarget): boolean {
-    if (id === "home") return homeActive;
-    if (homeActive) return false;
+    if (id === "home") return homeActive && !helpActive;
+    if (id === "help") return helpActive;
+    if (homeActive || helpActive) return false;
     if (id === "resources") return activity === "masters" && masterOpen;
     return activity === id && !(id === "masters" && masterOpen);
   }
   function renderItem(id: SidebarTarget) {
-    if (id !== "home" && id !== "resources" && !canView(id)) return null;
+    if (id !== "home" && id !== "resources" && id !== "help" && !canView(id)) return null;
     const on = isOn(id);
     return (
       <button
@@ -98,10 +105,16 @@ export function Sidebar({
       </button>
     );
   }
+  const initials = (user ?? "BC")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "BC";
   return (
     <aside className={`sidebar ${collapsed ? "is-collapsed" : ""}`} aria-label="Modules">
       <div className="sidebar-brand">
-        {collapsed ? <BrandMark size={22} tone={tone} /> : <BrandLockup size="sm" tone={tone} />}
+        {collapsed ? <BrandMark size={22} tone="dark" /> : <BrandLockup size="sm" tone="dark" />}
       </div>
       <button
         type="button"
@@ -124,18 +137,10 @@ export function Sidebar({
         </div>
       </div>
       <div className="sidebar-foot">
-        <button
-          type="button"
-          className="nav-btn"
-          onClick={() => onTheme(theme === "dark" ? "light" : "dark")}
-          aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path d="M8 2.2v1.3M8 12.5v1.3M2.2 8h1.3M12.5 8h1.3M4 4l.9.9M11.1 11.1 12 12M12 4l-.9.9M4.9 11.1 4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            <circle cx="8" cy="8" r="2.3" stroke="currentColor" strokeWidth="1.5" />
-          </svg>
-          {collapsed ? null : <span>{theme === "dark" ? "Light" : "Dark"}</span>}
-        </button>
+        <div className="sidebar-account" title={user}>
+          <p className="who">{collapsed ? initials : user || "Workspace"}</p>
+          {collapsed ? null : <p className="trial">Bid Craft</p>}
+        </div>
       </div>
     </aside>
   );

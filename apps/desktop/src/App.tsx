@@ -62,13 +62,13 @@ import { TopBar } from "./views/TopBar";
 import { ReportsView } from "./views/ReportsView";
 import { BuyShell, MastersShell, SourceShell, SubmitShell } from "./views/ModuleShells";
 import { auditWorkspace } from "./dimensionWorkspace";
-import { applyTheme, readTheme, type ThemeName } from "./theme";
 import { checkForUpdate, updatesAutoEnabled, type UpdateOffer } from "./updates";
 import { cloneResourceMaster, pushRateToMaster } from "./resourceMaster";
 import { copyGlobalMaster, projectWithMaster } from "./projectResourceMaster";
 import { MastersView } from "./views/MastersView";
 import { OwnerView } from "./views/OwnerView";
 import { SettingsView } from "./views/SettingsView";
+import { HelpView } from "./views/HelpView";
 import { TenderQueriesView } from "./views/TenderQueriesView";
 import { Inspector, SourceView, SubmitView } from "./views/WorkspaceViews";
 import { DualWorkspace } from "./views/DualWorkspace";
@@ -97,7 +97,6 @@ export function App() {
   const [importMode, setImportMode] = useState<"create" | "append" | "amend">("create");
   const inspectorW = usePersistedNumber("aerolith-split:inspector", 300, 220, 560);
   const license = useAerolithLicense();
-  const [theme, setTheme] = useState<ThemeName>(readTheme);
   const [navCollapsed, setNavCollapsed] = useState(() => {
     try {
       return localStorage.getItem("bidcraft.navCollapsed") === "1";
@@ -113,7 +112,8 @@ export function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
   const [phraseOpen, setPhraseOpen] = useState(false);
-  const [portfolioPane, setPortfolioPane] = useState<"home" | "settings">("home");
+  const [portfolioPane, setPortfolioPane] = useState<"home" | "settings" | "help">("home");
+  const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     if (!updatesAutoEnabled()) return;
@@ -728,16 +728,22 @@ export function App() {
         <Sidebar
           activity={portfolioPane === "settings" ? "settings" : "dashboard"}
           homeActive={portfolioPane === "home"}
+          helpActive={portfolioPane === "help"}
           masterOpen={false}
           collapsed={navCollapsed}
-          theme={theme}
+          user={homeUser}
           canView={canView}
           onNavigate={(id) => {
+            if (id === "help") {
+              setPortfolioPane("help");
+              return;
+            }
             if (id === "settings" && !project) {
               setPortfolioPane("settings");
               return;
             }
             if (!project || id === "home") return;
+            setHelpOpen(false);
             setScreen("project");
             if (id === "resources") {
               setMasterTab("resources");
@@ -748,13 +754,10 @@ export function App() {
           }}
           onHome={() => {
             setPortfolioPane("home");
+            setHelpOpen(false);
             setScreen("home");
           }}
           onToggle={() => setNavCollapsed((value) => !value)}
-          onTheme={(next) => {
-            setTheme(next);
-            applyTheme(next);
-          }}
         />
         <TopBar
           projectName={project?.name ?? "No open project"}
@@ -784,12 +787,9 @@ export function App() {
               onAccount={license.openAccount}
               onPricing={license.openPricing}
               onSignOut={signOut}
-              theme={theme}
-              onTheme={(next) => {
-                setTheme(next);
-                applyTheme(next);
-              }}
             />
+          ) : portfolioPane === "help" ? (
+            <HelpView />
           ) : (
           <HomeView
             session={session}
@@ -941,15 +941,22 @@ export function App() {
     >
       <Sidebar
         activity={activity}
+        helpActive={helpOpen}
         masterOpen={masterTab === "resources"}
         collapsed={navCollapsed}
-        theme={theme}
+        user={whoLabel}
         canView={canView}
         onHome={() => {
           setPortfolioPane("home");
+          setHelpOpen(false);
           setScreen("home");
         }}
         onNavigate={(id: SidebarTarget) => {
+          if (id === "help") {
+            setHelpOpen(true);
+            return;
+          }
+          setHelpOpen(false);
           if (id === "home") {
             setScreen("home");
             return;
@@ -973,16 +980,13 @@ export function App() {
             return next;
           });
         }}
-        onTheme={(next) => {
-          setTheme(next);
-          applyTheme(next);
-        }}
         onClose={() => {
           setProject(null);
           setFilePath(null);
           setRateCode(null);
           setQtoLineId(null);
           setSaveMsg("");
+          setHelpOpen(false);
           setScreen("home");
         }}
         onOpen={() => void openAeroFile()}
@@ -1039,7 +1043,10 @@ export function App() {
           <div className="banner">Owner impersonation is active. This tenant can see it in Settings → Audit.</div>
         ) : null}
       </div>
-      <main className={`stage ${fillStage ? "stage-fill" : ""} ${activity === "takeoff" || activity === "estimate" ? "pane-dense" : "enterprise-stage"}`}>
+      <main className={`stage ${fillStage ? "stage-fill" : ""} ${helpOpen || (activity !== "takeoff" && activity !== "estimate") ? "enterprise-stage" : "pane-dense"}`}>
+        {helpOpen ? (
+          <HelpView />
+        ) : (
         <PrintProvider project={project} format={reportFormat}>
         {activity === "dashboard" ? (
           <BoqSplit project={project} value={billFocus} onChange={setBillFocus} layoutId="boq-rail-dashboard">
@@ -1312,14 +1319,10 @@ export function App() {
             onAccount={license.openAccount}
             onPricing={license.openPricing}
             onSignOut={signOut}
-            theme={theme}
-            onTheme={(next) => {
-              setTheme(next);
-              applyTheme(next);
-            }}
           />
         ) : null}
         </PrintProvider>
+        )}
       </main>
       {inspectorVisible ? (
       <aside className="inspector">

@@ -28,7 +28,6 @@ import { useState } from "react";
 import { PublisherMark } from "./Brand";
 import { convertMasterRates } from "../resourceMaster";
 import { convertProjectCurrency } from "../projectResourceMaster";
-import { applyTheme, type ThemeName } from "../theme";
 import { UPDATE_CHANNEL_URL, checkForUpdate, setUpdatesAutoEnabled, updatesAutoEnabled, type UpdateOffer } from "../updates";
 import { Split } from "../ui/Split";
 import { DataTable } from "../ui/tableLayout";
@@ -68,8 +67,6 @@ export function SettingsView({
   onAccount,
   onPricing,
   onSignOut,
-  theme = "light",
-  onTheme,
 }: {
   session: Session;
   platform: PlatformState;
@@ -84,8 +81,6 @@ export function SettingsView({
   onAccount?: () => void;
   onPricing?: () => void;
   onSignOut?: () => void;
-  theme?: ThemeName;
-  onTheme?: (theme: ThemeName) => void;
 }) {
   const [tab, setTab] = useState<SettingsTab>("license");
   const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
@@ -296,7 +291,7 @@ export function SettingsView({
       ) : (
         <p className="hint">Sign in with an Aerolith account to see the trial.</p>
       )}
-      <PublisherMark tone={theme === "dark" ? "dark" : "light"} />
+      <PublisherMark tone="light" />
       <p className="hint">Bid Craft {APP_VERSION}</p>
       </div>
       ) : null}
@@ -395,9 +390,10 @@ export function SettingsView({
         <h2 className="view">Updates</h2>
         <p className="hint">
           Bid Craft {APP_VERSION} checks the release channel when this desktop app starts. Download, install, and relaunch stay inside the app.
-          Already-installed copies move to 2.0.1 when a signed installer and <code>estimation-latest.json</code> are published on that channel.
+          Already-installed copies move to 2.0.2 when a signed installer and <code>estimation-latest.json</code> are published on that channel.
         </p>
         <p className="hint">{UPDATE_CHANNEL_URL}</p>
+        <p className="hint">Appearance is fixed: light canvas, dark navigation rail, orange accents.</p>
         <label className="check-row">
           <input
             type="checkbox"
@@ -412,12 +408,6 @@ export function SettingsView({
         <div className="tb-group">
           <button type="button" className="primary" disabled={updateBusy} onClick={() => void checkNow()}>
             {updateBusy ? "Checking…" : "Check now"}
-          </button>
-          <button
-            type="button"
-            onClick={() => (onTheme ?? applyTheme)(theme === "dark" ? "light" : "dark")}
-          >
-            {theme === "dark" ? "Use light theme" : "Use dark theme"}
           </button>
         </div>
         {updateMsg ? <p className="hint">{updateMsg}</p> : null}

@@ -65,10 +65,18 @@ export function DashboardView({
   );
 
   const header = usePrintHeader();
+  const priced = Math.max(0, scoped.length - unpriced);
+  const completion = scoped.length ? Math.round((priced / scoped.length) * 100) : 0;
   return (
-    <div className="dashboard-view">
-      <div className="module-toolbar">
-        <h1 className="view">Dashboard</h1>
+    <div className="dashboard-view enterprise-module">
+      <header className="module-chrome">
+        <div>
+          <p className="kicker">Overview</p>
+          <h1 className="view">Project overview</h1>
+          <p className="hint">
+            {unpriced} unpriced · {diffs} qty diffs · {missing} missing analysis
+          </p>
+        </div>
         <PrintActions
           build={() =>
             jobDocument(header.project.name, `r${header.project.revision}`, header.format, "Dashboard", [
@@ -94,29 +102,26 @@ export function DashboardView({
             ])
           }
         />
-      </div>
+      </header>
       {license}
-      <div className="kpis">
-        <div className="kpi">
-          <span>Cost</span>
-          <b>{formatMoney(cost, project.currency)}</b>
-        </div>
-        <div className="kpi">
+      <section className="kpi-strip" aria-label="Project summary">
+        <article>
+          <span>Total bid value</span>
+          <strong>{formatMoney(total, project.currency)}</strong>
+        </article>
+        <article>
+          <span>Estimated cost</span>
+          <strong>{formatMoney(cost, project.currency)}</strong>
+        </article>
+        <article>
           <span>Margin {formatPct(cost ? marginAmt / cost : totalMarginPct(m))}</span>
-          <b>{formatMoney(marginAmt, project.currency)}</b>
-        </div>
-        <div className="kpi kpi-total">
-          <span>{billId ? "This BOQ" : "Working total"}</span>
-          <b>{formatMoney(total, project.currency)}</b>
-        </div>
-      </div>
-      <p className="dash-flags">
-        {unpriced} unpriced
-        <span>·</span>
-        {diffs} qty diffs
-        <span>·</span>
-        {missing} missing analysis
-      </p>
+          <strong>{formatMoney(marginAmt, project.currency)}</strong>
+        </article>
+        <article>
+          <span>Completion</span>
+          <strong>{completion}%</strong>
+        </article>
+      </section>
       {bills.length > 1 ? (
         <div className="note boq-grand">
           <h2>Grand summary</h2>
@@ -148,7 +153,7 @@ export function DashboardView({
       <div className="dash-grid">
         <Split id="dashboard" axis="x" defaultSize={560} min={280} max={900}>
         <div className="note">
-          <h2>Cost by category</h2>
+          <h2>Work category breakdown</h2>
           {tree.length === 0 ? (
             <p>No resource rollup yet. Open Rate Analysis and Resource Prices.</p>
           ) : (
@@ -158,7 +163,7 @@ export function DashboardView({
           )}
         </div>
         <div className="note">
-          <h2>Margin waterfall</h2>
+          <h2>Cost vs value</h2>
           {waterfall.map((w) => (
             <div className="bar-row" key={w.label}>
               <span>
@@ -181,6 +186,58 @@ export function DashboardView({
           </div>
         </div>
         </Split>
+      </div>
+      <div className="dash-board-grid">
+        <aside className="activity-feed" aria-label="Recent activity">
+          <h2>Recent activity</h2>
+          <ul>
+            <li>
+              <span>
+                <strong>Working total</strong> · {formatMoney(total, project.currency)}
+              </span>
+              <span>{billId ? "This BOQ" : "Job"}</span>
+            </li>
+            <li>
+              <span>
+                <strong>{unpriced}</strong> rows still unpriced
+              </span>
+              <span>Estimate</span>
+            </li>
+            <li>
+              <span>
+                <strong>{diffs}</strong> quantity differences
+              </span>
+              <span>Take-off</span>
+            </li>
+            <li>
+              <span>
+                <strong>{missing}</strong> items missing analysis
+              </span>
+              <span>Rate analysis</span>
+            </li>
+          </ul>
+        </aside>
+        <aside className="assembly-card" aria-label="Project assembly">
+          <h2>Project assembly</h2>
+          <ul>
+            <li>
+              <strong>Estimator</strong>
+              <span>Active</span>
+            </li>
+            <li>
+              <strong>Margin stack</strong>
+              <span>{formatPct(totalMarginPct(m))}</span>
+            </li>
+            <li>
+              <strong>Revision</strong>
+              <span>r{project.revision}</span>
+            </li>
+            <li>
+              <strong>Currency</strong>
+              <span>{project.currency}</span>
+            </li>
+          </ul>
+        </aside>
       </div>
     </div>
   );
