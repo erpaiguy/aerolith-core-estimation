@@ -59,19 +59,11 @@ export function paneTitle(pane: Pane): string {
   return SCREENS.find((s) => s.pane === pane)?.title ?? pane;
 }
 
-export type JobNavItem = { pane?: Pane; label: string; future?: boolean };
+export type JobNavItem = { pane: Pane; label: string };
 
 export const JOB_NAV: Array<{ label: string; hint?: "tender" | "measure" | "price" | "submit"; items: JobNavItem[] }> = [
   { label: "Overview", items: [{ pane: "dashboard", label: "Dashboard" }] },
-  {
-    label: "Tender",
-    hint: "tender",
-    items: [
-      { label: "Documents and addenda", future: true },
-      { label: "Contract review", future: true },
-      { pane: "queries", label: "Client queries" },
-    ],
-  },
+  { label: "Tender", hint: "tender", items: [{ pane: "queries", label: "Client queries" }] },
   {
     label: "Measure",
     hint: "measure",
@@ -87,46 +79,22 @@ export const JOB_NAV: Array<{ label: string; hint?: "tender" | "measure" | "pric
       { pane: "estimate", label: "Working BOQ" },
       { pane: "register", label: "Rate analysis" },
       { pane: "buy", label: "Resource prices" },
-      { label: "Subcontract packages", future: true },
-      { label: "Preliminaries", future: true },
     ],
   },
-  {
-    label: "Risk and money",
-    items: [
-      { label: "Risk and contingency", future: true },
-      { label: "Cash flow and bonds", future: true },
-      { pane: "margins", label: "Margins" },
-    ],
-  },
+  { label: "Risk and money", items: [{ pane: "margins", label: "Margins" }] },
   {
     label: "Submit",
     hint: "submit",
     items: [
-      { label: "Tender review", future: true },
-      { label: "Qualifications and pack", future: true },
-      { label: "Technical proposal", future: true },
       { pane: "submit", label: "Submission BOQ" },
       { pane: "finalise", label: "Finalise" },
     ],
   },
-  {
-    label: "After submission",
-    items: [
-      { label: "Outcome and negotiation", future: true },
-      { label: "Handover to project", future: true },
-    ],
-  },
 ];
 
-export const WORK_NAV: Array<{ pane?: Pane; label: string; future?: boolean; owner?: boolean }> = [
-  { label: "Tender pipeline", future: true },
-  { label: "Tender calendar", future: true },
+export const WORK_NAV: Array<{ pane?: Pane; label: string; owner?: boolean }> = [
   { label: "Jobs" },
-  { label: "Clients", future: true },
-  { label: "Company library", future: true },
   { pane: "reports", label: "Reports" },
-  { label: "Benchmarks", future: true },
   { pane: "masters", label: "Masters" },
   { pane: "settings", label: "Settings" },
   { label: "Owner console", owner: true },

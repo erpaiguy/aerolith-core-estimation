@@ -101,12 +101,7 @@ export function LandingView({
       </header>
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
         <nav className="gn" aria-label="Workspace">
-          <button className="nb" type="button" disabled><span>Tender pipeline</span><span className="nw">New</span></button>
-          <button className="nb" type="button" disabled><span>Tender calendar</span><span className="nw">New</span></button>
           <button className="nb on" type="button">Jobs</button>
-          <button className="nb" type="button" disabled><span>Clients</span><span className="nw">New</span></button>
-          <button className="nb" type="button" disabled><span>Company library</span><span className="nw">New</span></button>
-          <button className="nb" type="button" disabled><span>Benchmarks</span><span className="nw">New</span></button>
           {onOwner ? <button className="nb" type="button" onClick={onOwner}><span>Owner console</span><Chip kind="g">Admin</Chip></button> : null}
           <span style={{ flex: 1 }} />
           <div className="card" style={{ padding: "10px 12px" }}>

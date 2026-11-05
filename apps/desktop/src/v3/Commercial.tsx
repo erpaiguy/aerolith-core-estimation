@@ -46,7 +46,6 @@ function PriceTabs({ pane, api, count }: { pane: Pane; api: Api; count: number }
       {tabs.map(([id, label]) => (
         <button key={id} type="button" className={pane === id ? "on" : ""} onClick={() => api.onPane(id)}>{label}</button>
       ))}
-      <button type="button" disabled title="Not in this release">Escalation and currency</button>
     </div>
   );
 }

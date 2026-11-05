@@ -23,13 +23,22 @@
   font-family: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.4;
+  overflow: hidden;
 }
 .v3 * { box-sizing: border-box; }
 .v3 a { color: var(--teal); }
 .v3 a:hover { color: var(--teal-ink); }
-.v3 h1 { margin: 0; font-size: 24px; font-weight: 700; line-height: 1.2; }
-.v3 h2 { margin: 0; font-size: 18px; font-weight: 700; }
-.v3 button, .v3 input, .v3 select, .v3 textarea { font: inherit; color: inherit; }
+.v3 h1 { margin: 0; font-size: 24px; font-weight: 700; line-height: 1.2; letter-spacing: 0; }
+.v3 h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 0; }
+.v3 button, .v3 input, .v3 select, .v3 textarea {
+  font: inherit; color: inherit; margin: 0; opacity: 1; box-shadow: none; appearance: none;
+}
+.v3 button {
+  background: transparent; border: 0; height: auto; min-height: 0; padding: 0; border-radius: 0;
+  font-weight: inherit; line-height: inherit; max-width: none;
+}
+.v3 button:hover { background: transparent; color: inherit; }
+.v3 button:disabled { opacity: 1; cursor: default; }
 .v3 .m { font-family: "Fragment Mono", ui-monospace, monospace; font-size: 13px; font-variant-numeric: tabular-nums; }
 .v3 .b {
   font: inherit; font-weight: 700; font-size: 13px; height: 32px; padding: 0 12px; border-radius: 6px;
@@ -65,8 +74,16 @@
 .v3 .card { background: var(--paper); border: 1px solid var(--line); border-radius: 6px; }
 .v3 .hd {
   height: 44px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 12px;
-  background: var(--navy); color: #fff; position: relative;
+  background: var(--navy); color: #fff; position: relative; z-index: 20;
 }
+.v3 .hd-job { margin-left: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.v3 .hd-job em { color: #c5d4e0; font-style: normal; margin-left: 6px; }
+.v3 .menu-anchor, .v3 .cmd-anchor { position: relative; flex: none; }
+.v3 .cmd-anchor { width: 320px; }
+.v3 .cmd-anchor .i { width: 100%; height: 30px; background: #1d4e73; border-color: #2c5f86; color: #fff; }
+.v3 .headrow { display: flex; align-items: flex-end; gap: 12px; min-height: 44px; }
+.v3 .headrow .acts { margin-left: auto; display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.v3 .notice { display: flex; flex-direction: column; gap: 8px; padding: 12px 22px 0; }
 .v3 .lg {
   width: 26px; height: 26px; border-radius: 6px; background: var(--teal); display: inline-flex;
   align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff;
@@ -99,9 +116,10 @@
 .v3 .nw { font-size: 9px; font-weight: 700; color: var(--danger); text-transform: uppercase; letter-spacing: 0.05em; }
 .v3 .k { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .v3 .l { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.v3 .stage { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
 .v3 .main {
   flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 12px;
-  padding: 16px 22px; overflow: auto;
+  padding: 16px 22px 20px; overflow: auto;
 }
 .v3 .foot {
   height: 28px; flex: none; display: flex; align-items: center; gap: 16px; padding: 0 12px;
@@ -110,29 +128,31 @@
 .v3 table { width: 100%; border-collapse: collapse; }
 .v3 th {
   text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); background: var(--ice);
-  border-bottom: 1px solid var(--line); padding: 6px 10px; white-space: nowrap;
+  border-bottom: 1px solid var(--line); padding: 8px 10px; white-space: nowrap; vertical-align: bottom;
 }
-.v3 td { padding: 6px 10px; border-bottom: 1px solid #dbe6ee; vertical-align: top; }
+.v3 td { padding: 8px 10px; border-bottom: 1px solid #dbe6ee; vertical-align: middle; white-space: nowrap; }
+.v3 td .i, .v3 td input.i, .v3 td select.i { height: 28px; min-width: 72px; }
 .v3 .r { text-align: right; }
 .v3 tr.on td { background: var(--select); }
 .v3 tr.sec td { font-weight: 700; background: #eef5f8; }
 .v3 .row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
 .v3 .ex {
-  display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0;
-  border-bottom: 1px solid #dbe6ee; color: var(--ink); text-decoration: none; background: transparent;
-  border-left: 0; border-right: 0; border-top: 0; width: 100%; cursor: pointer; text-align: left; font: inherit;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px;
+  border: 0; border-bottom: 1px solid #dbe6ee; border-radius: 0; color: var(--ink); text-decoration: none;
+  background: transparent; width: 100%; cursor: pointer; text-align: left; font: inherit; height: auto; min-height: 36px;
 }
+.v3 .ex:hover { background: #e3eef5; }
 .v3 .ex:last-child { border-bottom: 0; }
 .v3 .bar { height: 14px; border-radius: 3px; background: var(--teal); }
 .v3 .menu {
-  position: absolute; top: 40px; z-index: 20; background: #fff; color: var(--ink); border: 1px solid var(--line);
-  border-radius: 6px; min-width: 180px; padding: 6px; display: flex; flex-direction: column; gap: 2px;
-  box-shadow: 0 8px 24px rgba(16, 36, 51, 0.16);
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 40; background: #fff; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 6px; min-width: 220px; padding: 6px;
+  display: flex; flex-direction: column; gap: 2px; box-shadow: 0 8px 24px rgba(16, 36, 51, 0.16);
 }
-.v3 .menu button { justify-content: flex-start; color: var(--ink); background: #fff; }
+.v3 .menu button { justify-content: flex-start; width: 100%; color: var(--ink); background: #fff; }
 .v3 .cmd {
-  position: absolute; top: 42px; right: 180px; width: 360px; background: #fff; color: var(--ink);
-  border: 1px solid var(--line); border-radius: 6px; z-index: 30; max-height: 320px; overflow: auto;
+  position: absolute; top: calc(100% + 4px); left: 0; width: 100%; background: #fff; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 6px; z-index: 40; max-height: 320px; overflow: auto;
   box-shadow: 0 8px 24px rgba(16, 36, 51, 0.18);
 }
 .v3 .cmd button { width: 100%; text-align: left; border: 0; background: #fff; border-radius: 4px; height: 32px; padding: 0 10px; cursor: pointer; }

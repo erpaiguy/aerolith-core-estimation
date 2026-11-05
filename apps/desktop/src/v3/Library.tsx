@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { APP_VERSION } from "../auth/releaseConfig";
 import type { LicenseSession } from "../auth/licenseState";
-import { downloadSubmissionCsv, printSubmission } from "../reportExport";
 import { mergeReportFormat, type ReportFormat } from "../reportFormat";
+import { downloadSuite, printSuite, reportSuites } from "./reports";
 import { newId, type CategoryRow, type LoadedProject } from "../model";
 import type { Session } from "../platform/store";
 import { jobFigures, num } from "./figures";
@@ -11,57 +11,67 @@ import { LicensePanel } from "../views/LicensePanel";
 import type { Pane } from "./routes";
 
 export function ReportsScreen({ project, billId, onPane, onSaveFormat }: { project: LoadedProject; billId: string | null; onPane: (pane: Pane) => void; onSaveFormat: (format: ReportFormat) => void }) {
-  const fig = jobFigures(project, billId);
-  const packets = [
-    ["Submission BOQ", "Client bill with rates and Section 7"],
-    ["Working BOQ", "Internal bill with our quantities"],
-    ["Rate analysis sheets", "One page per item, resources and margin"],
-    ["Resource schedule", "Totals by material, labour and plant"],
-    ["Tender adjustments", "Quantity differences versus the client"],
-    ["Client query log", "Questions and answers with dates"],
-  ];
-  const [pick, setPick] = useState(0);
+  const suites = reportSuites(project, billId);
+  const [pick, setPick] = useState(suites[0]?.id ?? "submission");
   const [logo, setLogo] = useState(true);
-  const [draft, setDraft] = useState(!project.sealedAt);
+  const [status, setStatus] = useState("");
+  const suite = suites.find((row) => row.id === pick) ?? suites[0]!;
+  const fig = jobFigures(project, billId);
   function format() {
-    return { ...mergeReportFormat(null), showLogo: logo };
+    return mergeReportFormat({ showLogo: logo, showKpis: true, qtyColumn: suite.id === "working" ? "our" : "issued" });
   }
   return (
     <div className="main">
       <PageHead crumb="Reports" title="Report centre">
-        <button className="b" type="button" onClick={() => downloadSubmissionCsv(project, format(), fig.total)}>Export Excel</button>
-        <button className="b p" type="button" onClick={() => printSubmission(project, format(), fig.total, 0)}>Export PDF</button>
-        <button className="b" type="button" onClick={() => onSaveFormat(format())}>Save options to the company</button>
+        <button className="b" type="button" onClick={() => { downloadSuite(project.name, suite); setStatus(`Saved ${suite.title}.csv`); }}>Export CSV</button>
+        <button className="b p" type="button" onClick={() => {
+          setStatus("");
+          void printSuite(project, suite, format()).then(() => setStatus(`Opened ${suite.title} for printing.`)).catch((err: unknown) => {
+            setStatus(err instanceof Error ? err.message : "Could not print that report.");
+          });
+        }}>Print</button>
+        <button className="b" type="button" onClick={() => { onSaveFormat(format()); setStatus("Saved these options on the company."); }}>Save options</button>
       </PageHead>
+      {status ? <div className="banner" role="status">{status}</div> : null}
+      <div className="grid4">
+        <div className="card" style={{ padding: "8px 14px" }}><div className="k">Working total</div><div className="m" style={{ fontSize: 20, fontWeight: 700 }}>{num(fig.total)}</div></div>
+        <div className="card" style={{ padding: "8px 14px" }}><div className="k">Direct cost</div><div className="m" style={{ fontSize: 20, fontWeight: 700 }}>{num(fig.cost)}</div></div>
+        <div className="card" style={{ padding: "8px 14px" }}><div className="k">Priced lines</div><div className="m" style={{ fontSize: 20, fontWeight: 700 }}>{fig.items.length - fig.unpriced.length}</div></div>
+        <div className="card" style={{ padding: "8px 14px" }}><div className="k">Open queries</div><div className="m" style={{ fontSize: 20, fontWeight: 700 }}>{fig.openQueries.length}</div></div>
+      </div>
       <div className="split">
-        <section className="card" style={{ width: 320, padding: 8 }}>
-          {packets.map((row, i) => (
-            <button key={row[0]} className="ex" type="button" onClick={() => setPick(i)}>
-              <span><strong>{row[0]}</strong><div style={{ color: "#2c4558" }}>{row[1]}</div></span>
-              {pick === i ? <Chip>Preview</Chip> : null}
+        <section className="card" style={{ width: 280, overflow: "auto" }}>
+          {suites.map((row) => (
+            <button key={row.id} className="ex" type="button" onClick={() => setPick(row.id)}>
+              <span><strong>{row.title}</strong><div style={{ color: "#2c4558", whiteSpace: "normal" }}>{row.blurb}</div></span>
+              {suite.id === row.id ? <Chip>{row.rows.length}</Chip> : null}
             </button>
           ))}
         </section>
-        <section className="card grow" style={{ padding: 16 }}>
-          <h2>{packets[pick]?.[0]} · {project.sealedAt ? "Sealed" : "Draft"}</h2>
-          <p>{project.name}</p>
+        <section className="card grow scroll">
+          <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", gap: 8 }}>
+            <h2>{suite.title}</h2>
+            <Chip kind={project.sealedAt ? "g" : "w"}>{project.sealedAt ? "Sealed" : "Draft"}</Chip>
+            <span style={{ flex: 1 }} />
+            <button className="b s" type="button" onClick={() => onPane(suite.id === "queries" ? "queries" : suite.id === "analysis" ? "register" : "submit")}>Open source</button>
+          </div>
           <table>
-            <thead><tr><th>No.</th><th>Description</th><th className="r">Amount</th></tr></thead>
+            <thead><tr>{suite.heads.map((head) => <th key={head} className={/qty|rate|amount|cost|direct|share|difference|lines/i.test(head) ? "r" : ""}>{head}</th>)}</tr></thead>
             <tbody>
-              {fig.items.slice(0, 8).map((item) => (
-                <tr key={item.id}><td className="m">{item.boqCode}</td><td>{item.description}</td><td className="m r">{num(item.result?.amount ?? 0)}</td></tr>
-              ))}
-              <tr className="sec"><td /><td>Grand total, QAR</td><td className="m r">{num(fig.total)}</td></tr>
+              {suite.rows.length ? suite.rows.slice(0, 80).map((row, index) => (
+                <tr key={`${suite.id}-${index}`}>
+                  {row.map((cell, cellIndex) => <td key={cellIndex} className={cellIndex > 1 ? "m r" : cellIndex === 0 ? "m" : ""}>{cell}</td>)}
+                </tr>
+              )) : (
+                <tr><td colSpan={suite.heads.length}>This job has no rows for {suite.title} yet.</td></tr>
+              )}
             </tbody>
           </table>
-          <p style={{ color: "#2c4558" }}>Full packet is generated on this computer. {fig.green ? "Working total is GREEN." : ""}</p>
-          <button className="b s" type="button" onClick={() => onPane("submit")}>Open submission BOQ</button>
         </section>
         <aside className="ins">
           <h2>Options</h2>
           <label className="check"><input type="checkbox" checked={logo} onChange={(e) => setLogo(e.target.checked)} /> Company logo and footer</label>
-          <label className="check"><input type="checkbox" checked={draft} onChange={(e) => setDraft(e.target.checked)} /> Watermark draft pages</label>
-          <p>This {draft ? "is a draft" : "prints without the draft marker"}. Sealed revisions can print without it.</p>
+          <p style={{ color: "#2c4558" }}>{suite.rows.length} rows from {project.name}. Print uses the same rows as this preview.</p>
         </aside>
       </div>
     </div>
@@ -304,13 +314,13 @@ export function DesignScreen({ onToast }: { onToast: (text: string) => void }) {
       <section className="card" style={{ padding: 12 }}>
         <strong>No overrides on this job</strong>
         <p>Every line uses the stack. Add an override from Margins.</p>
-        <button className="b" type="button" onClick={() => setOpen(true)}>Add override</button>
+        <button className="b" type="button" onClick={() => setOpen(true)}>Show confirm</button>
       </section>
       {open ? (
         <section className="card" style={{ padding: 12, maxWidth: 480 }} role="dialog" aria-label="Confirm">
-          <strong>Seal revision R0?</strong>
-          <p>Quantities, rates and margins are frozen.</p>
-          <div style={{ display: "flex", gap: 8 }}><button className="b" type="button" onClick={() => setOpen(false)}>Cancel</button><button className="b p" type="button" onClick={() => { setOpen(false); onToast("Rate posted."); }}>Seal revision</button></div>
+          <strong>Confirm this example?</strong>
+          <p>This specimen only shows the confirm pattern. It does not change the job.</p>
+          <div style={{ display: "flex", gap: 8 }}><button className="b" type="button" onClick={() => setOpen(false)}>Cancel</button><button className="b p" type="button" onClick={() => { setOpen(false); onToast("Example confirmed."); }}>Confirm</button></div>
         </section>
       ) : null}
       <p className="m">1,234,567.89</p>

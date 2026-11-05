@@ -716,36 +716,34 @@ export function App() {
     );
   }
 
-  return (
+  const notice = (
     <>
       {catalogStale && liveTenant ? (
-        <div className="v3" style={{ position: "absolute", top: 8, left: 260, right: 24, zIndex: 6 }}>
-          <div className="banner">
-            Company catalogue is at v{liveTenant.catalogVersion}. This job is v{project.catalogVersion ?? 1}.
-            <button className="b p s" type="button" onClick={() => setProject(applyCatalogToProject(project, effectiveCatalog(liveTenant)))}>Refresh snapshot</button>
-          </div>
-        </div>
-      ) : null}
-      {conflicts.length ? (
-        <div className="v3" style={{ position: "absolute", right: 16, bottom: 40, width: 360, zIndex: 6 }}>
-          <ConflictQueue conflicts={conflicts} onPick={resolveConflict} onDismiss={() => { setConflicts([]); setReplica(null); }} />
+        <div className="banner">
+          Company catalogue is at v{liveTenant.catalogVersion}. This job is v{project.catalogVersion ?? 1}.
+          <button className="b p s" type="button" onClick={() => setProject(applyCatalogToProject(project, effectiveCatalog(liveTenant)))}>Refresh snapshot</button>
         </div>
       ) : null}
       {updateOffer ? (
-        <div className="v3" style={{ position: "absolute", top: 52, left: 260, right: 24, zIndex: 5 }}>
-          <div className="banner" role="status">
-            Bid Craft {updateOffer.version} is available. {updateOffer.notes}
-            <button className="b p s" type="button" disabled={updateBusy} onClick={() => {
-              setUpdateBusy(true);
-              void updateOffer.install().catch((err) => {
-                setUpdateBusy(false);
-                window.alert(err instanceof Error ? err.message : "Could not install the update.");
-              });
-            }}>{updateBusy ? "Installing…" : "Download, install, and relaunch"}</button>
-          </div>
+        <div className="banner" role="status">
+          Bid Craft {updateOffer.version} is available. {updateOffer.notes}
+          <button className="b p s" type="button" disabled={updateBusy} onClick={() => {
+            setUpdateBusy(true);
+            void updateOffer.install().catch((err) => {
+              setUpdateBusy(false);
+              window.alert(err instanceof Error ? err.message : "Could not install the update.");
+            });
+          }}>{updateBusy ? "Installing…" : "Download, install, and relaunch"}</button>
         </div>
       ) : null}
-      <JobWorkspace
+      {conflicts.length ? (
+        <ConflictQueue conflicts={conflicts} onPick={resolveConflict} onDismiss={() => { setConflicts([]); setReplica(null); }} />
+      ) : null}
+    </>
+  );
+
+  return (
+    <JobWorkspace
         pane={pane}
         onPane={show}
         project={project}
@@ -764,7 +762,7 @@ export function App() {
         onSeal={() => commit({ ...project, sealedAt: new Date().toISOString() }, "seal")}
         onRevision={() => commit({ ...project, sealedAt: null, revision: project.revision + 1 }, "revision")}
         who={`${whoLabel} · ${roleName}`}
-        saved={saveMsg || "Saved"}
+        saved={saveMsg}
         licence={licenseLine || licenseBanner(license.session)}
         fileName={filePath ?? `${project.name}.aero`}
         showOwner={session.kind === "owner"}
@@ -785,8 +783,8 @@ export function App() {
         onSaveFormat={saveReportFormat}
         onSaveCatalog={() => saveCatalogEdits({ units: project.units, categories: project.categories, vendors: project.vendors })}
         onPromote={requestPromote}
+        notice={(catalogStale && liveTenant) || updateOffer || conflicts.length ? notice : undefined}
       />
-    </>
   );
 }
 

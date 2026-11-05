@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { LicenseSession } from "../auth/licenseState";
 import type { LoadedProject, QtoLine, WorkingItem } from "../model";
 import type { Session } from "../platform/store";
@@ -49,6 +49,7 @@ export function JobWorkspace({
   onSaveFormat,
   onSaveCatalog,
   onPromote,
+  notice,
 }: {
   pane: Pane;
   onPane: (pane: Pane) => void;
@@ -89,6 +90,7 @@ export function JobWorkspace({
   onSaveFormat: (format: import("../reportFormat").ReportFormat) => void;
   onSaveCatalog: () => void;
   onPromote: (kind: "unit" | "category" | "vendor", code: string, label: string) => void;
+  notice?: ReactNode;
 }) {
   const [resourceCode, setResourceCode] = useState<string | null>(project.resources[0]?.project_code ?? null);
   const [lineIndex, setLineIndex] = useState<number | null>(0);
@@ -114,9 +116,11 @@ export function JobWorkspace({
       licence={licence}
       fileName={fileName || `${project.name}.aero`}
       unpriced={fig.unpriced.length}
+      qtyDiffs={fig.qtyDiff.length}
       openQueries={fig.openQueries.length}
       sealed={fig.sealed}
       showOwner={showOwner}
+      notice={notice}
       onPane={onPane}
       onJobs={onJobs}
       onOpen={onOpen}
@@ -124,6 +128,8 @@ export function JobWorkspace({
       onClose={onClose}
       onSignOut={onSignOut}
       onOwner={onOwner}
+      onAddItem={onAddItem}
+      onAddSection={onAddSection}
     >
       {toast ? <div className="banner" role="status">{toast} <button className="b s" type="button" onClick={() => setToast("")}>Dismiss</button></div> : null}
       {pane === "dashboard" ? <DashboardScreen api={measure} onBill={onBill} /> : null}
