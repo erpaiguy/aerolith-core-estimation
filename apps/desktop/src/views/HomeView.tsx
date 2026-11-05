@@ -161,6 +161,30 @@ export function HomeView({
     return card.title.toLowerCase().includes(query.trim().toLowerCase());
   });
   const listed = recent.length + (current ? 1 : 0);
+  const tableRows = useMemo(() => {
+    const rows: Array<{ id: string; name: string; status: string; value: string; owner: string; run: () => void }> = [];
+    if (current && onResume) {
+      rows.push({
+        id: "current",
+        name: current.name,
+        status: current.status,
+        value: current.value,
+        owner,
+        run: onResume,
+      });
+    }
+    for (const job of recent) {
+      rows.push({
+        id: job.path,
+        name: job.name,
+        status: "Saved",
+        value: "Open to total",
+        owner,
+        run: () => onOpenPath?.(job.path),
+      });
+    }
+    return rows;
+  }, [current, onOpenPath, onResume, owner, recent]);
 
   return (
     <div className="enterprise-module home-portfolio">
@@ -170,8 +194,21 @@ export function HomeView({
       <header className="module-chrome">
         <div>
           <p className="kicker">{solo ? "Solo workspace" : tenant?.name || "Workspace"}</p>
-          <h1 className="view">Home</h1>
+          <h1 className="view">Project files</h1>
           <p className="hint">{licenseLine || "Jobs stay in this workspace."} {tenant ? tenantProjectsHint(tenant.id) : ""}</p>
+        </div>
+        <div className="home-actions">
+          <button type="button" className="primary" onClick={onNew}>
+            New project
+          </button>
+          <button type="button" onClick={onOpen}>
+            Open .aero
+          </button>
+          {canImport ? (
+            <button type="button" onClick={onImport}>
+              Import
+            </button>
+          ) : null}
         </div>
       </header>
       <section className="kpi-strip" aria-label="Workspace summary">
@@ -217,6 +254,50 @@ export function HomeView({
           ))}
         </div>
       )}
+      <section aria-label="Project list">
+        <header className="module-chrome">
+          <div>
+            <h2 className="view" style={{ fontSize: "var(--text-lg)" }}>
+              Project list
+            </h2>
+            <p className="hint">Recent and open jobs in this workspace.</p>
+          </div>
+        </header>
+        <div className="project-table-wrap">
+          <table className="project-table">
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Status</th>
+                <th>Value</th>
+                <th>Owner</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableRows.length === 0 ? (
+                <tr>
+                  <td colSpan={5}>No saved projects yet. Create a new project or open a sample.</td>
+                </tr>
+              ) : (
+                tableRows.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.name}</td>
+                    <td>{row.status}</td>
+                    <td>{row.value}</td>
+                    <td>{row.owner}</td>
+                    <td>
+                      <button type="button" className="linkish" onClick={row.run}>
+                        Open
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.2
+
+- Estima-inspired shell: dark navigation rail, white command bar, light gray canvas, orange accents (`#F97316` / `#EA580C`).
+- Appearance is fixed — no light/dark theme switcher in the sidebar or Settings.
+- Home shows project-file KPIs, a project card grid, and a project list table with New project / Open / Import.
+- Overview KPIs for total bid, cost, margin, and completion, plus recent activity and project assembly.
+- Margins opens as Finalize your estimate with commercial adjustments and a live total bid price card.
+- Buy shows procurement KPIs; Reports uses a left template library and preview pane; Help center is in the sidebar.
+- App version 2.0.2 so installed copies can update through `estimation-latest.json` on the existing release tag once a signed installer is published from branch `cursor/bid-craft-v2.0.2-4380`.
+
 ## 2.0.1
 
 - App version 2.0.1 so installed copies can update from 2.0.0 through `estimation-latest.json` on the existing release tag.

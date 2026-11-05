@@ -12,15 +12,15 @@
 #
 # If the signing secrets are present, this replaces Estimation-Setup.exe,
 # Estimation-Setup.exe.sig, and estimation-latest.json on the stable tag
-# v1.0.0. Installed apps already point at that manifest, so a signed 2.0.1
+# v1.0.0. Installed apps already point at that manifest, so a signed 2.0.2
 # manifest is what offers the update.
 #
 # If the signing secrets are empty, this uploads an unsigned installer as a
-# draft release tagged v2.0.1-draft and does not touch estimation-latest.json.
+# draft release tagged v2.0.2-draft and does not touch estimation-latest.json.
 #
-# Merge is not required. Run this from branch cursor/bid-craft-v2.0-4380:
+# Merge is not required. Run this from branch cursor/bid-craft-v2.0.2-4380:
 # Actions → "Publish Estimation release" → Run workflow →
-# Use workflow from: cursor/bid-craft-v2.0-4380 → Run workflow.
+# Use workflow from: cursor/bid-craft-v2.0.2-4380 → Run workflow.
 # workflow_dispatch uses the workflow file and the checkout from that branch.
 # Do not commit the token or the private key.
 
@@ -53,7 +53,7 @@ jobs:
             Write-Host "Signing secrets are present. This run will publish a signed updater manifest on tag v1.0.0."
           } else {
             "signed=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-            Write-Host "Signing secrets are absent. This run will upload an unsigned draft on v2.0.1-draft and will not replace estimation-latest.json."
+            Write-Host "Signing secrets are absent. This run will upload an unsigned draft on v2.0.2-draft and will not replace estimation-latest.json."
             Write-Host "Installed apps will not update until you add TAURI_SIGNING_PRIVATE_KEY and TAURI_SIGNING_PRIVATE_KEY_PASSWORD and run this workflow again. See docs/UPDATER_V2.md."
           }
 
@@ -179,14 +179,14 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           repository: erpaiguy/aerolith-core-releases
-          tag_name: v2.0.1-draft
-          name: Bid Craft 2.0.1 unsigned draft
+          tag_name: v2.0.2-draft
+          name: Bid Craft 2.0.2 unsigned draft
           draft: true
           token: ${{ secrets.AEROLITH_RELEASES_TOKEN }}
           body: |
-            Unsigned Windows installer for Bid Craft 2.0.1.
+            Unsigned Windows installer for Bid Craft 2.0.2.
             This draft is not an updater manifest. Installed apps ignore it.
-            Add the minisign signing secrets and re-run Publish Estimation release from branch cursor/bid-craft-v2.0-4380 to replace estimation-latest.json on tag v1.0.0. Merge is not required.
+            Add the minisign signing secrets and re-run Publish Estimation release from branch cursor/bid-craft-v2.0.2-4380 to replace estimation-latest.json on tag v1.0.0. Merge is not required.
           files: |
             dist/Estimation-Setup.exe
           fail_on_unmatched_files: true
@@ -201,7 +201,7 @@ jobs:
           ## Bid Craft updater
           - Signing secrets used: $signed
           - Signed runs replace ``estimation-latest.json`` on tag ``v1.0.0`` (the URL already baked into installed apps).
-          - Unsigned runs upload a draft tag ``v2.0.1-draft`` and leave the manifest alone.
-          - Merge is not required. This run uses the workflow file and code from the branch selected for workflow_dispatch. For 2.0.1 that branch is ``cursor/bid-craft-v2.0-4380``.
+          - Unsigned runs upload a draft tag ``v2.0.2-draft`` and leave the manifest alone.
+          - Merge is not required. This run uses the workflow file and code from the branch selected for workflow_dispatch. For 2.0.2 that branch is ``cursor/bid-craft-v2.0.2-4380``.
           - Remaining human steps: see docs/UPDATER_V2.md.
           "@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append

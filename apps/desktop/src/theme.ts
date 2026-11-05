@@ -1,26 +1,24 @@
-export type ThemeName = "light" | "dark";
+/** Bid Craft 2.0.2 locks a single estima-style appearance: light canvas, dark rail, orange accents. */
+
+export type ThemeName = "light";
 
 const KEY = "bidcraft.theme";
 
 export function readTheme(): ThemeName {
-  try {
-    return localStorage.getItem(KEY) === "dark" ? "dark" : "light";
-  } catch {
-    return "light";
-  }
+  return "light";
 }
 
-export function applyTheme(theme: ThemeName): void {
-  document.documentElement.dataset.theme = theme;
+export function applyTheme(_theme?: ThemeName): void {
+  if (typeof document === "undefined") return;
+  document.documentElement.dataset.theme = "light";
   try {
-    localStorage.setItem(KEY, theme);
+    localStorage.setItem(KEY, "light");
   } catch {
     /* private mode */
   }
 }
 
 export function bootTheme(): ThemeName {
-  const theme = readTheme();
-  if (typeof document !== "undefined") document.documentElement.dataset.theme = theme;
-  return theme;
+  applyTheme("light");
+  return "light";
 }

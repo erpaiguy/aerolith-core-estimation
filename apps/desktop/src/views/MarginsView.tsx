@@ -117,10 +117,19 @@ export function MarginsView({
     setName("");
   }
 
+  const bidTotal = useMemo(
+    () => scopedItems.reduce((sum, item) => sum + (item.result?.amount ?? 0), 0),
+    [scopedItems],
+  );
+  const directCost = useMemo(
+    () => scopedItems.reduce((sum, item) => sum + (item.result?.costAmount ?? 0), 0),
+    [scopedItems],
+  );
+
   return (
-    <div className="module-workspace margins-layout">
+    <div className="module-workspace margins-layout enterprise-module">
       <div className="module-toolbar">
-        <h1 className="view">Margins</h1>
+        <h1 className="view">Finalize your estimate</h1>
         <p className="hint">
           Applied once on cost. Job stack {formatPct(jobPct)}
           {mixed ? " · scoped assignments overlay it" : ""}.
@@ -161,6 +170,32 @@ export function MarginsView({
             ])
           }
         />
+      </div>
+      <div className="finalize-stack">
+        <section className="finalize-card" aria-label="Commercial adjustments">
+          <h2>Commercial adjustments</h2>
+          <p className="hint">OH, profit, logistics, and contingency on direct cost.</p>
+          <div className="finalize-factors">
+            {MARGIN_FACTORS.map((f) => (
+              <label className="field" key={f.key}>
+                {f.label} %
+                <QtyInput
+                  className="cell num"
+                  aria-label={`${f.label} percent summary`}
+                  value={project.margin[f.key] * 100}
+                  decimals={2}
+                  onValue={(n) => setJobFactor(f.key, n ?? 0)}
+                  disabled={locked}
+                />
+              </label>
+            ))}
+          </div>
+        </section>
+        <section className="finalize-card is-bid" aria-label="Total bid price">
+          <h2>Total bid price</h2>
+          <p className="hint">Direct cost {formatMoney(directCost, project.currency)} · stack {formatPct(jobPct)}</p>
+          <p className="bid-total">{formatMoney(bidTotal, project.currency)}</p>
+        </section>
       </div>
       <div className="margins-body">
         <Split id="margins" axis="x" defaultSize={440} min={280} max={720}>

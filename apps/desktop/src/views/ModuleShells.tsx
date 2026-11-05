@@ -70,22 +70,46 @@ export function SourceShell({
 }
 
 export function BuyShell({ project, children }: { project: LoadedProject; children: ReactNode }) {
-  const quoted = useMemo(() => {
+  const coverage = useMemo(() => {
     const selected = new Set(project.resourceQuotes.filter((quote) => quote.selected).map((quote) => quote.projectResourceCode));
     const withQuote = project.resources.filter((row) => selected.has(row.project_code)).length;
-    return [
-      { label: "Preferred quote", value: withQuote },
-      { label: "No quote yet", value: Math.max(0, project.resources.length - withQuote) },
-    ];
+    const pending = Math.max(0, project.resources.length - withQuote);
+    return {
+      withQuote,
+      pending,
+      bars: [
+        { label: "Preferred quote", value: withQuote },
+        { label: "No quote yet", value: pending },
+      ],
+    };
   }, [project.resourceQuotes, project.resources]);
+  const packs = project.enquiries?.length ?? 0;
   return (
     <div className="enterprise-module">
       <ModuleChrome
         kicker="Buy"
-        title="Quotes"
-        detail="Comparison grids stay below. The bars count resources that already have a selected quote."
+        title="Procurement"
+        detail="Track vendor quotes and purchase coverage. Comparison grids stay below."
       />
-      <ChartFrame title="Quote coverage" bars={quoted} />
+      <section className="kpi-strip buy-kpis" aria-label="Procurement summary">
+        <article>
+          <span>Resources</span>
+          <strong>{project.resources.length}</strong>
+        </article>
+        <article>
+          <span>Preferred quotes</span>
+          <strong>{coverage.withQuote}</strong>
+        </article>
+        <article>
+          <span>Pending</span>
+          <strong>{coverage.pending}</strong>
+        </article>
+        <article>
+          <span>Enquiry packs</span>
+          <strong>{packs}</strong>
+        </article>
+      </section>
+      <ChartFrame title="Quote coverage" bars={coverage.bars} />
       {children}
     </div>
   );

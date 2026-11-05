@@ -1,24 +1,25 @@
 :root {
-  --navy: #23262d;
-  --navy-2: #3a3f48;
-  --blue: #c65a28;
-  --ink: #23262d;
-  --ink-soft: #5a5f65;
-  --paper: #f6f4f0;
+  /* Bid Craft 2.0.2 — estima shell with orange accents (no alternate themes). */
+  --navy: #0f172a;
+  --navy-2: #1e293b;
+  --blue: #f97316;
+  --ink: #0f172a;
+  --ink-soft: #64748b;
+  --paper: #f9fafb;
   --paper-2: #ffffff;
-  --line: #e4e0d8;
-  --accent: #c65a28;
-  --accent-2: #9a4318;
-  --warn: #9a4318;
-  --ok: #1F7A4D;
-  --ok-fill: #1F7A4D;
+  --line: #e5e7eb;
+  --accent: #f97316;
+  --accent-2: #ea580c;
+  --warn: #c2410c;
+  --ok: #15803d;
+  --ok-fill: #15803d;
   --on-ok: #ffffff;
-  --danger: #B42318;
-  --rail: #f6f4f0;
-  --rail-text: #23262d;
-  --rail-muted: #5a5f65;
-  --rail-hover: #efeae4;
-  --rail-on: #f6e4da;
+  --danger: #b42318;
+  --rail: #0f172a;
+  --rail-text: #f8fafc;
+  --rail-muted: #94a3b8;
+  --rail-hover: rgba(248, 250, 252, 0.08);
+  --rail-on: rgba(249, 115, 22, 0.22);
   --on-accent: #ffffff;
   --banner-bg: #fff7ed;
   --danger-bg: #fdf2f1;
@@ -29,28 +30,28 @@
   --warn-soft: #fed7aa;
   --info: #1d4ed8;
   --info-line: #bfdbfe;
-  --ok-ink: #3f6212;
-  --ok-line: #d9f99d;
+  --ok-ink: #166534;
+  --ok-line: #bbf7d0;
   --ok-bg: #f0fdf4;
   --violet: #6d28d9;
   --violet-line: #ddd6fe;
   --teal: #0f766e;
   --teal-line: #99f6e4;
-  --money: #9a4318;
-  --shadow: 0 8px 24px rgba(20, 22, 26, 0.12);
-  --overlay: rgba(20, 22, 26, 0.46);
-  --gold: #e07a45;
-  --hover: #f3eee8;
-  --select: #f6e4da;
-  --ribbon: #f6f4f0;
-  --xl: #efeae4;
+  --money: #ea580c;
+  --shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+  --overlay: rgba(15, 23, 42, 0.46);
+  --gold: #fb923c;
+  --hover: #fff7ed;
+  --select: #ffedd5;
+  --ribbon: #f9fafb;
+  --xl: #f3f4f6;
+  --kpi-tint: #fff7ed;
   --scroll-size: 10px;
   --scroll-track: var(--xl);
-  --scroll-thumb: #8AA0B5;
   --scroll-thumb: color-mix(in srgb, var(--navy) 42%, var(--line));
   --scroll-thumb-hover: var(--navy-2);
-  --scroll-thumb-active: var(--gold);
-  --radius: 6px;
+  --scroll-thumb-active: var(--accent);
+  --radius: 8px;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
@@ -3621,58 +3622,10 @@ button.buy-settle:hover {
   .doc-table th, .doc-table td { border: 1px solid var(--ink); }
 }
 
+/* Appearance is fixed in 2.0.2 — dark theme variables are intentionally unused. */
 html[data-theme="dark"] {
-  color-scheme: dark;
-  --navy: #14161a;
-  --navy-2: #2c313a;
-  --blue: #e07a45;
-  --ink: #f5f3ef;
-  --ink-soft: #a3a7ac;
-  --paper: #1b1e24;
-  --paper-2: #23262d;
-  --line: #3a3f48;
-  --accent: #e07a45;
-  --accent-2: #c65a28;
-  --hover: #2c313a;
-  --select: #3d2a22;
-  --ribbon: #2c313a;
-  --xl: #1b1e24;
-  --gold: #e07a45;
-  --rail: #14161a;
-  --rail-text: #f5f3ef;
-  --rail-muted: #a3a7ac;
-  --rail-hover: rgba(255, 255, 255, 0.08);
-  --rail-on: rgba(224, 122, 69, 0.28);
-  --on-accent: #14161a;
-  --banner-bg: #3d2a22;
-  --danger-bg: #3f1d1d;
-  --danger-line: #7f1d1d;
-  --danger-soft: #7f1d1d;
-  --warn-ink: #fdba74;
-  --warn-line: #7c2d12;
-  --warn-soft: #7c2d12;
-  --info: #93c5fd;
-  --info-line: #1e3a5f;
-  --ok-ink: #bbf7d0;
-  --ok-line: #14532d;
-  --ok-bg: #14281c;
-  --violet: #c4b5fd;
-  --violet-line: #4c1d95;
-  --teal: #5eead4;
-  --teal-line: #134e4a;
-  --money: #e07a45;
-  --ok: #6ee7b7;
-  --ok-fill: #166534;
-  --on-ok: #ffffff;
-  --danger: #fca5a5;
-  --warn: #fdba74;
-  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --scroll-thumb: color-mix(in srgb, var(--ink-soft) 70%, var(--line));
-  --scroll-thumb-hover: var(--ink);
-  --overlay: rgba(0, 0, 0, 0.55);
-  --scroll-track: #1b1e24;
+  color-scheme: light;
 }
-html[data-theme="dark"] ::selection { background: var(--select); color: var(--ink); }
 
 :root {
   --space-2xl: 48px;
@@ -3758,8 +3711,8 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
 .module-chrome h1 { margin: 0; font-size: var(--text-xl); letter-spacing: -0.03em; }
 .kpi-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); }
 .kpi-strip article {
-  background: var(--paper-2);
-  border: 1px solid var(--line);
+  background: var(--kpi-tint);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
   border-radius: var(--ui-radius);
   padding: var(--ui-card-pad);
   box-shadow: var(--elev-1);
@@ -3768,7 +3721,7 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   gap: 8px;
 }
 .kpi-strip span { color: var(--ink-soft); font-size: var(--text-sm); }
-.kpi-strip strong { font-size: var(--text-lg); font-weight: 600; }
+.kpi-strip strong { font-size: var(--text-lg); font-weight: 600; color: var(--accent-2); }
 .filter-bar { display: flex; flex-wrap: wrap; gap: var(--space-md); align-items: center; }
 .filter-bar input { flex: 1; min-width: 220px; height: 40px; border-radius: 999px; border: 1px solid var(--line); padding: 0 14px; background: var(--paper-2); }
 .filter-chips { display: flex; gap: 8px; }
@@ -3813,7 +3766,7 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   grid-area: sidebar;
   background: var(--rail);
   color: var(--rail-text);
-  border-right: 1px solid var(--line);
+  border-right: 1px solid color-mix(in srgb, var(--rail-text) 8%, transparent);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -3823,8 +3776,8 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 12px 8px;
-  min-height: 48px;
+  padding: 16px 14px 10px;
+  min-height: 56px;
 }
 .sidebar-brand strong {
   font-size: 14px;
@@ -3847,6 +3800,7 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   padding: 0 10px;
   width: calc(100% - 16px);
   justify-content: flex-start;
+  color: var(--rail-muted);
 }
 .sidebar.is-collapsed .sidebar-collapse,
 .sidebar.is-collapsed .nav-btn { justify-content: center; padding: 0; width: 40px; margin-left: 12px; margin-right: 12px; }
@@ -3868,11 +3822,20 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
   width: calc(100% - 16px);
   text-align: left;
   font-weight: 500;
+  color: var(--rail-muted);
 }
 .sidebar .nav-btn:hover,
 .sidebar-collapse:hover { background: var(--rail-hover); color: var(--rail-text); }
-.sidebar .nav-btn.on { background: var(--rail-on); color: var(--rail-text); }
-.sidebar-foot { margin-top: auto; padding: 8px 0 12px; border-top: 1px solid var(--line); }
+.sidebar .nav-btn.on {
+  background: var(--rail-on);
+  color: var(--rail-text);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.sidebar-foot {
+  margin-top: auto;
+  padding: 8px 0 12px;
+  border-top: 1px solid color-mix(in srgb, var(--rail-text) 10%, transparent);
+}
 .brand-logo { display: block; width: auto; height: 36px; max-width: 100%; object-fit: contain; align-self: flex-start; flex: 0 0 auto; background: transparent; }
 .sidebar-job {
   display: flex;
@@ -4089,3 +4052,189 @@ html[data-theme="dark"] ::selection { background: var(--select); color: var(--in
 .palette li button { width: 100%; display: flex; justify-content: space-between; gap: 12px; text-align: left; background: transparent; border: 0; padding: 8px 10px; }
 .palette li button.on, .palette li button:hover { background: var(--select); }
 .palette small { color: var(--ink-soft); }
+
+/* —— Bid Craft 2.0.2 estima module chrome —— */
+.home-portfolio .module-chrome { align-items: center; }
+.home-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.project-table-wrap {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--elev-1);
+  overflow: auto;
+}
+.project-table { width: 100%; border-collapse: collapse; }
+.project-table th,
+.project-table td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-sm);
+}
+.project-table th {
+  color: var(--ink-soft);
+  font-weight: 600;
+  background: var(--xl);
+  position: sticky;
+  top: 0;
+}
+.project-table tr:last-child td { border-bottom: 0; }
+.project-table tr:hover td { background: var(--hover); }
+.project-table button.linkish {
+  background: transparent;
+  border: 0;
+  color: var(--accent-2);
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+}
+.dashboard-view.enterprise-module .kpis { display: none; }
+.dash-board-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.7fr);
+  gap: var(--space-lg);
+}
+.activity-feed,
+.assembly-card {
+  margin: 0;
+  padding: var(--ui-card-pad);
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--elev-1);
+}
+.activity-feed h2,
+.assembly-card h2,
+.finalize-card h2 { margin: 0 0 12px; font-size: var(--text-md); }
+.activity-feed ul,
+.assembly-card ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.activity-feed li,
+.assembly-card li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+.activity-feed li:last-child,
+.assembly-card li:last-child { border-bottom: 0; padding-bottom: 0; }
+.activity-feed strong,
+.assembly-card strong { color: var(--ink); font-weight: 600; }
+.finalize-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.45fr);
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.finalize-card {
+  padding: var(--ui-card-pad);
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--elev-1);
+}
+.finalize-card.is-bid {
+  background: linear-gradient(160deg, var(--kpi-tint), var(--paper-2));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+.finalize-card .bid-total {
+  margin: 8px 0 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--accent-2);
+  font-variant-numeric: tabular-nums;
+}
+.finalize-factors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.finalize-factors .field { display: flex; flex-direction: column; gap: 4px; font-size: var(--text-sm); color: var(--ink-soft); }
+.reports-library {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.4fr) minmax(0, 1fr);
+  gap: var(--space-lg);
+}
+.report-list {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--ui-radius);
+  padding: 8px;
+  box-shadow: var(--elev-1);
+}
+.report-list button {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--ink);
+}
+.report-list button.on,
+.report-list button:hover { background: var(--select); }
+.report-list small { color: var(--ink-soft); }
+.report-preview-pane {
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--ui-radius);
+  padding: var(--ui-card-pad);
+  box-shadow: var(--elev-1);
+  min-height: 320px;
+}
+.buy-kpis { margin-bottom: var(--space-md); }
+.help-center .help-search {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  max-width: 560px;
+}
+.help-center .help-search input {
+  flex: 1;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  padding: 0 18px;
+  background: var(--paper-2);
+  font-size: var(--text-md);
+}
+.help-topics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+.help-topic {
+  padding: var(--ui-card-pad);
+  background: var(--paper-2);
+  border: 1px solid var(--line);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--elev-1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 140px;
+}
+.help-topic h2 { margin: 0; font-size: var(--text-md); }
+.help-topic p { margin: 0; color: var(--ink-soft); flex: 1; }
+.command-bar {
+  background: var(--paper-2);
+}
+.command-search {
+  border-radius: 10px;
+  background: var(--xl);
+}
+.filter-chips button.on {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--accent);
+}
+@media (max-width: 900px) {
+  .dash-board-grid,
+  .finalize-stack,
+  .reports-library { grid-template-columns: 1fr; }
+}
