@@ -3,8 +3,8 @@ import { extractBill, canCommitImport, type ExtractKind } from "../import/extrac
 import { appendBillFromClientRows, amendBillFromClientRows, projectFromClientRows } from "../loadReference";
 import type { BoqColumnDef, LoadedProject } from "../model";
 import type { TenantCatalog } from "../tenantCatalog";
-import { BrandLockup, useSurfaceTone } from "./Brand";
 import { defaultClientColumns, slugColumnId } from "../boqColumns";
+import "../v3/theme.css";
 import { parseSignedNumber } from "@aerolith/shared";
 import { sortedBills } from "../bills";
 import { DataTable } from "../ui/tableLayout";
@@ -38,7 +38,7 @@ export function ImportWizard({
   onAppend?: (project: LoadedProject) => void;
 }) {
   const bills = appendTo ? sortedBills(appendTo) : [];
-  const tone = useSurfaceTone();
+  const [step, setStep] = useState(appendTo ? 3 : 1);
   const [intent, setIntent] = useState<"new-bill" | "amend">(amendBillId ? "amend" : "new-bill");
   const [targetBillId, setTargetBillId] = useState(amendBillId || bills[0]?.id || "");
   const [name, setName] = useState(() => {
@@ -156,16 +156,51 @@ export function ImportWizard({
 
   const blockCreate = needsReview && !reviewed;
 
+  const steps = [
+    ["Bid basis", "Client BOQ"],
+    ["Job details", name || "Name, client, currency"],
+    ["Client BOQ", "Import the issued bill"],
+    ["Commercial defaults", "Margin stack and quantity policy"],
+    ["Review and create", "Save the .aero file"],
+  ];
   return (
-    <div className="app home">
-      <BrandLockup size="md" tone={tone} />
-      <p className="kicker">{appendTo ? "Existing job" : "New job"}</p>
-      <h1>{appendTo ? (intent === "amend" ? "Amend BOQ" : "Add BOQ") : "Import client bill"}</h1>
-      <p className="lede">
+    <div className="v3" style={{ background: "#f5f9fb" }}>
+      <header style={{ height: 56, display: "flex", alignItems: "center", padding: "0 24px", borderBottom: "1px solid #c5d4e0", background: "#fff" }}>
+        <h1 style={{ fontSize: 20 }}>{appendTo ? (intent === "amend" ? "Amend BOQ" : "Add BOQ") : "New job"}</h1>
+        <span style={{ flex: 1 }} />
+        <span style={{ color: "#2c4558" }}>Step {step} of 5</span>
+      </header>
+      <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
+        <nav aria-label="Steps" style={{ width: 290, background: "#d7e5ef", borderRight: "1px solid #c5d4e0", padding: 16, display: "flex", flexDirection: "column", gap: 4 }}>
+          {steps.map((row, index) => (
+            <div key={row[0]} className={`stp${index + 1 === step ? " on" : index + 1 < step ? " done" : ""}`}>
+              <i>{index + 1 < step ? "✓" : index + 1}</i>
+              <div><strong>{row[0]}</strong><div style={{ color: "#2c4558", fontSize: 13 }}>{row[1]}</div></div>
+            </div>
+          ))}
+        </nav>
+        <main className="main">
+      <div className="k">Step {step}</div>
+      <h2>{steps[step - 1]?.[0]}</h2>
+      <p style={{ color: "#2c4558" }}>
         {appendTo && intent === "amend"
-          ? "Paste the amendment, extra pages, or a reissued bill. Matching items update client qty. New rows are added. Tender adjustments can come in as a new section. Our qty and rates stay until you remeasure or reprice."
-          : note}
+          ? "Paste the amendment. Matching items update client qty. New rows are added. Our qty and rates stay until you remeasure or reprice."
+          : step === 3
+            ? "Bid Craft reads sections, items, units and quantities. You confirm the mapping before anything is created."
+            : note}
       </p>
+      {step !== 3 && !appendTo ? (
+        <section className="card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10, maxWidth: 560 }}>
+          {step === 1 ? <p>This job is priced from a client bill of quantities. Currency {currency}.</p> : null}
+          {step === 2 ? (
+            <label className="l">Job name<input className="i" value={name} onChange={(e) => setName(e.target.value)} /></label>
+          ) : null}
+          {step === 4 ? <p>Commercial defaults use the company margin stack: overhead, profit, logistics and contingency, each as a percentage of direct cost. You can change them on Margins after the job is created.</p> : null}
+          {step === 5 ? <p>Create {name || "the job"} in {currency}. The file is saved from the job with File → Save.</p> : null}
+        </section>
+      ) : null}
+      {step === 3 || appendTo ? (
+      <>
       {appendTo ? (
         <div className="seg login-mode" role="group" aria-label="Import kind">
           <button type="button" className={intent === "new-bill" ? "primary" : ""} onClick={() => setIntent("new-bill")}>
@@ -261,14 +296,22 @@ export function ImportWizard({
           </tbody>
         </DataTable>
       </div>
-      <div className="actions">
-        <button className="primary" type="button" disabled={blockCreate || busy} onClick={finish}>
-          {appendTo ? (intent === "amend" ? "Apply amendment" : "Add BOQ") : "Create project"}
-        </button>
-        <button type="button" onClick={onCancel}>
-          Cancel
-        </button>
+      </>
+      ) : null}
+        </main>
       </div>
+      <footer style={{ height: 60, display: "flex", alignItems: "center", gap: 10, padding: "0 24px", borderTop: "1px solid #c5d4e0", background: "#fff" }}>
+        <button className="b" type="button" onClick={onCancel}>Cancel</button>
+        <span style={{ flex: 1 }} />
+        <button className="b" type="button" disabled={step <= 1} onClick={() => setStep((n) => Math.max(1, n - 1))}>Back</button>
+        {step < 5 && !appendTo ? (
+          <button className="b p" type="button" onClick={() => setStep((n) => Math.min(5, n + 1))}>Next</button>
+        ) : (
+          <button className="b p" type="button" disabled={blockCreate || busy} onClick={finish}>
+            {appendTo ? (intent === "amend" ? "Apply amendment" : "Add BOQ") : "Create project"}
+          </button>
+        )}
+      </footer>
     </div>
   );
 }
