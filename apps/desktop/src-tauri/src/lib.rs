@@ -18,7 +18,6 @@ fn write_aero(path: String, data: Vec<u8>) -> Result<String, String> {
             let _ = std::fs::rename(&bak, &path);
             e.to_string()
         })?;
-        let _ = std::fs::remove_file(&bak);
     } else {
         std::fs::rename(&tmp, &path).map_err(|e| e.to_string())?;
     }
@@ -134,6 +133,87 @@ fn display_path(path: &Path) -> String {
     raw.strip_prefix(r"\\?\").unwrap_or(&raw).to_string()
 }
 
+const MAX_USER_BYTES: usize = 64 * 1024 * 1024;
+
+fn limit_len(len: usize) -> Result<(), String> {
+    if len > MAX_USER_BYTES {
+        return Err("File is too large to write".into());
+    }
+    Ok(())
+}
+
+/// PowerShell reads the path from the environment, so a name cannot be reparsed as a command.
+#[cfg_attr(not(any(target_os = "windows", test)), allow(dead_code))]
+fn literal_powershell(script: &str, path: &str) -> std::process::Command {
+    let mut cmd = std::process::Command::new("powershell");
+    cmd.args([
+        "-NoProfile",
+        "-NonInteractive",
+        "-WindowStyle",
+        "Hidden",
+        "-Command",
+        script,
+    ]);
+    cmd.env("BIDCRAFT_PATH", path);
+    cmd
+}
+
+fn safe_pdf_name(name: &str) -> Result<String, String> {
+    let base = name.rsplit(['/', '\\']).next().unwrap_or(name).trim();
+    let without = base
+        .strip_suffix(".pdf")
+        .or_else(|| base.strip_suffix(".PDF"))
+        .unwrap_or(base);
+    let stem: String = without
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric() || *c == '-' || *c == '_')
+        .collect();
+    if stem.is_empty() {
+        return Err("PDF name was rejected".into());
+    }
+    Ok(format!("{stem}.pdf"))
+}
+
+fn approved_https(url: &str) -> Result<String, String> {
+    let url = url.trim();
+    if url.len() > 2048 {
+        return Err("Link is too long".into());
+    }
+    let rest = url
+        .strip_prefix("https://")
+        .ok_or_else(|| "Only https links can be opened".to_string())?;
+    if rest.chars().any(|c| {
+        c.is_whitespace()
+            || c.is_control()
+            || matches!(c, '"' | '\'' | '`' | '&' | '|' | ';' | '\\' | '<' | '>')
+    }) {
+        return Err("Link was rejected".into());
+    }
+    let host = rest.split(['/', '?', '#']).next().unwrap_or("");
+    if host.is_empty() || host.contains('@') || host.contains(':') {
+        return Err("Link was rejected".into());
+    }
+    let host = host.to_ascii_lowercase();
+    if host != "www.theaerolithcore.com" && host != "theaerolithcore.com" {
+        return Err("That site is not opened from Bid Craft".into());
+    }
+    Ok(url.to_string())
+}
+
+/// Constant-time compare of two workspace PIN hashes.
+pub fn pin_hashes_equal(left: &str, right: &str) -> bool {
+    let a = left.as_bytes();
+    let b = right.as_bytes();
+    if a.len() != b.len() {
+        return false;
+    }
+    let mut diff: u8 = 0;
+    for i in 0..a.len() {
+        diff |= a[i] ^ b[i];
+    }
+    diff == 0
+}
+
 fn user_path(path: &str) -> Result<PathBuf, String> {
     let trimmed = path.trim().trim_matches('"');
     if trimmed.is_empty() {
@@ -148,6 +228,7 @@ fn user_path(path: &str) -> Result<PathBuf, String> {
 
 #[tauri::command]
 fn write_user_file(path: String, data: Vec<u8>) -> Result<String, String> {
+    limit_len(data.len())?;
     let path = user_path(&path)?;
     if let Some(parent) = path.parent() {
         if !parent.as_os_str().is_empty() {
@@ -160,17 +241,16 @@ fn write_user_file(path: String, data: Vec<u8>) -> Result<String, String> {
 
 #[tauri::command]
 fn write_temp_pdf(name: String, data: Vec<u8>) -> Result<String, String> {
-    let safe = name
-        .chars()
-        .map(|c| if c.is_ascii_alphanumeric() || c == '.' || c == '-' || c == '_' { c } else { '-' })
-        .collect::<String>();
-    let file = std::env::temp_dir().join(if safe.to_ascii_lowercase().ends_with(".pdf") {
-        safe
-    } else {
-        format!("{safe}.pdf")
-    });
+    limit_len(data.len())?;
+    let file = std::env::temp_dir().join(safe_pdf_name(&name)?);
     std::fs::write(&file, data).map_err(|e| e.to_string())?;
     Ok(display_path(&file))
+}
+
+#[tauri::command]
+fn open_https(url: String) -> Result<(), String> {
+    let url = approved_https(&url)?;
+    spawn_detached(&mut open_command(&url))
 }
 
 #[tauri::command]
@@ -185,20 +265,10 @@ fn print_user_file(path: String) -> Result<(), String> {
     let text = path.to_string_lossy().to_string();
     #[cfg(target_os = "windows")]
     {
-        return spawn_detached(
-            std::process::Command::new("powershell")
-                .args([
-                    "-NoProfile",
-                    "-WindowStyle",
-                    "Hidden",
-                    "-Command",
-                    "Start-Process",
-                    "-LiteralPath",
-                    &text,
-                    "-Verb",
-                    "Print",
-                ]),
-        );
+        return spawn_detached(&mut literal_powershell(
+            "Start-Process -LiteralPath $env:BIDCRAFT_PATH -Verb Print",
+            &text,
+        ));
     }
     #[cfg(not(target_os = "windows"))]
     {
@@ -210,9 +280,7 @@ fn print_user_file(path: String) -> Result<(), String> {
 fn open_command(path: &str) -> std::process::Command {
     #[cfg(target_os = "windows")]
     {
-        let mut cmd = std::process::Command::new("cmd");
-        cmd.args(["/C", "start", "", path]);
-        return cmd;
+        return literal_powershell("Start-Process -LiteralPath $env:BIDCRAFT_PATH", path);
     }
     #[cfg(not(target_os = "windows"))]
     {
@@ -241,7 +309,8 @@ pub fn run() {
             write_user_file,
             write_temp_pdf,
             open_user_file,
-            print_user_file
+            print_user_file,
+            open_https
         ])
         .run(tauri::generate_context!())
         .expect("error while running Bid Craft");
@@ -284,6 +353,18 @@ mod tests {
     }
 
     #[test]
+    fn keeps_one_generation_backup() {
+        let path = temp_aero();
+        let written = write_aero(path, b"first".to_vec()).unwrap();
+        let again = write_aero(written.clone(), b"second".to_vec()).unwrap();
+        let bak = std::path::Path::new(&again).with_extension("aero.bak");
+        assert_eq!(std::fs::read(&again).unwrap(), b"second");
+        assert_eq!(std::fs::read(&bak).unwrap(), b"first");
+        let _ = std::fs::remove_file(&again);
+        let _ = std::fs::remove_file(&bak);
+    }
+
+    #[test]
     fn writes_and_reads_aero_bytes() {
         let path = temp_aero();
         let written = write_aero(path.clone(), b"aerolith-sqlite".to_vec()).unwrap();
@@ -311,6 +392,58 @@ mod tests {
     #[test]
     fn tenant_id_rejects_path_escape() {
         assert!(default_projects_dir(Some("../evil".into())).is_err());
+    }
+
+    #[test]
+    fn pdf_name_cannot_escape_the_temp_directory() {
+        assert!(safe_pdf_name("..").is_err());
+        assert!(safe_pdf_name("../secret").is_err() || safe_pdf_name("../secret").unwrap() == "secret.pdf");
+        assert_eq!(safe_pdf_name(r"..\..\windows\system.ini").unwrap(), "systemini.pdf");
+        let name = safe_pdf_name("offer.pdf").unwrap();
+        assert_eq!(name, "offer.pdf");
+        assert!(!name.contains(".."));
+    }
+
+    #[test]
+    fn powershell_keeps_the_path_out_of_the_command_line() {
+        let path = r"C:\bids\a & calc.exe.pdf";
+        let cmd = literal_powershell("Start-Process -LiteralPath $env:BIDCRAFT_PATH", path);
+        let args: Vec<String> = cmd.get_args().map(|arg| arg.to_string_lossy().into_owned()).collect();
+        assert!(args.iter().all(|arg| !arg.contains(path) && !arg.contains('&')));
+        let env = cmd
+            .get_envs()
+            .find(|(key, _)| *key == "BIDCRAFT_PATH")
+            .and_then(|(_, value)| value)
+            .map(|value| value.to_string_lossy().into_owned());
+        assert_eq!(env.as_deref(), Some(path));
+    }
+
+    #[test]
+    fn https_links_stay_on_the_publisher_site() {
+        assert!(approved_https("https://www.theaerolithcore.com/account").is_ok());
+        assert!(approved_https("https://theaerolithcore.com/pricing").is_ok());
+        assert!(approved_https("http://www.theaerolithcore.com").is_err());
+        assert!(approved_https("https://evil.example/account").is_err());
+        assert!(approved_https("https://www.theaerolithcore.com/account?x=1&y=2").is_err());
+        assert!(approved_https("https://user@www.theaerolithcore.com").is_err());
+    }
+
+    #[test]
+    fn user_file_rejects_an_oversized_payload() {
+        assert!(limit_len(MAX_USER_BYTES).is_ok());
+        assert!(limit_len(MAX_USER_BYTES + 1).is_err());
+    }
+
+    #[test]
+    fn pin_hashes_compare_in_constant_time() {
+        let hash = "ab".repeat(32);
+        assert!(pin_hashes_equal(&hash, &hash));
+        let mut other = hash.clone();
+        other.pop();
+        other.push('c');
+        assert!(!pin_hashes_equal(&hash, &other));
+        assert!(!pin_hashes_equal(&hash, &hash[..hash.len() - 1]));
+        assert!(pin_hashes_equal("", ""));
     }
 
     #[test]

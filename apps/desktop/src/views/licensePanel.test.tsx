@@ -46,13 +46,41 @@ describe("license UI", () => {
         onSubmit: () => undefined,
         onSignup: () => undefined,
         onPricing: () => undefined,
+        onRequestReset: async () => ({ ok: true, error: null }),
+        onResetPassword: async () => ({ ok: true, error: null }),
       }),
     );
     expect(html).toContain("Sign in with your Aerolith account");
     expect(html).toContain('type="email"');
     expect(html).toContain('autoComplete="current-password"');
     expect(html).toContain("Start trial");
+    expect(html).toContain("Forgot password?");
+    expect(html).toContain("Privacy policy");
+    expect(html).toContain("Terms of service");
+    expect(html).toContain("Terms and conditions");
+    expect(html).toContain("License terms");
     expect(html).not.toContain("PIN");
     expect(html).not.toContain("Workspace");
+    expect(html).not.toMatch(/coming soon/i);
+  });
+
+  it("asks for the reset link and a new password", () => {
+    const html = renderToStaticMarkup(
+      createElement(LoginView, {
+        busy: false,
+        error: "",
+        initialMode: "reset",
+        onSubmit: () => undefined,
+        onSignup: () => undefined,
+        onPricing: () => undefined,
+        onRequestReset: async () => ({ ok: true, error: null }),
+        onResetPassword: async () => ({ ok: true, error: null }),
+      }),
+    );
+    expect(html).toContain("Reset password");
+    expect(html).toContain("Send reset email");
+    expect(html).toContain("Reset link from the email");
+    expect(html).toContain("Update password");
+    expect(html).toContain("Back to sign in");
   });
 });

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { LegalBrowser } from "../views/LegalDocs";
 import { APP_VERSION } from "../auth/releaseConfig";
 import type { LicenseSession } from "../auth/licenseState";
 import { mergeReportFormat, type ReportFormat } from "../reportFormat";
@@ -204,6 +205,7 @@ export function SettingsScreen({
   onSignOut,
   onCheckUpdate,
   onCompare,
+  initialTab = "calc",
 }: {
   project: LoadedProject;
   session: Session;
@@ -218,13 +220,15 @@ export function SettingsScreen({
   onSignOut: () => void;
   onCheckUpdate: () => void;
   onCompare: () => void;
+  initialTab?: string;
 }) {
-  const [tab, setTab] = useState("calc");
+  const [tab, setTab] = useState(initialTab);
   const tabs = [
     ["calc", "Calculation"],
     ["categories", "Cost categories"],
     ["users", "Users and roles"],
     ["licence", "Licence and devices"],
+    ["legal", "Legal"],
     ["updates", "Updates"],
     ["backup", "Backup"],
   ];
@@ -268,6 +272,11 @@ export function SettingsScreen({
           {tab === "users" && !tenant ? <p>Owner session. Open a tenant to manage its users.</p> : null}
           {tab === "licence" ? (
             <LicensePanel session={license} busy={licenseBusy} onRefresh={onRefresh} onAccount={onAccount} onPricing={onPricing} onSignOut={onSignOut} />
+          ) : null}
+          {tab === "legal" ? (
+            <section className="card" style={{ padding: 16 }}>
+              <LegalBrowser />
+            </section>
           ) : null}
           {tab === "updates" ? (
             <section className="card" style={{ padding: 12 }}>
