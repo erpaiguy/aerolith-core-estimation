@@ -42,6 +42,7 @@ import { LoginView } from "./views/LoginView";
 import { SplashShell } from "./views/SplashShell";
 import { checkForUpdate, updatesAutoEnabled, type UpdateOffer } from "./updates";
 import { cloneResourceMaster } from "./resourceMaster";
+import { closeJobIfSaved, openAmend, SAVE_CANCELLED } from "./jobSession";
 import { CloseJobDialog, LandingView, OwnerScreen, SignedOutView } from "./v3/gates";
 import { JobWorkspace } from "./v3/JobWorkspace";
 import type { Pane } from "./v3/routes";
@@ -233,13 +234,16 @@ export function App() {
     }
   }
 
-  async function saveAero() {
-    if (!project) return;
+  async function saveAero(): Promise<boolean> {
+    if (!project) return false;
     try {
       const native = await import("./nativeAero");
       if (native.isTauri()) {
         const path = await native.pickSaveAeroPath(project.name, filePath, liveTenant?.id);
-        if (!path) return;
+        if (!path) {
+          setSaveMsg(SAVE_CANCELLED);
+          return false;
+        }
         setSaveMsg("Saving…");
         const { projectToAero } = await import("./aero");
         const saved = await native.writeAeroBytes(path, await projectToAero(project));
@@ -247,7 +251,7 @@ export function App() {
         const scope = workspaceId ?? sessionScope(session);
         if (scope) pushRecent(project.name, saved, scope);
         setSaveMsg(`Saved ${saved}`);
-        return;
+        return true;
       }
       const { projectToAero, downloadAero } = await import("./aero");
       const bytes = await projectToAero(project);
@@ -255,18 +259,23 @@ export function App() {
         const picked = await native.saveAeroWithBrowserPicker(bytes, project.name);
         if (picked) {
           setSaveMsg(`Saved ${picked}`);
-          return;
+          return true;
         }
       } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") return;
+        if (err instanceof DOMException && err.name === "AbortError") {
+          setSaveMsg(SAVE_CANCELLED);
+          return false;
+        }
         throw err;
       }
       downloadAero(bytes, project.name);
       setSaveMsg("Saved .aero to your downloads folder (browser preview).");
+      return true;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Could not save .aero";
       setSaveMsg(message);
       window.alert(message);
+      return false;
     }
   }
 
@@ -710,7 +719,7 @@ export function App() {
         onCancel={() => setCloseAsk(false)}
         onDiscard={leaveJob}
         onSave={() => {
-          void saveAero().finally(leaveJob);
+          void closeJobIfSaved(() => saveAero(), leaveJob);
         }}
       />
     );
@@ -758,7 +767,12 @@ export function App() {
         onAddItem={addItem}
         onAddSection={addSection}
         onRemove={removeItem}
-        onAmend={() => { setImportMode("amend"); setScreen("import"); }}
+        onAmend={() => {
+          openAmend(editLocked, () => {
+            setImportMode("amend");
+            setScreen("import");
+          });
+        }}
         onSeal={() => commit({ ...project, sealedAt: new Date().toISOString() }, "seal")}
         onRevision={() => commit({ ...project, sealedAt: null, revision: project.revision + 1 }, "revision")}
         who={`${whoLabel} · ${roleName}`}
