@@ -14,6 +14,12 @@ function committedText(
   return formatGrouped(n, decimals);
 }
 
+/** A focused quantity follows an outside change, such as undo. */
+export function externalQuantityChanged(draft: string, value: number | null | undefined): boolean {
+  const parsed = parseSignedNumber(draft);
+  return parsed == null || value == null || Math.abs(parsed - value) > 1e-6;
+}
+
 export function QtyInput({
   value,
   onValue,
@@ -46,8 +52,16 @@ export function QtyInput({
   const [draft, setDraft] = useState(committedText(value, decimals, round, moneyCurrency));
 
   useEffect(() => {
-    if (!focused) setDraft(committedText(value, decimals, round, moneyCurrency));
-  }, [value, focused, decimals, round, moneyCurrency]);
+    const shown = committedText(value, decimals, round, moneyCurrency);
+    if (!focused) {
+      setDraft(shown);
+      return;
+    }
+    if (externalQuantityChanged(draft, value)) {
+      setDraft(shown);
+      setFocused(false);
+    }
+  }, [value, focused, decimals, round, moneyCurrency, draft]);
 
   function snap(n: number): number {
     if (decimals == null) return n;

@@ -38,6 +38,20 @@ export function useAerolithLicense() {
       setSession({ ...service.session });
       return result.ok;
     },
+    async requestPasswordReset(email: string) {
+      setBusy(true);
+      setError("");
+      const result = await service.requestPasswordReset(email);
+      setBusy(false);
+      return result;
+    },
+    async resetPassword(email: string, proof: string, password: string, confirm: string) {
+      setBusy(true);
+      setError("");
+      const result = await service.resetPassword(email, proof, password, confirm);
+      setBusy(false);
+      return result;
+    },
     async logout() {
       setBusy(true);
       await service.logout();

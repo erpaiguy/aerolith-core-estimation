@@ -1,3 +1,4 @@
+import type { RecoveryProof } from "./passwordReset";
 import type { ReleaseConfig } from "./releaseConfig";
 import { readLicense, readSupabaseAuth, type LicenseVerifyResponse, type LoginResponse } from "./payload";
 
@@ -70,6 +71,66 @@ export class AuthApiClient {
 
   refreshLicense(request: ActivateBody): Promise<LicenseVerifyResponse> {
     return this.postLicence("license-refresh", request);
+  }
+
+  async requestPasswordReset(email: string): Promise<{ ok: boolean; error: string | null }> {
+    try {
+      const response = await this.fetchImpl(`${this.config.supabaseUrl}/auth/v1/recover`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          apikey: this.config.supabaseAnonKey,
+        },
+        body: JSON.stringify({ email }),
+      });
+      const message = await errorMessage(response);
+      if (response.status === 429) {
+        return { ok: false, error: "Too many reset emails. Wait a few minutes and try again." };
+      }
+      if (response.ok || looksLikeUnknownUser(message)) return { ok: true, error: null };
+      if (response.status >= 500) return { ok: false, error: "Could not send the reset email. Try again in a moment." };
+      return { ok: false, error: message || "Could not send the reset email." };
+    } catch (err) {
+      return { ok: false, error: `Could not reach the account service. ${err instanceof Error ? err.message : "network"}` };
+    }
+  }
+
+  async resetPassword(email: string, proof: RecoveryProof, password: string): Promise<{ ok: boolean; error: string | null }> {
+    try {
+      const accessToken = proof.kind === "session" ? proof.accessToken : await this.recoveryAccessToken(email, proof);
+      if (!accessToken) return { ok: false, error: "That reset link has expired or was already used. Send a new email." };
+      const response = await this.fetchImpl(`${this.config.supabaseUrl}/auth/v1/user`, {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+          apikey: this.config.supabaseAnonKey,
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ password }),
+      });
+      if (response.ok) return { ok: true, error: null };
+      const message = await errorMessage(response);
+      return { ok: false, error: message || "Could not update the password." };
+    } catch (err) {
+      return { ok: false, error: `Could not reach the account service. ${err instanceof Error ? err.message : "network"}` };
+    }
+  }
+
+  private async recoveryAccessToken(email: string, proof: Exclude<RecoveryProof, { kind: "session" }>): Promise<string | null> {
+    const body =
+      proof.kind === "otp"
+        ? { type: "recovery", token: proof.token, email }
+        : { type: "recovery", token_hash: proof.tokenHash };
+    const response = await this.fetchImpl(`${this.config.supabaseUrl}/auth/v1/verify`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        apikey: this.config.supabaseAnonKey,
+      },
+      body: JSON.stringify(body),
+    });
+    const login = readSupabaseAuth(await response.text(), response.ok);
+    return login.success ? login.accessToken : null;
   }
 
   async logout(accessToken: string | null): Promise<void> {
@@ -148,6 +209,20 @@ export class AuthApiClient {
       return networkLicense(`Could not verify license: ${err instanceof Error ? err.message : "network"}`);
     }
   }
+}
+
+async function errorMessage(response: Response): Promise<string | null> {
+  try {
+    const login = readSupabaseAuth(await response.text(), false);
+    return login.error;
+  } catch {
+    return null;
+  }
+}
+
+function looksLikeUnknownUser(message: string | null): boolean {
+  const text = (message ?? "").toLowerCase();
+  return text.includes("not found") || text.includes("user does not exist") || text.includes("no user");
 }
 
 function normalizeStatus(status: number, payload: LicenseVerifyResponse): LicenseVerifyResponse {

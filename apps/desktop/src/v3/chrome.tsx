@@ -91,6 +91,11 @@ export function Shell({
   onOwner,
   onAddItem,
   onAddSection,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+  initialMenu,
   children,
 }: {
   pane: Pane;
@@ -118,9 +123,14 @@ export function Shell({
   onOwner?: () => void;
   onAddItem: () => void;
   onAddSection: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
+  initialMenu?: "file" | "edit" | "view" | "help" | null;
   children: ReactNode;
 }) {
-  const [menu, setMenu] = useState<"file" | "edit" | "view" | "help" | null>(null);
+  const [menu, setMenu] = useState<"file" | "edit" | "view" | "help" | null>(initialMenu ?? null);
   const [query, setQuery] = useState("");
   const [cmd, setCmd] = useState(false);
   const focused = pane === "clone" || pane === "component" || pane === "design";
@@ -188,10 +198,23 @@ export function Shell({
     setMenu((current) => (current === name ? null : name));
   }
 
-  function item(label: string, action: () => void) {
+  function item(label: string, action: () => void, extra?: { disabled?: boolean; shortcut?: string }) {
+    const disabled = extra?.disabled ?? false;
     return (
-      <button key={label} className="b" type="button" role="menuitem" onClick={() => { setMenu(null); action(); }}>
+      <button
+        key={label}
+        className="b"
+        type="button"
+        role="menuitem"
+        disabled={disabled}
+        onClick={() => {
+          if (disabled) return;
+          setMenu(null);
+          action();
+        }}
+      >
         {label}
+        {extra?.shortcut ? <span className="m" style={{ marginLeft: "auto", color: "#6b8397" }}>{extra.shortcut}</span> : null}
       </button>
     );
   }
@@ -209,6 +232,8 @@ export function Shell({
           {item("Sign out", onSignOut)}
         </MenuButton>
         <MenuButton label="Edit" open={menu === "edit"} onOpen={() => toggle("edit")}>
+          {item("Undo", onUndo, { disabled: !canUndo, shortcut: "Ctrl+Z" })}
+          {item("Redo", onRedo, { disabled: !canRedo, shortcut: "Ctrl+Y" })}
           {item("Add item", () => { onAddItem(); go("estimate"); })}
           {item("Add section", () => { onAddSection(); go("estimate"); })}
           {item("Working BOQ", () => go("estimate"))}

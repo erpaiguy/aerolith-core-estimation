@@ -1,5 +1,5 @@
 import { configureDisplayFormat, mergeDisplayFormat } from "@aerolith/shared";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { emptyProject, loadCampusSampleProject, loadReferenceProject } from "./loadReference";
 import type { Activity, LoadedProject, QtoLine, WorkingItem } from "./model";
 import { inferParents, newId, stampItem } from "./model";
@@ -43,6 +43,7 @@ import { SplashShell } from "./views/SplashShell";
 import { checkForUpdate, updatesAutoEnabled, type UpdateOffer } from "./updates";
 import { cloneResourceMaster } from "./resourceMaster";
 import { closeJobIfSaved, openAmend, SAVE_CANCELLED } from "./jobSession";
+import { createHistory, historySteps, pushHistory, redoHistory, undoHistory } from "./editHistory";
 import { CloseJobDialog, LandingView, OwnerScreen, SignedOutView } from "./v3/gates";
 import { JobWorkspace } from "./v3/JobWorkspace";
 import type { Pane } from "./v3/routes";
@@ -71,6 +72,13 @@ export function App() {
   const [closeAsk, setCloseAsk] = useState(false);
   const [jobsOpened, setJobsOpened] = useState(0);
   const [editCount, setEditCount] = useState(0);
+  const [histTick, setHistTick] = useState(0);
+  const historyRef = useRef(createHistory<LoadedProject>());
+  const projectRef = useRef<LoadedProject | null>(null);
+  const undoRef = useRef<() => void>(() => undefined);
+  const redoRef = useRef<() => void>(() => undefined);
+  const lockedRef = useRef(false);
+  projectRef.current = project;
 
   useEffect(() => {
     if (!updatesAutoEnabled()) return;
@@ -103,6 +111,23 @@ export function App() {
   const sealed = Boolean(project?.sealedAt);
   const editLocked =
     licenseReadOnly || sealed || (session?.kind === "tenant" && !roleEdit(permModule));
+  lockedRef.current = editLocked;
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.altKey || !(event.ctrlKey || event.metaKey)) return;
+      const key = event.key.toLowerCase();
+      const undoKey = key === "z" && !event.shiftKey;
+      const redoKey = key === "y" || (key === "z" && event.shiftKey);
+      if (!undoKey && !redoKey) return;
+      if (!projectRef.current || lockedRef.current) return;
+      event.preventDefault();
+      if (undoKey) undoRef.current();
+      else redoRef.current();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     configureDisplayFormat({
@@ -154,8 +179,42 @@ export function App() {
     applyPlatform(nextPlat);
   }
 
+  function clearHistory() {
+    historyRef.current = createHistory();
+    setHistTick((tick) => tick + 1);
+  }
+
+  function noteEdit(current: LoadedProject) {
+    historyRef.current = pushHistory(historyRef.current, current);
+    setHistTick((tick) => tick + 1);
+  }
+
+  function undo() {
+    const current = projectRef.current;
+    if (!current || lockedRef.current) return;
+    const step = undoHistory(historyRef.current, current);
+    if (!step) return;
+    historyRef.current = step.history;
+    setProject(withResults(step.value));
+    setHistTick((tick) => tick + 1);
+  }
+
+  function redo() {
+    const current = projectRef.current;
+    if (!current || lockedRef.current) return;
+    const step = redoHistory(historyRef.current, current);
+    if (!step) return;
+    historyRef.current = step.history;
+    setProject(withResults(step.value));
+    setHistTick((tick) => tick + 1);
+  }
+
+  undoRef.current = undo;
+  redoRef.current = redo;
+
   function openProject(next: LoadedProject, path?: string | null) {
     const live = withResults(next);
+    clearHistory();
     setProject(live);
     setActivity("dashboard");
     setSelected(null);
@@ -204,6 +263,7 @@ export function App() {
       setSession(null);
       setProject(null);
       setFilePath(null);
+      clearHistory();
       setScreen("signedout");
     });
   }
@@ -307,6 +367,7 @@ export function App() {
     if (licenseReadOnly) return;
     if (session?.kind === "tenant" && !can(session, permModule, "edit") && kind === "edit") return;
     if (project?.sealedAt && kind === "edit") return;
+    if (project) noteEdit(project);
     setProject(withResults({ ...next, isDemo: false }));
     setEditCount((n) => n + 1);
   }
@@ -587,6 +648,8 @@ export function App() {
         }}
         onSignup={license.openSignup}
         onPricing={license.openPricing}
+        onRequestReset={(email) => license.requestPasswordReset(email)}
+        onResetPassword={(email, proof, password, confirm) => license.resetPassword(email, proof, password, confirm)}
       />
     );
   }
@@ -673,6 +736,7 @@ export function App() {
     setQtoLineId(null);
     setSaveMsg("");
     setCloseAsk(false);
+    clearHistory();
     setScreen("home");
     setPane("dashboard");
   }
@@ -798,6 +862,10 @@ export function App() {
         onSaveCatalog={() => saveCatalogEdits({ units: project.units, categories: project.categories, vendors: project.vendors })}
         onPromote={requestPromote}
         notice={(catalogStale && liveTenant) || updateOffer || conflicts.length ? notice : undefined}
+        canUndo={histTick >= 0 && historySteps(historyRef.current, editLocked).undo}
+        canRedo={histTick >= 0 && historySteps(historyRef.current, editLocked).redo}
+        onUndo={undo}
+        onRedo={redo}
       />
   );
 }

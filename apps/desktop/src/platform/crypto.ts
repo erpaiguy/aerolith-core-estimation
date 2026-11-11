@@ -17,8 +17,17 @@ export function newSalt(): string {
   return [...a].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/** Constant-time compare of two PIN hashes. A length mismatch is rejected before the walk. */
+export function pinHashesEqual(left: string, right: string): boolean {
+  if (left.length !== right.length) return false;
+  let diff = 0;
+  for (let i = 0; i < left.length; i += 1) diff |= left.charCodeAt(i) ^ right.charCodeAt(i);
+  return diff === 0;
+}
+
 export async function verifyPin(pin: string, salt: string, pinHash: string): Promise<boolean> {
-  return (await hashPin(pin, salt)) === pinHash;
+  const got = await hashPin(pin, salt);
+  return pinHashesEqual(got, pinHash);
 }
 
 export function licenseStatus(trialStartedAt: string, expiresAt: string | null, now = Date.now()) {

@@ -50,6 +50,10 @@ export function JobWorkspace({
   onSaveCatalog,
   onPromote,
   notice,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
 }: {
   pane: Pane;
   onPane: (pane: Pane) => void;
@@ -91,6 +95,10 @@ export function JobWorkspace({
   onSaveCatalog: () => void;
   onPromote: (kind: "unit" | "category" | "vendor", code: string, label: string) => void;
   notice?: ReactNode;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
 }) {
   const [resourceCode, setResourceCode] = useState<string | null>(project.resources[0]?.project_code ?? null);
   const [lineIndex, setLineIndex] = useState<number | null>(0);
@@ -130,6 +138,10 @@ export function JobWorkspace({
       onOwner={onOwner}
       onAddItem={onAddItem}
       onAddSection={onAddSection}
+      canUndo={canUndo}
+      canRedo={canRedo}
+      onUndo={onUndo}
+      onRedo={onRedo}
     >
       {toast ? <div className="banner" role="status">{toast} <button className="b s" type="button" onClick={() => setToast("")}>Dismiss</button></div> : null}
       {pane === "dashboard" ? <DashboardScreen api={measure} onBill={onBill} /> : null}

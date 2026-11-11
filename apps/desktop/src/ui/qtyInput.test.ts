@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isNumericDraft, parseSignedNumber } from "@aerolith/shared";
+import { externalQuantityChanged } from "./QtyInput";
 
 describe("quantity entry", () => {
   it("keeps minus and decimal drafts while typing", () => {
@@ -23,5 +24,14 @@ describe("quantity entry", () => {
     expect(parseSignedNumber("-0.25")).toBe(-0.25);
     expect(parseSignedNumber("1,250.75")).toBe(1250.75);
     expect(parseSignedNumber("0")).toBe(0);
+  });
+});
+
+describe("quantity undo refresh", () => {
+  it("follows an outside quantity change and keeps a matching draft", () => {
+    expect(externalQuantityChanged("12", 4)).toBe(true);
+    expect(externalQuantityChanged("12", 12)).toBe(false);
+    expect(externalQuantityChanged("", 12)).toBe(true);
+    expect(externalQuantityChanged("12", null)).toBe(true);
   });
 });

@@ -1,7 +1,7 @@
 {
   "identifier": "default",
   "description": "Main window can use native open/save dialogs and .aero commands",
-  "windows": ["*"],
+  "windows": ["main"],
   "permissions": [
     "core:default",
     "dialog:default",

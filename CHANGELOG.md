@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.0.2
+
+- Forgot password emails a one-time reset link. Pasting the link, or the code, sets a new password without signing the device in.
+- The webview content security policy allows the app, the account service, and the Google fonts used by the light theme. External links stay on the Aerolith site. Temporary PDF names cannot leave the temp folder. PIN hashes compare in constant time.
+- Undo and redo restore the last project edit from the Edit menu and from Ctrl+Z / Ctrl+Y. Both stay disabled while a job is sealed or locked.
+- A successful save keeps the previous `.aero.bak`.
+- Privacy, terms of service, terms and conditions, and the licence text are readable on the sign-in screen and in Settings.
+
+Save-and-close and the Amend lock from 3.0.1 are unchanged.
+
+Publish Estimation release was not run for this version.
+
 ## 3.0.1
 
 Fixes the 3.0.0 desktop shell after the installed build.
